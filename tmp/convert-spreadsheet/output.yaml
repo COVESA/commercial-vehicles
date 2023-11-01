@@ -1,0 +1,306 @@
+Vehicle.ADAS.EBA.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Indicates if EBA is currently regulating brake pressure. True = Engaged.
+    False = Not Engaged.
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+  uuid: 86360c44ead354d18af7ff14176151f6
+Vehicle.ADAS.LaneDepartureDetection.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if lane departure detection registered a lane departure.
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+  uuid: c32fcd1d56035cb08acfd380be224c6a
+Vehicle.ADAS.ObstacleDetection.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+  uuid: b0b1eab51f135ffcb2a17a7603415fec
+Vehicle.ADAS.TCS.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Indicates if TCS is currently regulating traction. True = Engaged.
+    False = Not Engaged.
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+  uuid: b33d70009ad5589fbffe17fa7e827242
+Vehicle.Acceleration.Lateral:
+  category: Safety
+  datatype: float
+  description: Vehicle acceleration in Y (lateral acceleration).
+  importance: MUST
+  sampling: 1Hz
+  type: sensor
+  unit: m/s^2
+  usecase: SAFETY05
+  uuid: 7522c5d6b7665b16a099643b2700e93c
+Vehicle.Cabin.Seat.Row1.DriverSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY01
+  uuid: db477d45def05e11a90689c9e655cad9
+Vehicle.Chassis.Brake.PedalPosition:
+  category: Safety
+  datatype: uint8
+  description: Brake pedal position as percent. 0 = Not depressed. 100 = Fully depressed.
+  importance: MUST
+  max: 100
+  min: 0
+  sampling: CHANGE
+  type: sensor
+  unit: percent
+  usecase: SAFETY04
+  uuid: 0477d3a4a831564ea473976cf34374f2
+Vehicle.LowVoltageBattery.CurrentVoltage:
+  category: Optimization / Maintenance
+  datatype: float
+  description: Current Voltage of the low voltage battery.
+  importance: MUST
+  sampling: 10Hz
+  type: sensor
+  unit: V
+  usecase: MAINTENANCE17
+  uuid: 1394234e8b975a279959ae82e03df786
+Vehicle.LowVoltageSystemState:
+  allowed:
+  - UNDEFINED
+  - LOCK
+  - 'OFF'
+  - ACC
+  - 'ON'
+  - START
+  category: Sustainability (ICE)
+  datatype: string
+  description: State of the supply voltage of the control units (usually 12V).
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SUSTAINABILITY04
+  uuid: d7391ceb132e5519b02d4c13d5513d99
+Vehicle.OBD.FuelType:
+  category: Sustainability (ICE)
+  datatype: uint8
+  description: PID 51 - Fuel type
+  importance: MUST
+  max: 23
+  min: 0
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: attribute
+  usecase: SUSTAINABILITY01
+  uuid: aefb45bdd8035904b0c8f3ffcedc53a9
+Vehicle.Powertrain.CombustionEngine.DieselExhaustFluid.Level:
+  category: Sustainability (ICE)
+  datatype: uint8
+  description: Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 =
+    empty. 100 = full.
+  importance: SHOULD
+  max: 100
+  min: 0
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: percent
+  usecase: SUSTAINABILITY02
+  uuid: f5b0269b58ff5a8e8399f6d96963a3b6
+Vehicle.Powertrain.CombustionEngine.ECT:
+  category: Optimization / Maintenance
+  datatype: int16
+  description: Engine coolant temperature.
+  importance: SHOULD
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: celsius
+  usecase: MAINTENANCE14
+  uuid: fff3cad23cac5b189a1a075c3ab562cd
+Vehicle.Powertrain.CombustionEngine.EOP:
+  category: Optimization / Maintenance
+  datatype: uint16
+  description: Engine oil pressure.
+  importance: MUST
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE09
+  uuid: 76c7039dc7975ec3a003f0f4a04895ec
+Vehicle.Powertrain.CombustionEngine.EngineHours:
+  category: Compliance
+  datatype: float
+  description: Accumulated time during engine lifetime with 'engine speed (rpm) >
+    0'.
+  importance: MUST
+  sampling: 0..0016666666666667Hz
+  type: sensor
+  unit: h
+  usecase: COMPLIANCE01
+  uuid: a23a62e24f58514d961890f53262e4e0
+Vehicle.Powertrain.CombustionEngine.EngineOilLevel:
+  allowed:
+  - CRITICALLY_LOW
+  - LOW
+  - NORMAL
+  - HIGH
+  - CRITICALLY_HIGH
+  category: Optimization / Maintenance
+  datatype: string
+  description: Engine oil level.
+  importance: MUST
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE11
+  uuid: e3813f59e94b509eb865fd97255a8a4f
+Vehicle.Powertrain.CombustionEngine.IdleHours:
+  category: Sustainability (ICE)
+  comment: Vehicles may calculate accumulated idle time for an engine. It might be
+    based on engine speed (rpm) below a certain limit or any other mechanism.
+  datatype: float
+  description: Accumulated idling time during engine lifetime. Definition of idling
+    is not standardized.
+  importance: SHOULD
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  unit: h
+  usecase: SUSTAINABILITY02
+  uuid: 6caa3d7e669c5cc6aecd4a6be9a302d4
+Vehicle.Powertrain.FuelSystem.ConsumptionSinceStart:
+  category: Sustainability (EV)
+  comment: A new trip is considered to start when engine gets enabled (e.g. LowVoltageSystemState
+    in ON or START mode). A trip is considered to end when engine is no longer enabled.
+    The signal may however keep the value of the last trip until a new trip is started.
+  datatype: float
+  description: Fuel amount in liters consumed since start of current trip.
+  importance: MUST
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  unit: l
+  usecase: SUSTAINABILITY05
+  uuid: adf0a40964ff556f92b10275ad918883
+Vehicle.Powertrain.TractionBattery.Charging.IsCharging:
+  category: Sustainability (EV)
+  datatype: boolean
+  description: True if charging is ongoing. Charging is considered to be ongoing if
+    energy is flowing from charger to vehicle.
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SUSTAINABILITY08
+  uuid: d28244c9e3365899954bd3e38ef46bb9
+Vehicle.Powertrain.TractionBattery.NetCapacity:
+  category: Sustainability (EV)
+  datatype: uint16
+  description: Total net capacity of the battery considering aging.
+  importance: SHOULD
+  sampling: .nan
+  type: sensor
+  unit: kWh
+  usecase: SUSTAINABILITY10
+  uuid: 9c68fe42cb81501eb6349f8c9b0b6899
+Vehicle.Powertrain.TractionBattery.Range:
+  category: Sustainability (EV)
+  datatype: uint32
+  description: Remaining range in meters using only battery.
+  importance: MUST
+  sampling: 0.016666666666667Hz
+  type: sensor
+  unit: m
+  usecase: SUSTAINABILITY06
+  uuid: c0376a425e5d578d9d86ae0dc2ad9778
+Vehicle.Powertrain.TractionBattery.StateOfCharge.Current:
+  category: Sustainability (EV)
+  datatype: float
+  description: Physical state of charge of the high voltage battery, relative to net
+    capacity. This is not necessarily the state of charge being displayed to the customer.
+  importance: MUST
+  max: 100.0
+  min: 0
+  sampling: CHANGE
+  type: sensor
+  unit: percent
+  usecase: SUSTAINABILITY06
+  uuid: 2e647ca3a1ff5e52af137aab240642da
+Vehicle.Powertrain.Transmission.CurrentGear:
+  category: Safety
+  datatype: int8
+  description: The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
+  importance: MUST
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY07
+  uuid: cd0ba1d772565e16bff46cbd5c9361da
+Vehicle.Service.DistanceToService:
+  category: Optimization / Maintenance
+  datatype: float
+  description: Remaining distance to service (of any kind). Negative values indicate
+    service overdue.
+  importance: SHOULD
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  unit: km
+  usecase: MAINTENANCE04
+  uuid: 6f4347ce149759819572c8c3a17e8d93
+Vehicle.Service.IsServiceDue:
+  category: Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if vehicle needs service (of any kind). True = Service needed
+    now or in the near future. False = No known need for service.
+  importance: SHOULD
+  sampling: CHANGE
+  type: sensor
+  usecase: MAINTENANCE06
+  uuid: 3e28f85ccccd5702b9adbe9a761ea1b4
+Vehicle.Service.TimeToService:
+  category: Optimization / Maintenance
+  datatype: int32
+  description: Remaining time to service (of any kind). Negative values indicate service
+    overdue.
+  importance: SHOULD
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  unit: s
+  usecase: MAINTENANCE12
+  uuid: c968be91a5685fa9ae30b84a0f91934e
+Vehicle.Speed:
+  category: Sustainability (ICE)
+  datatype: float
+  description: Vehicle speed.
+  importance: MUST
+  sampling: 1Hz
+  type: sensor
+  unit: km/h
+  usecase: SUSTAINABILITY04
+  uuid: efe50798638d55fab18ab7d43cc490e9
+Vehicle.TraveledDistance:
+  category: Compliance
+  datatype: float
+  description: Odometer reading, total distance traveled during the lifetime of the
+    vehicle.
+  importance: MUST
+  sampling: 5Km
+  type: sensor
+  unit: km
+  usecase: COMPLIANCE02
+  uuid: 32c3c3585f105d8aa5566ef5a038a741
+Vehicle.VehicleIdentification.VIN:
+  category: Optimization / Maintenance
+  datatype: string
+  description: 17-character Vehicle Identification Number (VIN) as defined by ISO
+    3779.
+  importance: MUST
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: attribute
+  usecase: MAINTENANCE01
+  uuid: 6f0b6fa8c34f589baa92e565bc9df5bd
