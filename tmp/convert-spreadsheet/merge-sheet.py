@@ -3,7 +3,7 @@ import yaml
 
 
 # Load the YAML file
-yaml_file_path = 'vss_rel_4.0.yaml'
+yaml_file_path = 'vss.yaml'
 with open(yaml_file_path, 'r') as yaml_file:
     yaml_data = yaml.safe_load(yaml_file)
 
@@ -23,10 +23,10 @@ for index, row in df.iterrows():
         yaml_entry = yaml_data[vss_value]
         
         # Add the additional fields from the spreadsheet
-        yaml_entry['category'] = row['category']
-        yaml_entry['importance'] = row['importance']
-        yaml_entry['usecase'] = row['usecase']
-        yaml_entry['sampling'] = row['sampling']
+        yaml_entry['category'] = row['Pillar']
+        yaml_entry['importance'] = row['Importance for use case']
+        yaml_entry['usecase'] = row['Use case #']
+        yaml_entry['sampling'] = row['Recommended Sampling']
         
         # Store the updated YAML entry
         yaml_entries_with_extra_fields[vss_value] = yaml_entry
