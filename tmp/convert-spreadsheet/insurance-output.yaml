@@ -1,0 +1,771 @@
+Vehicle.ADAS.ABS.IsEnabled:
+  category: Safety
+  datatype: boolean
+  description: Indicates if ABS is enabled. True = Enabled. False = Disabled.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY13
+Vehicle.ADAS.ABS.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Indicates if ABS is currently regulating brake pressure. True = Engaged.
+    False = Not Engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ActiveAutonomyLevel:
+  allowed:
+  - SAE_0
+  - SAE_1
+  - SAE_2_DISENGAGING
+  - SAE_2
+  - SAE_3_DISENGAGING
+  - SAE_3
+  - SAE_4_DISENGAGING
+  - SAE_4
+  - SAE_5_DISENGAGING
+  - SAE_5
+  category: Safety
+  comment: Complies with https://www.sae.org/standards/content/j3016_202104/ and https://www.sae.org/blog/sae-j3016-update.
+    Level 5 and 4 ADS (Automated driving system) disengage, if appropriate, only after
+    it achieves a minimal risk condition or a driver is performing the DDT. Level
+    3 ADS disengages either an appropriate time after issuing a request to intervene
+    or immediately upon user request. Level 2 DAS (Driving automation system) disengages
+    immediately upon driver request. However, since many Level 2 DAS, often termed
+    "Level 2.5", warn the driver shortly before reaching their operational limits,
+    the VSS also supports the DISENGAGING state for SAE_2. Nevertheless, it should
+    be noted that the SAE J3016 states that it is incorrect to describe driving automation
+    features using fractional levels.
+  datatype: string
+  description: Indicates the currently active level of driving automation according
+    to the SAE J3016 (Taxonomy and Definitions for Terms Related to Driving Automation
+    Systems for On-Road Motor Vehicles).
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY04
+Vehicle.ADAS.CruiseControl.IsActive:
+  category: Safety
+  datatype: boolean
+  description: Indicates if cruise control system is active (i.e. actively controls
+    speed). True = Active. False = Inactive.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY04
+Vehicle.ADAS.CruiseControl.IsError:
+  category: Safety
+  datatype: boolean
+  description: Indicates if cruise control system incurred an error condition. True
+    = Error. False = No Error.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY04
+Vehicle.ADAS.CruiseControl.SpeedSet:
+  category: Safety
+  datatype: float
+  description: Set cruise control speed in kilometers per hour.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  unit: km/h
+  usecase: SAFETY04
+Vehicle.ADAS.EBA.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Indicates if EBA is currently regulating brake pressure. True = Engaged.
+    False = Not Engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY 13
+Vehicle.ADAS.ESC.IsEnabled:
+  category: Safety
+  datatype: boolean
+  description: Indicates if ESC is enabled. True = Enabled. False = Disabled.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY13
+Vehicle.ADAS.ESC.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Indicates if ESC is currently regulating vehicle stability. True =
+    Engaged. False = Not Engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.LaneDepartureDetection.IsEnabled:
+  category: Safety
+  datatype: boolean
+  description: Indicates if lane departure detection system is enabled. True = Enabled.
+    False = Disabled.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY13
+Vehicle.ADAS.LaneDepartureDetection.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if lane departure detection registered a lane departure.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Center.Distance:
+  category: Safety
+  datatype: float
+  description: Distance in meters to detected object
+  importance: .nan
+  min: 0.0
+  sampling: 5-10 Hz
+  type: sensor
+  unit: m
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Center.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Center.TimeGap:
+  category: Safety
+  datatype: uint32
+  description: Time in milliseconds before potential impact object
+  importance: .nan
+  sampling: 5-10 Hz
+  type: sensor
+  unit: ms
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Center.WarningType:
+  allowed:
+  - UNDEFINED
+  - CROSS_TRAFFIC
+  - BLIND_SPOT
+  category: Safety
+  comment: Undefined obstacle warning type would merely alert of presence of obstacle
+    and may measure distance.
+  datatype: string
+  description: Indicates the type of obstacle warning detected as some track not only
+    the presence of an obstacle but potential intercepting trajectory or other characteristics.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Left.Distance:
+  category: Safety
+  datatype: float
+  description: Distance in meters to detected object
+  importance: .nan
+  min: 0.0
+  sampling: 5-10 Hz
+  type: sensor
+  unit: m
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Left.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Left.TimeGap:
+  category: Safety
+  datatype: uint32
+  description: Time in milliseconds before potential impact object
+  importance: .nan
+  sampling: 5-10 Hz
+  type: sensor
+  unit: ms
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Left.WarningType:
+  allowed:
+  - UNDEFINED
+  - CROSS_TRAFFIC
+  - BLIND_SPOT
+  category: Safety
+  comment: Undefined obstacle warning type would merely alert of presence of obstacle
+    and may measure distance.
+  datatype: string
+  description: Indicates the type of obstacle warning detected as some track not only
+    the presence of an obstacle but potential intercepting trajectory or other characteristics.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Right.Distance:
+  category: Safety
+  datatype: float
+  description: Distance in meters to detected object
+  importance: .nan
+  min: 0.0
+  sampling: 5-10 Hz
+  type: sensor
+  unit: m
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Right.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Right.TimeGap:
+  category: Safety
+  datatype: uint32
+  description: Time in milliseconds before potential impact object
+  importance: .nan
+  sampling: 5-10 Hz
+  type: sensor
+  unit: ms
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Right.WarningType:
+  allowed:
+  - UNDEFINED
+  - CROSS_TRAFFIC
+  - BLIND_SPOT
+  category: Safety
+  comment: Undefined obstacle warning type would merely alert of presence of obstacle
+    and may measure distance.
+  datatype: string
+  description: Indicates the type of obstacle warning detected as some track not only
+    the presence of an obstacle but potential intercepting trajectory or other characteristics.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Center.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Center.WarningType:
+  allowed:
+  - UNDEFINED
+  - CROSS_TRAFFIC
+  - BLIND_SPOT
+  category: Safety
+  comment: Undefined obstacle warning type would merely alert of presence of obstacle
+    and may measure distance.
+  datatype: string
+  description: Indicates the type of obstacle warning detected as some track not only
+    the presence of an obstacle but potential intercepting trajectory or other characteristics.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Left.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Left.WarningType:
+  allowed:
+  - UNDEFINED
+  - CROSS_TRAFFIC
+  - BLIND_SPOT
+  category: Safety
+  comment: Undefined obstacle warning type would merely alert of presence of obstacle
+    and may measure distance.
+  datatype: string
+  description: Indicates the type of obstacle warning detected as some track not only
+    the presence of an obstacle but potential intercepting trajectory or other characteristics.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Right.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Right.WarningType:
+  allowed:
+  - UNDEFINED
+  - CROSS_TRAFFIC
+  - BLIND_SPOT
+  category: Safety
+  comment: Undefined obstacle warning type would merely alert of presence of obstacle
+    and may measure distance.
+  datatype: string
+  description: Indicates the type of obstacle warning detected as some track not only
+    the presence of an obstacle but potential intercepting trajectory or other characteristics.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.TCS.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Indicates if TCS is currently regulating traction. True = Engaged.
+    False = Not Engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.Acceleration.Lateral:
+  category: Safety
+  datatype: float
+  description: Vehicle acceleration in Y (lateral acceleration).
+  importance: .nan
+  sampling: 20-50 Hz
+  type: sensor
+  unit: m/s^2
+  usecase: SAFETY05 / SAFETY 04
+Vehicle.Acceleration.Longitudinal:
+  category: Safety
+  datatype: float
+  description: Vehicle acceleration in X (longitudinal acceleration).
+  importance: .nan
+  sampling: 20-50 Hz
+  type: sensor
+  unit: m/s^2
+  usecase: SAFETY02 / SAFETY04
+Vehicle.Acceleration.Vertical:
+  category: Safety
+  datatype: float
+  description: Vehicle acceleration in Z (vertical acceleration).
+  importance: .nan
+  sampling: 20-50 Hz
+  type: sensor
+  unit: m/s^2
+  usecase: SAFETY04
+Vehicle.AngularVelocity.Pitch:
+  category: Safety
+  datatype: float
+  description: Vehicle rotation rate along Y (lateral).
+  importance: .nan
+  sampling: 20-50 Hz
+  type: sensor
+  unit: degrees/s
+  usecase: SAFETY04
+Vehicle.AngularVelocity.Roll:
+  category: Safety
+  datatype: float
+  description: Vehicle rotation rate along X (longitudinal).
+  importance: .nan
+  sampling: 20-50 Hz
+  type: sensor
+  unit: degrees/s
+  usecase: SAFETY04
+Vehicle.AngularVelocity.Yaw:
+  category: Safety
+  datatype: float
+  description: Vehicle rotation rate along Z (vertical).
+  importance: .nan
+  sampling: 20-50 Hz
+  type: sensor
+  unit: degrees/s
+  usecase: SAFETY04
+Vehicle.Body.Lights.Beam.Low.IsOn:
+  category: Safety
+  datatype: boolean
+  description: Indicates if light is on or off. True = On. False = Off.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY04
+Vehicle.Body.Lights.DirectionIndicator.Left.IsSignaling:
+  category: Safety
+  datatype: boolean
+  description: Indicates if light is signaling or off. True = signaling. False = Off.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY13
+Vehicle.Body.Lights.DirectionIndicator.Right.IsSignaling:
+  category: Safety
+  datatype: boolean
+  description: Indicates if light is signaling or off. True = signaling. False = Off.
+  importance: .nan
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY13
+Vehicle.Body.Windshield.Front.Wiping.System.IsWiping:
+  category: Safety
+  datatype: boolean
+  description: Indicates wiper movement. True if wiper blades are moving. Change of
+    direction shall be considered as IsWiping if wipers will continue to move directly
+    after the change of direction.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY04
+Vehicle.Cabin.Seat.Row1.DriverSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row1.DriverSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.DriverSide.IsOccupied:
+  category: Safety
+  datatype: boolean
+  description: Does the seat have a passenger in it.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.Middle.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row1.Middle.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.Middle.IsOccupied:
+  category: Safety
+  datatype: boolean
+  description: Does the seat have a passenger in it.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.PassengerSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row1.PassengerSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.PassengerSide.IsOccupied:
+  category: Safety
+  datatype: boolean
+  description: Does the seat have a passenger in it.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.DriverSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row2.DriverSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.DriverSide.IsOccupied:
+  category: Safety
+  datatype: boolean
+  description: Does the seat have a passenger in it.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.Middle.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row2.Middle.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.Middle.IsOccupied:
+  category: Safety
+  datatype: boolean
+  description: Does the seat have a passenger in it.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.PassengerSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row2.PassengerSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.PassengerSide.IsOccupied:
+  category: Safety
+  datatype: boolean
+  description: Does the seat have a passenger in it.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.Pressure:
+  category: Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: .nan
+  sampling: 0.00333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE08
+Vehicle.Chassis.Axle.Row1.Wheel.Right.Tire.Pressure:
+  category: Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: .nan
+  sampling: 0.00333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE08
+Vehicle.Chassis.Axle.Row2.Wheel.Left.Tire.Pressure:
+  category: Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: .nan
+  sampling: 0.00333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE08
+Vehicle.Chassis.Axle.Row2.Wheel.Right.Tire.Pressure:
+  category: Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: .nan
+  sampling: 0.00333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE08
+Vehicle.Chassis.Brake.PedalPosition:
+  category: Safety
+  datatype: uint8
+  description: Brake pedal position as percent. 0 = Not depressed. 100 = Fully depressed.
+  importance: .nan
+  max: 100
+  min: 0
+  sampling: CHANGE
+  type: sensor
+  unit: percent
+  usecase: SAFETY04
+Vehicle.Chassis.ParkingBrake.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Parking brake status. True = Parking Brake is Engaged. False = Parking
+    Brake is not Engaged.
+  importance: Must Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: actuator
+  usecase: SAFETY12
+Vehicle.CurrentLocation.Altitude:
+  category: Safety
+  datatype: double
+  description: Current altitude relative to WGS 84 reference ellipsoid, as measured
+    at the position of GNSS receiver antenna.
+  importance: .nan
+  sampling: 5Hz
+  type: sensor
+  unit: m
+  usecase: SAFETY09
+Vehicle.CurrentLocation.Heading:
+  category: Safety
+  datatype: double
+  description: Current heading relative to geographic north. 0 = North, 90 = East,
+    180 = South, 270 = West.
+  importance: .nan
+  max: 360
+  min: 0
+  sampling: 20-50 Hz
+  type: sensor
+  unit: degrees
+  usecase: SAFETY04
+Vehicle.CurrentLocation.Latitude:
+  category: Safety
+  datatype: double
+  description: Current latitude of vehicle in WGS 84 geodetic coordinates, as measured
+    at the position of GNSS receiver antenna.
+  importance: .nan
+  max: 90
+  min: -90
+  sampling: 5Hz
+  type: sensor
+  unit: degrees
+  usecase: SAFETY09
+Vehicle.CurrentLocation.Longitude:
+  category: Safety
+  datatype: double
+  description: Current longitude of vehicle in WGS 84 geodetic coordinates, as measured
+    at the position of GNSS receiver antenna.
+  importance: .nan
+  max: 180
+  min: -180
+  sampling: 5Hz
+  type: sensor
+  unit: degrees
+  usecase: SAFETY09
+Vehicle.CurrentLocation.Timestamp:
+  category: Safety
+  datatype: string
+  description: Timestamp from GNSS system for current location, formatted according
+    to ISO 8601 with UTC time zone.
+  importance: .nan
+  sampling: 5Hz
+  type: sensor
+  unit: iso8601
+  usecase: SAFETY09
+Vehicle.CurrentOverallWeight:
+  category: .nan
+  datatype: uint16
+  description: Current overall Vehicle weight. Including passengers, cargo and other
+    load inside the car.
+  importance: .nan
+  sampling: .nan
+  type: sensor
+  unit: kg
+  usecase: 'AV '
+Vehicle.Driver.FatigueLevel:
+  category: Safety
+  datatype: float
+  description: Fatigue level of the driver, which can be evaluated by multiple factors
+    e.g. trip time, behaviour of steering, eye status.
+  importance: .nan
+  max: 100
+  min: 0
+  sampling: CHANGE
+  type: sensor
+  unit: percent
+  usecase: SAFETY13
+Vehicle.LowVoltageSystemState:
+  allowed:
+  - UNDEFINED
+  - LOCK
+  - 'OFF'
+  - ACC
+  - 'ON'
+  - START
+  category: Safety
+  datatype: string
+  description: State of the supply voltage of the control units (usually 12V).
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY11
+Vehicle.Occupant.Row1.DriverSide.HeadPosition:
+  category: Safety
+  description: The current position of the driver head on vehicle axis according to
+    ISO 23150:2023.
+  importance: .nan
+  sampling: CHANGE
+  type: branch
+  usecase: SAFETY13
+Vehicle.Powertrain.CombustionEngine.EOP:
+  category: Safety
+  datatype: uint16
+  description: Engine oil pressure.
+  importance: .nan
+  sampling: 0.0033333333Hz
+  type: sensor
+  unit: kPa
+  usecase: SAFETY15
+Vehicle.Powertrain.CombustionEngine.Speed:
+  category: Safety
+  datatype: uint16
+  description: Engine speed measured as rotations per minute.
+  importance: Must Have
+  sampling: 0.033333333333Hz
+  type: sensor
+  unit: rpm
+  usecase: SAFETY 14
+Vehicle.Powertrain.FuelSystem.AbsoluteLevel:
+  category: Sustainability (ICE)
+  datatype: float
+  description: Current available fuel in the fuel tank expressed in liters.
+  importance: .nan
+  sampling: 0.0083333333Hz
+  type: sensor
+  unit: l
+  usecase: Sustainability01
+Vehicle.Powertrain.Transmission.CurrentGear:
+  category: Safety
+  datatype: int8
+  description: The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
+  importance: .nan
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY07
+Vehicle.Speed:
+  category: Safety
+  datatype: float
+  description: Vehicle speed.
+  importance: .nan
+  sampling: 5 Hz
+  type: sensor
+  unit: km/h
+  usecase: SAFETY10
+Vehicle.TraveledDistance:
+  category: Safety
+  datatype: float
+  description: Odometer reading, total distance traveled during the lifetime of the
+    vehicle.
+  importance: .nan
+  sampling: CHANGE/0.008333f Hz
+  type: sensor
+  unit: km
+  usecase: SAFETY04
