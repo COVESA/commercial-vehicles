@@ -1,0 +1,175 @@
+Pillar,Use case #,Primary Use Case ,Data Point / Feature,VSS,PGN (hex),SPN,Recommended Sampling,Recommended Sampling / Data Reporting Logic (description),Curve error threshold* when applicable,Importance for use case,Geotab ID,Comments
+Productivity,PRODUCTIVITY01,"- Real time asset tracking
+- Ensure timely arrivals and departures
+- Ensure efficient number of stops
+- Route Optimization
+- Understand and improve asset utilization",GPS,"Vehicle.CurrentLocation.{Timestamp,Latitude,Longitude,Altitude}",N/A,N/A,1Hz,"Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart logging isn't available, 1 Hz",see code - uses calculated distance instead of coordinates and 1.8km as error threshold,Must Have,GPS Record,
+Productivity,PRODUCTIVITY02,- Ensure assets are connected,Heartbeat (vehicle data or a notification of health while ignition is off),N/A? - bring to VSS Expert Group or choose an arbitrary data point such as VIN as response ,N/A,N/A,1.1574074074074E-5Hz,"Ideal: Every 23 Hours
+Min: Any vehicle data signal Every 24 Hours",,Must Have,N/A,
+Productivity,PRODUCTIVITY03,- Reduce inefficiencies by detecting idling,Ignition status,Vehicle.LowVoltageSystemState,0xFCC2,7315,CHANGE,Event Based: Every time status changes. Must indicate whether the vehicle is in On/Off/Accessory mode or consider accessory mode as Ignition OFF.,,Must Have,10000,
+Productivity,PRODUCTIVITY04,"- Shared mobility:
+    - Reduce costs and inefficiencies
+    - Improved utilization of assets
+    - Protect your assets","Door Status (FL, FR, RL, RR, Cargo, other doors)","Vehicle.Cabin.Door.*.*.{IsLocked,isOpen}",0xFDA5,,CHANGE,Event Based: Every time status changes.,,Must Have,2066 to 2075,
+Maintenance,MAINTENANCE01,- Ensure assets are identified correctly,VIN,Vehicle.VehicleIdentification.VIN,0xFEEC,237,Vehicle.LowVoltageSystemState='START',Once a day,,Must Have,VIN Record,
+Maintenance,MAINTENANCE02,- Inventory management (detect & manage vehicle within zones),GPS,"Vehicle.CurrentLocation.{Timestamp,Latitude,Longitude,Altitude}",N/A,N/A,1Hz,"Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart logging isn't available, 1 Hz",see row 2,Must Have,GPS Record,
+Maintenance,MAINTENANCE03,- Setup maintenance reminders based on distance,Odometer,Vehicle.TraveledDistance,0xFEC1,917,Vehicle.LowVoltageSystemState='START',Min: Every ignition event,,Must Have,5,
+Maintenance,MAINTENANCE03,- Setup maintenance reminders based on distance,Distance to service,Vehicle.Service.DistanceToService,0xFEC0,914,Vehicle.LowVoltageSystemState='START',Min: Every ignition event,,Should Have,2676,May be determined by user input and Odometer
+Maintenance,MAINTENANCE04,- Detect and manage battery drain issues,Battery voltage,Vehicle.LowVoltageBattery.CurrentVoltage,,,0.033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 30 seconds",0.894V*,Must Have,9999,
+Maintenance,MAINTENANCE05,- Detect issues early to prevent downtime or major breakdowns,Faults / DTCs / Warnings,"**only in OBD.vspec which is slated to be deprecated, agreement to provide DTC in tree",0xFECA,NA,CHANGE,Event Based: Every time status changes,,Must Have,Fault Record,
+Maintenance,MAINTENANCE05,- Detect issues early to prevent downtime or major breakdowns,Engine Warning Light,Vehicle.OBD.Status.IsMILOn,,,Vehicle.OBD.Status.IsMILOn=true,Event Based: Every time status changes,,Must Have,36,
+Maintenance,MAINTENANCE05,- Detect issues early to prevent downtime or major breakdowns,High Engine Temp warning,,,,,,,Should Have,,
+Maintenance,MAINTENANCE05,- Detect issues early to prevent downtime or major breakdowns,Oil pressure warning,,,,,,,Should Have,,
+Maintenance,MAINTENANCE06,- Detect and manage low / high tire pressure situations,Tire Pressure,"Vehicle.Chassis.Axle.Row{n}.Wheel.{Left, Right}.Tire.Pressure",0xFEF4,Several,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",16 kPa,Must Have,79-82,
+Maintenance,MAINTENANCE07,- Ensure appropriate engine oil pressure to prevent engine damage,Engine oil pressure,Vehicle.Powertrain.CombustionEngine.EOP,"0xFEEF
+",100,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",16 kPa,Must Have,11,
+Maintenance,MAINTENANCE08,- Prevent vehicle wear and tear from over-revving,Engine speed (rpm),Vehicle.Powertrain.CombusitionEngine.Speed,0xF004,190,0.033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 30 seconds",125 rpm,Should Have,107,May also be determined by Faults / DTCs / Warnings
+Maintenance,MAINTENANCE09,- Detect low oil life & scheduling maintenance,Oil life remaining,Vehicle.Powertrain.CombusitionEngine.OilLifeRemaining,,,Vehicle.LowVoltageSystemState='START',Min: Every ignition event,,Must Have,77,
+Maintenance,MAINTENANCE09,- Detect low oil level & scheduling maintenance,Oil level,Vehicle.Powertrain.CombustionEngine.EngineOilLevel,0xFEEF,98,Vehicle.LowVoltageSystemState='START',Min: Every ignition event,,Must Have,103,
+Maintenance,MAINTENANCE10,- Setup maintenance reminders based on engine hours,Engine hours,Vehicle.Powertrain.CombustionEngine.EngineHours,0xFEE5,247,Vehicle.LowVoltageSystemState='START',Min: Every ignition event,,Must Have,9,
+Maintenance,MAINTENANCE10,- Setup maintenance reminders based on engine hours,Time to service / oil change / transmission oil change,Vehicle.Service.IsServiceDue,,,Vehicle.Service.IsServiceDue=true,Min: Every ignition event,,Should Have,2677,May also be determined by user input and engine hours
+Maintenance,MAINTENANCE11,- Reduce time of asset used under idling situations,Total engine idle time,Vehicle.Powertrain.CombustionEngine.IdleHours,"0xFEDC",235,Vehicle.LowVoltageSystemState='START',Min: Every ignition event,,Should Have,120,"May also be determined by Ignition, speed, GPS"
+Maintenance,MAINTENANCE12,- Detect and manage abnormal temp events,Engine Coolant Temp,Vehicle.Powertrain.CombustionEngine.ECT,"0xFEEE
+",110,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",4 C,Should Have,99,May also be determined by Faults / DTCs / Warnings
+Maintenance,MAINTENANCE12,- Detect and manage abnormal temp events,Battery Temp,Vehicle.Powertrain.TractionBattery.Temperature,,,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",5 C,Should Have,,May also be determined by Faults / DTCs / Warnings
+Maintenance,MAINTENANCE13,- Detect and manage abnormal coolant levels,Coolant Level,Vehicle.Powertrain.CombustionEngine.EngineCoolant.Level,"0xFEEF
+",111,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",7%,Should Have,101,May also be determined by Faults / DTCs / Warnings
+Maintenance,MAINTENANCE14,- Detect and manage abnormal DEF levels,DEF Level / Adblue,Vehicle.Powertrain.CombustionEngine.DieselExhaustFluid.Level,0xFE56,1761,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",16 kPa,Should Have,2652,May also be determined by Faults / DTCs / Warnings
+Maintenance,MAINTENANCE15,- Predictive maintenance by detecting electrical system health,Cranking Voltage,Vehicle.LowVoltageBattery.CurrentVoltage when Vehicle.LowVoltageSystemState='START',,,"100Hz* conditional logic, repeat for 5 seconds after Vehicle.LowVoltageSystemState='START'",100 Hz,,Must Have,9999,
+Maintenance,MAINTENANCE15,- Predictive maintenance by detecting electrical system health,Battery voltage,Vehicle.LowVoltageBattery.CurrentVoltage,,,0.033333333333333Hz,10 Hz,,Must Have,9999,
+Maintenance,MAINTENANCE16,- Vehicle light and wiper health status,"Headlight, Tail light, Turn signal light, Hazard light, windshield wipers","Vehicle.Body.Lights.*.IsDefect Vehicle.Body.Windshield.Front.Wiping.System.IsBlocked
+Vehicle.Body.Windshield.Front.Wiping.System.IsOverheated
+Vehicle.Body.Windshield.Front.Wiping.System.IsWiperError",,,Vehicle.LowVoltageSystemState='START',Event Based: Every time status changes. ,,Should Have,,May also be determined by Faults / DTCs / Warnings
+Compliance,COMPLIANCE01,"- Reduce the risk of HOS (ELD) violations and errors
+- Gain peace of mind with Hours of Service visibility",Ignition status,Vehicle.LowVoltageSystemState,0xFCC2,7315,CHANGE,Event Based: Every time status changes. Must indicate whether the vehicle is in On/Off/Accessory mode or consider accessory mode as Ignition OFF.,,Must Have,10000,
+Compliance,COMPLIANCE01,"- Reduce the risk of HOS (ELD) violations and errors
+- Gain peace of mind with Hours of Service visibility",Road speed,Vehicle.Speed,0xFEF1,84,0.066666666666667 Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 15 seconds",3.8 km/h,Must Have,2185,
+Compliance,COMPLIANCE01,"- Reduce the risk of HOS (ELD) violations and errors
+- Gain peace of mind with Hours of Service visibility",Odometer,Vehicle.TraveledDistance,0xFEC1,917,Vehicle.LowVoltageSystemState='START',Every 5 Kms,,Must Have,5,
+Compliance,COMPLIANCE01,"- Reduce the risk of HOS (ELD) violations and errors
+- Gain peace of mind with Hours of Service visibility",Engine hours,Vehicle.Powertrain.CombustionEngine.EngineHours,0xFEE5,247,Vehicle.LowVoltageSystemState='START',Every 10 mins,,Must Have,9,
+Compliance,COMPLIANCE01,"- Reduce the risk of HOS (ELD) violations and errors
+- Gain peace of mind with Hours of Service visibility",Device power status,NA in VSS,N/A,N/A,,Event based: The telematics device needs to identify events where it was either unplugged or powered off and how long these events lasted for,,Must Have,17,
+Compliance,COMPLIANCE01,"- Reduce the risk of HOS (ELD) violations and errors
+- Gain peace of mind with Hours of Service visibility",Device memory status,NA in VSS,N/A,N/A,,Event based: The telematics device needs to be able to trigger an event when the internal storage on the device is full or nearly full,,Must Have,449,
+Compliance,COMPLIANCE02,- IFTA report,GPS,"Vehicle.CurrentLocation.{Timestamp,Latitude,Longitude,Altitude}",N/A,N/A,1Hz,"Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart logging isn't available, 1 Hz",see row 2,Must Have,GPS Record,
+Compliance,COMPLIANCE02,- IFTA report,Odometer,Vehicle.TraveledDistance,0xFEC1,917,Vehicle.LowVoltageSystemState='START',Every 5 Kms,,Must Have,5,
+Compliance,COMPLIANCE03,- Ensure compliance in jurisdictions which require that parking brake be applied in certain situations,Parking Brake,Vehicle.Chassis.ParkingBreak.IsEngaged,0xFEF1,70,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,49,
+Safety,SAFETY01,- Increase seatbelt use,Driver Seat Belt,Vehicle.Cabin.Seat.Row1.DriverSide.IsBelted,"0xFD17",4952,CHANGE,Event Based: Every time status changes (Buckled / Unbuckled),,Must Have,2,
+Safety,SAFETY02,- Reduce harsh braking and acceleration,Forward and backward acceleration,Vehicle.Acceleration.Longitudial,N/A,N/A,1Hz,Event Based: Everytime threshold is breached (0.15G) and at least 1 Hz data for the duration it stays above that threshold,,Must Have,Acceleration Record,VSS uses m/s^2 as measurement unit
+Safety,SAFETY03,- Detect accident events remotely,Impact Status / Airbag Deployed status / Accident detection,"Vehicle.Cabin.Seat.Row{1,2}.{DriverSide, Middle, PassengerSide}.AirbagIsDeployed",N/A,N/A,CHANGE,Event Based: Every time status changes,,Must Have,166,
+Safety,SAFETY04,- Reduce accidents via accurate understanding of accident events,Accident reconstruction data (granular acceleration and GPS data before and after accident),is this applicable to VSS?,N/A,N/A,,"Event based: When an accident is detected. Need 50 Hz acceleration, 10 Hz speed and 1 Hz GPS for 100 seconds before and after an accident event.",,Must Have,N/A,
+Safety,SAFETY04,- Reduce accidents via accurate understanding of accident events,Brake pedal status,Vehicle.Chassis.Brake.PedalPosition,0xFEF1,597,CHANGE,Event Based: Every time status changes,,Must Have,1,
+Safety,SAFETY04,- Reduce accidents via accurate understanding of accident events,Cruise control status,"Vehicle.ADAS.CruiseControl.IsActive, Vehicle.ADAS.CruiseControl.IsError, Vehicle.ADAS.CruiseControl.SpeedSet",0xFEF1,596/595,CHANGE,Event Based: Every time status changes,,Must Have,62/63,
+Safety,SAFETY05,- Reduce harsh cornering,Side to side acceleration,Vehicle.Acceleration.Lateral,N/A,N/A,1Hz,Event Based: Everytime threshold is breached (0.15G) and at least 1 Hz data for the duration it stays above that threshold,,Must Have,Acceleration Record,
+Safety,SAFETY06,- Increase seatbelt use for passengers,Passenger occupancy,"Vehicle.Cabin.Row{1,2}.{DriverSide, Middle, PassengerSide}.IsOccupied",0xFD16,4964,CHANGE,Event Based: Every time status changes,,Must Have,3,
+Safety,SAFETY06,- Increase seatbelt use for passengers,Passenger seatbelt,"Vehicle.Cabin.Row{1,2}.{DriverSide, Middle, PassengerSide}.IsBelted","0xFD17",4953,CHANGE,Event Based: Every time status changes,,Must Have,4,
+Safety,SAFETY07,- Reduce backing while leaving,Gear position,Vehicle.Powertrain.Transmission.CurrentGear,0xF005,523,CHANGE,Event Based: Every time status changes,,Must Have,8,
+Safety,SAFETY08,- Reduce Speeding,Road speed,Vehicle.Speed,0xFEF1,84,0.066666666666667 Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, 1 Hz",3.8 km/h,Must Have,2185,
+Safety,SAFETY09,- Understand location of safety events,GPS,"Vehicle.CurrentLocation.{Timestamp,Latitude,Longitude,Altitude}",N/A,N/A,5Hz,"Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart logging isn't available, 5 Hz",see row 2,Must Have,GPS Record,
+Safety,SAFETY10,- Understand speed during safety events,Road speed,Vehicle.Speed,0xFEF1,84,0.066666666666667 Hz,"Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart logging isn't available, 5 Hz",3.8 km/h,Must Have,2185,
+Safety,SAFETY11,- Detect asset usage out of office hours,Ignition status,Vehicle.LowVoltageSystemState,0xFCC2,7315,CHANGE,Event Based: Every time status changes. Must indicate whether the vehicle is in On/Off/Accessory mode or consider accessory mode as Ignition OFF.,,Must Have,10000,
+Safety,SAFETY12,- Reduce rollaway risk,Parking Brake,Vehicle.Chassis.ParkingBreak.IsEngaged,0xFEF1,70,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,49,
+Safety,SAFETY13,- Detect near accident events for safety coaching and improvements,Anti-lock brake system (ABS) status,"Vehicle.ADAS.ABS.IsEngaged, Vehicle.ADAS.ABS.IsEnabled",0xF001,563,CHANGE,Event Based: Every time status changes,,Must Have,2815,
+Safety,SAFETY13,- Detect near accident events for safety coaching and improvements (following distance),Distance to forward vehicle,,0FE6F,1587,3 seconds,"3 seconds, when the following distance is less than 50 meters",,Must Have,3298,
+Safety,SAFETY13,- Detect near accident events for safety coaching and improvements,Lane departure status,Vehicle.ADAS.LaneDepartureDetection.IsWarning,0xF007,3565/3566,CHANGE,Event Based: Every time status changes,,Must Have,3261/3262,
+Safety,SAFETY13,- Detect near accident events for safety coaching and improvements,Automatic / emergency / collision mitigation brake status,Vehicle.ADAS.EBA.IsEngaged,,,CHANGE,Event Based: Every time status changes,,Must Have,35418 (rear brake) / 35416 (forward brake),
+Safety,SAFETY13,- Detect near accident events for safety coaching and improvements,Obstacle warning status,Vehicle.ADAS.ObstacleDetection.IsWarning,0xFE6F,5022,CHANGE,Event Based: Every time status changes,,Must Have,3260,
+Safety,SAFETY13,- Detect near accident events for safety coaching and improvements,Traction Control system status,Vehicle.ADAS.TCS.IsEngaged,,,CHANGE,Event Based: Every time status changes,,Must Have,96,
+Safety,SAFETY14,- Reduce over-revving events,Engine speed (rpm),Vehicle.Powertrain.CombusitionEngine.Speed,0xF004,190,0.033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, 1 sec value above set threshold",125 rpm,Should Have,107,May also be determined by Faults / DTCs / Warnings
+Safety,SAFETY15,- Reduce accidents by detecting abnormal values of key engine metrics,Engine oil pressure,Vehicle.Powertrain.CombustionEngine.EOP,"0xFEEF
+",100,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",16 kPa,Must Have,11,
+Safety,SAFETY16,- Ensure key vehicle safety modules / features are working,"Airbag module health
+Seatbelt health
+Parking brake health","Airbag only has isDeployed no health check, same with seatbelt and parking brake - whether in use, no error checking",,,,Event Based: Every time status changes,,Should Have,,May also be determined by Faults / DTCs / Warnings
+Sustainability (ICE),SUSTAINABILITY01,"- Increase fuel efficiency
+- Monitor fuel used",Fuel type,Vehicle.OBD.FuelType,,,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,35789,For accurate fuel reporting
+Sustainability (ICE),SUSTAINABILITY01,"- Increase fuel efficiency
+- Monitor fuel used",Fuel level remaining (percentage),Vehicle.Powertrain.FuelSystem.Level,0xFEFC,96,0.0083333333333333Hz,every 2 mins,3.50%,Must Have,98,"VSS only knows a single FuelLevel. For rFMS  Vehicle.Powertrain.FuelSystem.Tank.{First, Second}.RelativeLevel was added in an overlay"
+Sustainability (ICE),SUSTAINABILITY01,"- Increase fuel efficiency
+- Monitor fuel used",Fuel volume remaining (L),Vehicle.Powertrain.FuelSystem.Remaining,,,0.0083333333333333Hz,every 2 mins,4.5L,Should Have,54,May also be determined using level % and Capacity
+Sustainability (ICE),SUSTAINABILITY01,"- Increase fuel efficiency
+- Monitor fuel used",Total fuel used (since activation),Vehicle.Powertrain.FuelSystem.ConsumptionSinceStart,0xFEE9,250,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,2187,
+Sustainability (ICE),SUSTAINABILITY01,"- Increase fuel efficiency
+- Monitor fuel used",Trip Fuel Used,,,,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,,
+Sustainability (ICE),SUSTAINABILITY01,"- Increase fuel efficiency
+- Monitor fuel used",Fuel Tank Capacity,Vehicle.Powertrain.FuelSystem.Capacity,,,,once a month,,Should Have,71,May also be user provided
+Sustainability (ICE),SUSTAINABILITY02,- Reduce emissions,Total engine idle time,Vehicle.Powertrain.CombustionEngine.IdleHours,"0xFEDC",235,Vehicle.LowVoltageSystemState='START',every ignition event,,Should Have,120,"May also be determined by Ignition, speed, GPS"
+Sustainability (ICE),SUSTAINABILITY02,- Reduce emissions,DEF Level / Adblue,Vehicle.Powertrain.CombustionEngine.DieselExhaustFluid.Level,0xFE56,1761,0.0033333333333333Hz,"Ideal: smart/curve logic  to detect and notify about significant change in data point
+If smart logging isn't available, every 5 minutes",7.20%,Should Have,2652,May also be determined by Faults / DTCs / Warnings
+Sustainability (ICE),SUSTAINABILITY02,- Reduce emissions,Aftertreatment fuel used,Vehicle.CombustionEngine.DieselExhaustFluid.Level,0xFD98 / 0xFD99,3522/3526,Vehicle.LowVoltageSystemState='START',every ignition event,,Should Have,2933/2934,
+Sustainability (ICE),SUSTAINABILITY02,- Reduce emissions,Aftertreatment DPF status,"not in VSS yet, proposal Vehicle.CombustionEngine.DieselParticleFilter.Status",0xFD7C,3700,CHANGE,Event Based: Every time status changes,,Should Have,2740,
+Sustainability (ICE),SUSTAINABILITY02,- Reduce emissions,DPF regen status,"not in VSS yet, proposal: Vehicle.CombustionEngine.DieselParticleFilter.Regen",0xFD7C,3701,CHANGE,Event Based: Every time status changes,,Should Have,2989,
+Sustainability (ICE),SUSTAINABILITY03,"- Reduce Idling
+- Monitor fuel used when idling",Total fuel used while idling (since activation),"not in VSS yet, could calculate",0xFEDC,236,,every ignition event,,Should Have,2188,"May also be determined by Fuel used, Ignition, speed, GPS"
+Sustainability (ICE),SUSTAINABILITY03,"- Reduce Idling
+- Monitor fuel used when idling",Trip fuel used while idling,"not in VSS yet, could calculate",,,,every ignition event,,Should Have,,"May also be determined by Fuel used, Ignition, speed, GPS"
+Sustainability (ICE),SUSTAINABILITY04,"- Reduce idling
+- Increase fuel efficiency
+- Reduce greenhouse emissions during Idling",GPS,"Vehicle.CurrentLocation.{Timestamp,Latitude,Longitude,Altitude}",N/A,N/A,1Hz,"Needed to detect movement
+Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart logging isn't available, 1 Hz",see row 2,Must Have,GPS Record,
+Sustainability (ICE),SUSTAINABILITY04,"- Reduce idling
+- Increase fuel efficiency
+- Reduce greenhouse emissions during Idling",Speed,Vehicle.Speed,0xFEF1,84,1Hz,"Needed to detect movement
+Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change
+If smart logging isn't available, 1 Hz",4km/h,Must Have,2185,
+Sustainability (ICE),SUSTAINABILITY04,"- Reduce idling
+- Increase fuel efficiency
+- Reduce greenhouse emissions during Idling",Ignition status,Vehicle.LowVoltageSystemState,0xFCC2,7315,CHANGE,Event Based: Every time status changes. Must indicate whether the vehicle is in On/Off/Accessory mode or consider accessory mode as Ignition OFF.,,Must Have,10000,
+Sustainability (EV),SUSTAINABILITY05,- Identify opportunities for Fleet electrification ,GPS,"Vehicle.CurrentLocation.{Timestamp,Latitude,Longitude,Altitude}",N/A,N/A,1Hz,"Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart loggin isn't available, 1 Hz",see row 2,Must Have,GPS Record,
+Sustainability (EV),SUSTAINABILITY05,- Identify opportunities for Fleet electrification ,Total fuel used (since activation) or Trip Fuel Used,Vehicle.Powertrain.FuelSystem.ConsumptionSinceStart,0xFEE9,250,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,2187,
+Sustainability (EV),SUSTAINABILITY06,- Ensure EVs are appropriately charged and fleets can run efficiently,EV battery charge % / state of charge (SOC),Vehicle.Powertrain.TractionBattery.StateOfCharge.Current,0xFCC2,7895,CHANGE,"ideal: every 1% change during driving and charging
+ 
+min: every 1 min during driving and every 2 min during charging",1%,Must Have,2118,
+Sustainability (EV),SUSTAINABILITY06,- Ensure EVs are appropriately charged and fleets can run efficiently,Range remaining,Vehicle.Powertrain.TractionBattery.Range,0xFEFF,8428,0.016666666666667Hz,every 1 min during driving and every 2 min during charging,,Must Have,2659,VSS in m
+Sustainability (EV),SUSTAINABILITY07,- Optimize charging costs based on zones,GPS,"Vehicle.CurrentLocation.{Timestamp,Latitude,Longitude,Altitude}",N/A,N/A,1Hz,"Ideal: smart/curve logic (https://github.com/Geotab/curve) to detect significant change in speed and/or direction and send corresponding data points
+If smart logging isn't available, 1 Hz",see row 2,Must Have,GPS Record,
+Sustainability (EV),SUSTAINABILITY08,"- Ensure EVs are appropriately charged and fleets can run efficiently
+- Identify and track charging events to control charging costs",Charging Status (AC/DC),Vehicle.Powertrain.TractionBattery.Charging.IsCharging,0xF096,8207,CHANGE,logged at start of charge (charging AC or charging DC) and end of charging (not charging),,Must Have,3289,
+Sustainability (EV),SUSTAINABILITY09,- Identify charging costs and optimize charging schedule,AC / DC charging energy in,Vehicle.Powertrain.TractionBattery.Charging.ChargeRate,,,0.0083333333333333Hz*,every 2 min during charging,1 kWh,Must Have,"3287
+3283
+3285",in VSS there is Vehicle.Powertrain.TractionBattery.Charging.ChargeCurrent.DC available
+Sustainability (EV),SUSTAINABILITY09,- Identify charging costs and optimize charging schedule,AC / DC charging energy out,Vehicle.Powertrain.TractionBattery.CurrentCurrent,,,0.0083333333333333Hz*,every 2 min during charging,1 kWh,Must Have,"3288
+3284
+3286",
+Sustainability (EV),SUSTAINABILITY09,- Identify charging costs and optimize charging schedule,EV Charging power,Vehicle.Powertrain.TractionBattery.GrossCapacity,,,0.0083333333333333Hz*,every 2 min during charging,1000W,Must Have,"3292
+3293
+3294",
+Sustainability (EV),SUSTAINABILITY09,- Identify charging costs and optimize charging schedule,AC Charging Voltage,Vehicle.Powertrain.TractionBattery.Charging.ChargeCurrent.Phase1 - confirm wrt p2&3,,,0.0083333333333333Hz*,every 2 min during charging,,Must Have,,
+Sustainability (EV),SUSTAINABILITY10,- Identify electric energy economy and real-world range,Driving energy out,"not in VSS yet, proposal: Vehicle.Powertrain.TractionBattery.Driving.EnergyIn",,,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,3278,
+Sustainability (EV),SUSTAINABILITY10,- Identify electric energy economy and real-world range,Driving energy in (from regenerative braking),"not in VSS yet, proposal: Vehicle.Powertrain.TractionBattery.Driving.EnergyOut",,,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,3277,need to evaluate Vehicle.Powertrain.AccumulatedBrakingEnergy 
+Sustainability (EV),SUSTAINABILITY10,- Identify electric energy economy and real-world range,Driving idle energy out,"not in VSS yet, proposal: Vehicle.Powertrain.TractionBattery.Idle.EnergyIn",,,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,3340,
+Sustainability (EV),SUSTAINABILITY10,- Identify electric energy economy and real-world range,Driving idle energy in,"not in VSS yet, proposal: Vehicle.Powertrain.TractionBattery.Idle.EnergyOut",,,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,3339,
+Sustainability (EV),SUSTAINABILITY10,- Identify electric energy economy and real-world range,EV battery capacity,Vehicle.Powertrain.TractionBattery.NetCapacity,,,,once a month,,Should Have,3415,Total net capacity of the battery considering aging
+Sustainability (EV),SUSTAINABILITY10,- Identify electric energy economy and real-world range,"Outside Temperature, Elevation",Vehicle.Exterior.AirTemperature Vehicle.CurrentLocation.Altitude,,,3m,30 seconds,2C,Should Have,,
+Sustainability (FCEV),SUSTAINABILITY11,- Monitor Fuel level to ensure continued operations,Hydrogen fuel level (%),"not in VSS yet, proposal: Vehicle.Powertrain.Hydrogen.Level",,,0.0033333333333333Hz,every 5 mins,3.50%,Must Have,98,
+Sustainability (FCEV),SUSTAINABILITY12,- Monitor fuel used and economy,Hydrogen fuel used (weight),"not in VSS yet, proposal: Vehicle.Powertrain.Hydrogen.Consumption",,,Vehicle.LowVoltageSystemState='START',every ignition event,,Must Have,3297,
+Sustainability (FCEV),SUSTAINABILITY13,- Monitor fuel used during idling and impact on economy,Idling hydrogen fuel used (weight),"not in VSS yet, proposal: Vehicle.Powertrain.Hydrogen.ConsumptionIdle",,,Vehicle.LowVoltageSystemState='START',every ignition event,,Should Have,3296,
+,,,,,,,,,,,,
+,,,,,,,,* Explanation of importance rating,,,,
+,,,,,,,,Data point is required to address the use case,Must Have,,,
+,,,,,,,,Data point adds value in addressing the use case,Should Have,,,
+,,,,,,,,,,,,
+,,,,,,,,*Explanation of Curve logging,,,,
+,,,,,,,,Lossy compression algorithm that for some signals provides a better representation with fewer data points,,,,
+,,,,,,,,,,,,
+,,,,,,,,06/17/2024,,v3.9,,
