@@ -19,7 +19,15 @@ grab appropriate version of vss
 
 In a browser retrieve csv output from the latest version of data campaign spreadsheet being worked on and name it sheet.csv
 
-File->Download->CSV from https://docs.google.com/spreadsheets/d/1FMtSLhJy1REgadlnSwAqPX7r57rqdLYyw4W7ZsWyg8E/edit#gid=2020824572
+File->Download->CSV from
+
+Fleet:
+
+https://docs.google.com/spreadsheets/d/1FMtSLhJy1REgadlnSwAqPX7r57rqdLYyw4W7ZsWyg8E/edit#gid=2020824572
+
+Insurance: 
+
+https://docs.google.com/spreadsheets/d/1Np9uLvwEESZ09dMcXoSvoyoyj5L_Le0k
 
 mv ~/Downloads/'Fleet Management Data [PUBLIC] - Pillar -_ UseCase -_ Data Needs.csv' sheet.csv 
 
