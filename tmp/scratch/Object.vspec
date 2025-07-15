@@ -1,0 +1,58 @@
+ObstacleDetection.MovableObject:
+  type: branch
+  description: Vehicle has Sensoris or similar based object detection and identification system.
+
+ObstacleDetection.MovableObject.Timestamp
+  datatype: int64
+  type: sensor
+  description: Indicates time in POSIX milliseconds of most recent detection event
+
+ObstacleDetection.MovableObject.EventDetectionStatus
+  type: branch
+  description: Status of object detection event
+
+ObstacleDetection.MovableObject.EventDetectionStatus.Type  
+  datatype: string
+  description: Type of object detection event  
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'EXPECTED_AND_DETECTED',
+    'EXPECTED_AND_NOT_DETECTED',
+    'EXPECTED_AND_NOT_DETECTED_ACCESS_BLOCKED',
+    'EXPECTED_AND_NOT_DETECTED_ACCESS_AVAILABLE',
+    'NOT_EXPECTED_AND_DETECTED'
+  ]
+
+ObstacleDetection.MovableObject.EventDetectionStatus.Confidence
+  datatype: int64
+  type: sensor
+  description: Confidence as a percentage of object detection event
+
+ObstacleDetection.MovableObject.TypeAndConfidence
+  type: branch
+  description: Object type detected and confidence level
+
+ObstacleDetection.MovableObject.TypeAndConfidence.Type
+
+ObstacleDetection.MovableObject.TypeAndConfidence.Confidence
+  datatype: int64
+  type: sensor
+  description: Confidence as a percentage of object detection type
+  datatype: string
+  description: Type of object detected  
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'VEHICLE',
+    'VEHICLE_PASSENGER_CAR',
+    'VEHICLE_TRUCK',
+    'VEHICLE_BUS',
+    'VEHICLE_TRAM',
+    'VEHICLE_TRAILER',
+    'TWO_WHEELER',
+    'TWO_WHEELER_MOTORCYCLE',
+    'TWO_WHEELER_BICYCLE',
+    'PERSON',
+    'ANIMAL'
+  ]

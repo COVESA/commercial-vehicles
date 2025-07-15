@@ -1,0 +1,35 @@
+An initial representation of Sensoris' MovableObject in COVESA VSS, see Object.vspec in same directory. Remaining is the whole spatial and relative speed and acceleration part which is going to take some thought to try to represent concisely and in a manner that it is a reusable concept. There is an existing notion in VSS ADAS.vspec already called ObstacleDetection which although cruder seems like a logical place for MovableObject. As I am writing this, I am wondering if this makes sense as StaticObject and subsequently signage, traffic lights under that are not necessarily Obstacles to avoid.
+
+I could not think of a practical reason to include EventEnvelope.DetectionType.Type but may revisit and add for completeness.
+
+https://github.com/COVESA/vehicle_signal_specification/blob/master/spec/ADAS/ADAS.vspec
+
+I had previously chosen to expand on ObstacleDetection as it was missing things like distance to object or type of obstacle warning. That was a relatively recent addition so maybe could be revisited and it may even make sense to deprecate altogether in favor of a more Sensoris approach.
+
+rougher notes, local links
+
+we'll have Movable and stationary (Static, eg signs) type
+
+in ADAS.vspec there is ObstacleDetection as we know - an obstable was detected, distance etc but of what type is not clear or vehicle might not be equiped with Sensoris based system
+
+have leaf nodes under, ObstacleDetection.MovableObject
+
+file:///home/edwardguild/doc/covesa/fleet/sensoris-specification-v1.6.0-public/doc/index.html#sensoris.protobuf.types.base.EventEnvelope.DetectionType.Type
+
+I don't think we care about event type - just timestamp for event that occured resulting in object detection
+
+file:///home/edwardguild/doc/covesa/fleet/sensoris-specification-v1.6.0-public/doc/index.html#sensoris.protobuf.types.base.EventEnvelope
+
+timestamp POSIX time in milliseconds date +%s 10 digits
+
+do we care about detection type? eg EXPECTED_AND_DETECTED - I think yes, useful for AV assessment
+
+file:///home/edwardguild/doc/covesa/fleet/sensoris-specification-v1.6.0-public/doc/index.html#sensoris.protobuf.types.base.EventDetectionStatus.Type
+
+do we care about Confidence (int%)? again I think yes
+
+object Type:
+
+file:///home/edwardguild/doc/covesa/fleet/sensoris-specification-v1.6.0-public/doc/index.html#sensoris.protobuf.categories.objectdetection.MovableObject.TypeAndConfidence.Type
+
+what about this xyz box notation (need for relative speed and distance but a bit fuzzier) and object id?
