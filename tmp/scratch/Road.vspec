@@ -1,0 +1,250 @@
+Road
+width_and_accuracy
+ value in mm
+ accuracy %
+#detection envelope -> EventEnvelope
+#inclination_and_curvature->InclinationAndCurvature
+
+Road.InclinationAndCurvature
+# we already have things like Vehicle.AngularVelocity.Pitch,Yaw but obviously can differ - indicating maybe not all wheels are on the road
+# file:///home/edwardguild/doc/covesa/fleet/sensoris-specification-v1.6.0-public/doc/index.html#sensoris.protobuf.types.base.Int64ValueAndAccuracy
+longitudinal_inclination_and_accuracy # Longitudinal declination and accuracy, also referred as slope. (degrees)
+lateral_inclination_and_accuracy # Lateral declination and accuracy, also referred as cross fall. (degrees)
+horizontal_curvature_and_accuracy # Horizontal curvature and accuracy. Negative value represents curve to the left, positive value represents curve to the right. Value of 0 represents straight road. The value is the reciproke of the radius (curvature = 1/radius) whereas high radii are represented by low values.
+
+Road.RoadAttribution
+# EventEnvelope
+# EventDetectionStatus
+ PositionAndAccuracy 
+# RoadAttribution.TypeAndConfidence.Type
+# RoadAttribution.TypeAndConfidence.Confidence
+# RoadAttribution.ChangeTypeAndConfidence
+
+Road.RoadAttribution.PositionAndAccuracy
+ Vehicle.CurrentLocation - and % accuracy
+
+# want to know a change occurred, CV group don't care what type of change it was
+Road.RoadAttribution.ChangeTypeAndConfidence.Type
+  description: Type of change type
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'DETECTED',
+    'START',
+    'END'
+  ]
+
+Road.RoadAttribution.ChangeTypeAndConfidence.Confidence
+  datatype: int64
+  type: sensor
+  description: Confidence as a percentage of change type
+
+Road.RoadAttribution.TypeAndConfidence.Type
+  description: Type of road detected
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'MOTORWAY',
+    'ONE_WAY_TRAFFIC',
+    'TWO_WAY_TRAFFIC',
+    'OFFROAD',
+    'TUNNEL'
+    'BRIDGE',
+    'ARTIFICIAL_ILLUMINATION',
+    'ROAD_WORKS_NARROW_LANES',
+    'LANE_RIGHT',
+    'LANE_LEFT',
+    'LANE_SPLIT_MIDDLE',
+    'LANE_MERGE_MIDDLE',
+    'CROSSWALK',
+    'CENTER_TURN_LANE'
+  ]
+
+Road.RoadAttribution.TypeAndConfidence..Confidence
+  datatype: int64
+  type: sensor
+  description: Confidence as a percentage of road type detection
+
+Road.RoadAttribution.ChangeTypeAndConfidence.Confidence  
+  datatype: int64
+  type: sensor
+  description: Confidence as a percentage of event detection status
+
+# don't think of interest to CV group
+Road.RoadAttribution.EventEnvelope.DetectionType.Type
+  description: Type of Event Detection
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'TRIGGERED_MANUALLY',
+    'TRIGGERED_AUTOMATED_REGULAR',
+    'TRIGGERED_AUTOMATED_RARE',
+    'READING_SINGLE',
+    'READING_SIMPLE',
+    'READING_FUSION',
+    'COMPLEX'
+  ]
+
+Road.RoadAttribution.EventEnvelope.DetectionType.Confidence
+  datatype: int64
+  type: sensor
+  description: Confidence as a percentage of event envelope detection
+
+Road.RoadAttribution.EventDetectionStatus.Type
+  description: Type of Event Detection
+  datatype: string
+  description: Type of object detected  
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'EXPECTED_AND_DETECTED',
+    'EXPECTED_AND_NOT_DETECTED',
+    'EXPECTED_AND_NOT_DETECTED_ACCESS_BLOCKED',
+    'EXPECTED_AND_NOT_DETECTED_ACCESS_AVAILABLE',
+    'NOT_EXPECTED_AND_DETECTED'
+  ]
+
+Road.RoadAttribution.EventDetectionStatus.Confidence
+  datatype: int64
+  type: sensor
+  description: Confidence as a percentage of event detection status
+
+Road.RoadAttribution.Lane
+
+#EventEnvelope
+# relative_lane_id int64: Relative lane identifier. Identifier is 0 for ego-lane, +1 for lane directly left of vehicle, +2 for lane left of lane +1, -1 for lane directly right of vehicle, -2 for lane right of lane -1.
+width_and_accuracy mm and %
+InclinationAndCurvature - which Road already has - do we need both? obviously can be different between lanes
+
+Road.RoadAttribution.Lane.LaneBoundary.
+
+EventEnvelope
+lane_boundary_id Lane boundary identifier. Identifier is unique within a DataMessage and can be used to trace lane boundaries between LaneBoundary events.
+existence_confidence
+EventDetectionStatus
+MarkingColorAndConfidence.Type - yellow, purple...
+width_and_accuracy
+height_and_accuracy
+
+Road.RoadAttribution.Lane.LaneBoundary.MarkingMaterialAndConfidence.Type
+  description: Type of 
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'METAL',
+    'CONCRETE',
+    'STONE',
+    'WOOD',
+    'PLASTIC',
+    'TRANSPARENT',
+    'VIBRATION_MARKINGS',
+    'PAINT',
+    'ASPHALT',
+    'GRAVEL',
+    'COBBLESTONE'
+  ]
+
+Road.RoadAttribution.Lane.LaneBoundary.TypeAndConfidence.Type
+
+  description: Type of 
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'LINE',
+    'LINE_SINGLE',
+    'LINE_SINGLE_SOLID',
+    'LINE_SINGLE_DASHED',
+    'LINE_SINGLE_DASHED_SHORT',
+    'LINE_SINGLE_DASHED_LONG',
+    'LINE_DOUBLE',
+    'LINE_DOUBLE_SOLID',
+    'LINE_DOUBLE_DASHED',
+    'LINE_DOUBLE_SOLID_DASHED',
+    'LINE_DOUBLE_DASHED_SOLID',
+    'SHADED_AREA_MARKING',
+    'BLOCKS_DASHED',
+    'CROSSING_ALERT',
+    'CURB',
+    'CURB_TRAVERSABLE',
+    'CURB_NON_TRAVERSABLE',
+    'PHYSICAL_DIVIDER',
+    'WALL',
+    'WALL_FLAT',
+    'WALL_CURVED',
+    'BARRIER',
+    'BARRIER_JERSEY',
+    'BARRIER_SOUND',
+    'BARRIER_CABLE',
+    'GUARDRAIL',
+    'FENCE',
+    'ROAD_EDGE',
+    'CLIFF',
+    'DITCH',
+    'ASPHALT_JOINT',
+    'LINE_MULTIPLE',
+    'LINE_MULTIPLE_ALL_DASHED',
+    'LINE_MULTIPLE_ANY_SOLID',
+    'PHYSICAL_DIVIDER_CONTINUOUS',
+    'PHYSICAL_DIVIDER_DISCONTINUOUS',
+    'LINE_DOUBLE_DASHED_OR_DOUBLE_SOLID_DASHED',
+    'LINE_DOUBLE_DASHED_OR_DOUBLE_DASHED_SOLID',
+    'LINE_DOUBLE_SOLID_OR_DOUBLE_SOLID_DASHED',
+    'LINE_DOUBLE_SOLID_OR_DOUBLE_DASHED_SOLID'
+  ]
+
+Road.RoadAttribution.Lane.LaneBoundaryMergeSplit.TypeAndConfidence.Type
+  description: Type of 
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'MERGE',
+    'SPLIT'
+  ]
+
+Road.RoadAttribution.Lane.LaneCountAndConfidence.Type
+  description: Type of 
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'TOTAL',
+    'LEFT_INCLUDING_EGO_LANE',
+    'RIGHT'
+  ]
+
+===================
+
+SurfaceMaterialAndConfidence.Type
+  description: Type of 
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'ASPHALT',
+    'CONCRETE',
+    'COMPOSITE_PAVEMENT',
+    'RECYCLING',
+    'GRAVEL',
+    'COBBLESTONE'
+  ]
+
+SurfaceMarking.TypeAndConfidence.Type
+  description: Type of 
+  datatype: string
+  type: sensor
+  allowed: [
+    'UNKNOWN_TYPE',
+    'SIGN',
+    'TEXT',
+    'ICON',
+    'PATTERN',
+    'PATTERN_CROSSWALK',
+    'LINE_ELEMENT',
+    'STOP_LINE'
+  ]
