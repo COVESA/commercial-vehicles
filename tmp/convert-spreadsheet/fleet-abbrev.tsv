@@ -10,7 +10,7 @@ Distance to service	Vehicle.Service.DistanceToService	- Setup maintenance remind
 Battery voltage	Vehicle.LowVoltageBattery.CurrentVoltage	- Detect and manage battery drain issues	0.033333333333333Hz
 Faults / DTCs / Warnings	**only in OBD.vspec which is slated to be deprecated, agreement to provide DTC in tree	- Detect issues early to prevent downtime or major breakdowns	CHANGE
 Engine Warning Light	Vehicle.OBD.Status.IsMILOn	- Detect issues early to prevent downtime or major breakdowns	Vehicle.OBD.Status.IsMILOn=true
-High Engine Temp warning		- Detect issues early to prevent downtime or major breakdowns	
+High Engine Temp warning	- Detect issues early to prevent downtime or major breakdowns	
 Oil pressure warning		- Detect issues early to prevent downtime or major breakdowns	
 Tire Pressure	Vehicle.Chassis.Axle.Row{n}.Wheel.{Left, Right}.Tire.Pressure	- Detect and manage low / high tire pressure situations	0.0033333333333333Hz
 Engine oil pressure	Vehicle.Powertrain.CombustionEngine.EOP	- Ensure appropriate engine oil pressure to prevent engine damage	0.0033333333333333Hz
