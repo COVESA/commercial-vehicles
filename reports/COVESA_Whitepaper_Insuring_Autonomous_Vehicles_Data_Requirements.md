@@ -1,10 +1,11 @@
+# Status: Draft #
 # Standardized Vehicle Data for Insuring Autonomous Vehicles: The Role of Open Standards in Regulatory Alignment
 
 **A COVESA Position Paper**
 
 **March 2026**
 
-**Contributors:** COVESA Commercial and Fleet Vehicles Expert Group with Allianz and MOTER
+**Contributors:** COVESA Commercial and Fleet Vehicles Expert Group
 
 ---
 
