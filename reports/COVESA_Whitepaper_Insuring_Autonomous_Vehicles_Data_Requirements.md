@@ -3,7 +3,7 @@
 # Status: Draft #
 **A COVESA Commercial and Fleet Vehicles Expert Group Position Paper**
 
-**March 2026**
+**April 2026**
 
 **Produced by:** COVESA Commercial and Fleet Vehicles Expert Group
 
