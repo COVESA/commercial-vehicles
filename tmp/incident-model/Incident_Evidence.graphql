@@ -1,0 +1,133 @@
+"""
+A piece of evidence associated with an incident. Evidence may include
+telematics snapshots, media files (video, images), documents, sensor
+logs, or external references.
+"""
+type IncidentEvidence {
+  """
+  Unique identifier of this evidence item within the incident.
+  """
+  id: ID!
+
+  """
+  Type of evidence.
+  """
+  evidenceType: IncidentEvidence_Type_Enum!
+
+  """
+  ISO 8601 timestamp when this evidence was captured or recorded.
+  """
+  capturedAt: String
+
+  """
+  URI or reference to the evidence artifact (file path, cloud storage
+  URL, or system reference).
+  """
+  uri: String
+
+  """
+  MIME type of the referenced artifact
+  (e.g., video/mp4, image/jpeg, application/json).
+  """
+  mimeType: String
+
+  """
+  Human-readable description of this evidence item.
+  """
+  description: String
+
+  """
+  Telematics data snapshot at or immediately preceding the incident.
+  Populated when evidenceType is TELEMATICS_SNAPSHOT.
+  """
+  telematicsSnapshot: IncidentTelematicsSnapshot
+
+  """
+  System or device that captured this evidence.
+  """
+  source: String
+}
+
+"""
+A snapshot of vehicle telematics signals at the moment of or immediately
+preceding the incident. Signal naming follows COVESA VSS conventions
+where applicable.
+"""
+type IncidentTelematicsSnapshot {
+  """
+  Vehicle speed. (VSS: Vehicle.Speed)
+  """
+  speed(unit: Velocity_Unit_Enum = KILOMETER_PER_HOUR): Float
+
+  """
+  Whether the engine was running. (VSS: Vehicle.Powertrain.CombustionEngine.IsRunning)
+  """
+  engineRunning: Boolean
+
+  """
+  Odometer reading. (VSS: Vehicle.TravelledDistance)
+  """
+  odometer(unit: Length_Unit_Enum = KILOMETER): Float
+
+  """
+  Fuel level as a percentage. (VSS: Vehicle.Powertrain.FuelSystem.Level)
+  """
+  fuelLevel(unit: Relation_Unit_Enum = PERCENT): UInt8 @range(min: 0, max: 100)
+
+  """
+  Longitudinal acceleration (positive = forward, negative = braking).
+  (VSS: Vehicle.Acceleration.Longitudinal)
+  """
+  accelerationLongitudinal(unit: Acceleration_Unit_Enum = METERS_PER_SECOND_SQUARED): Float
+
+  """
+  Lateral acceleration (positive = left, negative = right).
+  (VSS: Vehicle.Acceleration.Lateral)
+  """
+  accelerationLateral(unit: Acceleration_Unit_Enum = METERS_PER_SECOND_SQUARED): Float
+
+  """
+  Vehicle heading in degrees clockwise from true North.
+  (VSS: Vehicle.CurrentLocation.Heading)
+  """
+  heading(unit: Angle_Unit_Enum = DEGREE): Float @range(min: 0.0, max: 360.0)
+
+  """
+  Active driver assistance or safety systems at the time of the incident.
+  """
+  activeSafetySystemsEngaged: [String] @noDuplicates
+
+  """
+  ELD Hours of Service duty status at the time of the incident
+  (if applicable — ON_DUTY, OFF_DUTY, SLEEPER_BERTH, DRIVING).
+  """
+  eldDutyStatus: String
+
+  """
+  Additional named telematics signals for extensibility beyond the
+  fixed fields above.
+  """
+  additionalSignals: [IncidentTelematicsSignal]
+}
+
+"""
+A single named telematics signal value, used for extensible snapshot
+capture of signals not represented as fixed fields.
+"""
+type IncidentTelematicsSignal {
+  """
+  Signal path, preferably a COVESA VSS path
+  (e.g., Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.Pressure).
+  """
+  signalPath: String!
+
+  """
+  Value as a string representation.
+  """
+  value: String!
+
+  """
+  Unit of the value (free-form; use VSS unit strings where available).
+  """
+  unit: String
+}

@@ -1,0 +1,26 @@
+"""
+Classification of an incident, combining a broad category with a
+domain-specific type. Designed to be extended by specializations —
+the type field uses a String rather than a fixed enum to allow each
+specialization domain to define its own allowed values via an enum
+and reference it in an extension.
+"""
+type IncidentClassification {
+  """
+  Broad category of the incident.
+  """
+  category: Incident_Category_Enum!
+
+  """
+  Domain-specific incident type within the category. Each specialization
+  (e.g., VehicleTheft, UnsafeDriving) defines its own enum and maps it
+  here via extension.
+  """
+  type: String
+
+  """
+  Whether this incident was automatically detected (e.g., by telematics)
+  or manually reported.
+  """
+  detectionMethod: Incident_DetectionMethod_Enum
+}

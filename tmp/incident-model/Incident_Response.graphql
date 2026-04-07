@@ -1,0 +1,89 @@
+"""
+Response actions and outcomes associated with an incident.
+"""
+type IncidentResponse {
+  """
+  Ordered list of actions taken in response to this incident.
+  """
+  actions: [IncidentResponseAction] @cardinality(min: 0)
+
+  """
+  Whether emergency services (police, fire, ambulance) were contacted.
+  """
+  emergencyServicesNotified: Boolean
+
+  """
+  Reference number assigned by responding law enforcement.
+  """
+  policeReportNumber: String
+
+  """
+  Insurance claim information linked to this incident.
+  """
+  insuranceClaim: IncidentInsuranceClaim
+
+  """
+  ISO 8601 timestamp when the incident was considered resolved or closed.
+  """
+  resolvedAt: String
+
+  """
+  Resolution summary or outcome description.
+  """
+  resolution: String
+}
+
+"""
+A single action taken in response to an incident.
+"""
+type IncidentResponseAction {
+  """
+  Type of action taken.
+  """
+  actionType: IncidentResponse_ActionType_Enum!
+
+  """
+  ISO 8601 timestamp when the action was taken.
+  """
+  takenAt: String
+
+  """
+  Party, person, or system that performed this action.
+  """
+  performedBy: String
+
+  """
+  Free-text notes about the action.
+  """
+  notes: String
+}
+
+"""
+Insurance claim information linked to an incident.
+"""
+type IncidentInsuranceClaim {
+  """
+  Insurance policy number.
+  """
+  policyNumber: String
+
+  """
+  Insurance provider name.
+  """
+  provider: String
+
+  """
+  Claim reference number assigned by the insurer.
+  """
+  claimNumber: String
+
+  """
+  ISO 8601 timestamp when the claim was filed.
+  """
+  filedAt: String
+
+  """
+  Current claim status.
+  """
+  status: IncidentInsuranceClaim_Status_Enum
+}

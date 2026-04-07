@@ -1,0 +1,18 @@
+"""
+Unsafe driving incident specialization.
+Extends the generic Incident model with behavior-specific fields.
+
+TODO: define UnsafeDrivingIncident type and extend Incident.
+"""
+
+# Placeholder — to be implemented.
+# Expected fields:
+#   - behaviorType: UnsafeDriving_BehaviorType_Enum
+#       (SPEEDING, HARSH_BRAKING, HARSH_ACCELERATION, SHARP_CORNERING,
+#        DISTRACTED_DRIVING, DROWSY_DRIVING, SEATBELT_VIOLATION,
+#        PHONE_USE, FOLLOWING_TOO_CLOSE, LANE_DEPARTURE, ...)
+#   - thresholdExceeded: Float (magnitude of exceedance)
+#   - duration (unit: Duration_Unit_Enum): how long the behavior lasted
+#   - ruleViolated: String (reference to policy or regulatory rule)
+#   - coachingRequired: Boolean
+#   - repeatOffense: Boolean

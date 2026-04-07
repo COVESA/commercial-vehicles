@@ -1,0 +1,475 @@
+"""
+Vehicle Theft Incident Specialization
+Based on COVESA Anti-Theft / Stolen Vehicle Recovery data requirements.
+
+Extends the generic Incident model with theft-specific fields organized
+by use case (THEFT01-THEFT07).
+
+Source: Anti-Theft VSS Data Collection spreadsheet
+https://docs.google.com/spreadsheets/d/1QH0-4QVmtwt0Ur-dPsKLw6Z2pSsDxr9jFI3FutT9dAQ
+"""
+
+type VehicleTheftIncident {
+  """
+  Reference to the base generic incident record.
+  """
+  incident: Incident!
+
+  """
+  THEFT01: Vehicle identification snapshot at time of theft detection.
+  """
+  vehicleIdentification: VehicleTheft_Identification!
+
+  """
+  THEFT02: Real-time location, movement, and trip history.
+  """
+  locationAndMovement: VehicleTheft_LocationAndMovement!
+
+  """
+  THEFT03: Intrusion detection — doors, hood, trunk status.
+  """
+  intrusionDetection: VehicleTheft_IntrusionDetection
+
+  """
+  THEFT04: Key authentication and inventory.
+  """
+  keyAuthentication: VehicleTheft_KeyAuthentication
+
+  """
+  THEFT05: Lost mode, alarm, and immobilization status.
+  """
+  lostModeAndAlarm: VehicleTheft_LostModeAndAlarm
+
+  """
+  THEFT06: Security sensors — OBD tampering, jamming, spoofing.
+  """
+  securitySensors: VehicleTheft_SecuritySensors
+
+  """
+  THEFT07: Vehicle state at theft — ignition, engine, range, recovery aids.
+  """
+  vehicleState: VehicleTheft_VehicleState
+
+  """
+  Recovery status and outcome.
+  """
+  recoveryStatus: VehicleTheft_RecoveryStatus_Enum
+
+  """
+  Location where the vehicle was recovered.
+  """
+  recoveredAt: IncidentLocation
+
+  """
+  ISO 8601 timestamp when recovery was confirmed.
+  """
+  recoveredTimestamp: String
+
+  """
+  Whether the vehicle was in lost/stolen mode when theft occurred.
+  """
+  lostModeActiveAtTheft: Boolean
+
+  """
+  Whether remote immobilization was attempted.
+  """
+  immobilizationAttempted: Boolean
+
+  """
+  Whether keys were confirmed left in the vehicle.
+  """
+  keysLeftInVehicle: Boolean
+
+  """
+  Whether this was a carjacking (theft with driver present under duress).
+  """
+  wasCarjacking: Boolean
+}
+
+"""
+THEFT01: Vehicle identification — VIN, make, odometer baseline.
+"""
+type VehicleTheft_Identification {
+  """
+  Vehicle Identification Number (17 characters per ISO 3779).
+  VSS: Vehicle.VehicleIdentification.VIN
+  """
+  vin: String!
+
+  """
+  Vehicle brand/make.
+  VSS: Vehicle.VehicleIdentification.Brand
+  """
+  brand: String
+
+  """
+  World Manufacturer Identifier (first 3 chars of VIN).
+  VSS: Vehicle.VehicleIdentification.WMI
+  """
+  wmi: String
+
+  """
+  Last known odometer reading at time of theft.
+  VSS: Vehicle.TraveledDistance
+  """
+  lastOdometer(unit: Length_Unit_Enum = KILOMETER): Float
+
+  """
+  Odometer reading at end of penultimate (N-1) trip before theft.
+  VSS SUGGESTED: Vehicle.Trip.PreviousTrip.EndOdometer
+  """
+  penultimateTripOdometer(unit: Length_Unit_Enum = KILOMETER): Float
+}
+
+"""
+THEFT02: Location, movement, and trip history during and after theft.
+"""
+type VehicleTheft_LocationAndMovement {
+  """
+  Last known GPS position.
+  VSS: Vehicle.CurrentLocation.{Latitude,Longitude,Altitude,HorizontalAccuracy}
+  """
+  lastKnownLocation: IncidentLocation!
+
+  """
+  Timestamp of last known GPS fix.
+  VSS: Vehicle.CurrentLocation.Timestamp
+  """
+  lastGPSTimestamp: String
+
+  """
+  Heading/bearing at last position fix (degrees clockwise from true North).
+  VSS: Vehicle.CurrentLocation.Heading
+  """
+  heading(unit: Angle_Unit_Enum = DEGREE): Float @range(min: 0.0, max: 360.0)
+
+  """
+  Whether the vehicle was moving at last observation.
+  VSS: Vehicle.IsMoving
+  """
+  isMoving: Boolean
+
+  """
+  Instantaneous speed at last observation.
+  VSS: Vehicle.Speed
+  """
+  speed(unit: Velocity_Unit_Enum = KILOMETER_PER_HOUR): Float
+
+  """
+  Average speed during the last completed trip.
+  VSS: Vehicle.AverageSpeed
+  """
+  averageSpeed(unit: Velocity_Unit_Enum = KILOMETER_PER_HOUR): Float
+
+  """
+  Distance traveled during the last trip.
+  VSS: Vehicle.TraveledDistanceSinceStart or Vehicle.TripMeterReading
+  """
+  lastTripDistance(unit: Length_Unit_Enum = KILOMETER): Float
+
+  """
+  Timestamp when the last trip ended.
+  VSS SUGGESTED: Vehicle.Trip.LastTrip.EndTimestamp
+  """
+  lastTripEndTimestamp: String
+
+  """
+  Timestamp when the penultimate (N-1) trip ended.
+  VSS SUGGESTED: Vehicle.Trip.PreviousTrip.EndTimestamp
+  """
+  penultimateTripEndTimestamp: String
+}
+
+"""
+THEFT03: Intrusion detection — door, hood, trunk status at time of theft.
+"""
+type VehicleTheft_IntrusionDetection {
+  """
+  Row1 driver side door status.
+  VSS: Vehicle.Cabin.Door.Row1.DriverSide.{IsOpen,IsLocked}
+  """
+  row1DriverDoor: VehicleTheft_DoorStatus
+
+  """
+  Row1 passenger side door status.
+  VSS: Vehicle.Cabin.Door.Row1.PassengerSide.{IsOpen,IsLocked}
+  """
+  row1PassengerDoor: VehicleTheft_DoorStatus
+
+  """
+  Row2 driver side door status.
+  VSS: Vehicle.Cabin.Door.Row2.DriverSide.{IsOpen,IsLocked}
+  """
+  row2DriverDoor: VehicleTheft_DoorStatus
+
+  """
+  Row2 passenger side door status.
+  VSS: Vehicle.Cabin.Door.Row2.PassengerSide.{IsOpen,IsLocked}
+  """
+  row2PassengerDoor: VehicleTheft_DoorStatus
+
+  """
+  Hood open/close status.
+  VSS: Vehicle.Body.Hood.IsOpen
+  """
+  hoodIsOpen: Boolean
+
+  """
+  Front trunk (frunk) open status.
+  VSS: Vehicle.Body.Trunk.Front.IsOpen
+  """
+  frontTrunkIsOpen: Boolean
+
+  """
+  Rear trunk open status.
+  VSS: Vehicle.Body.Trunk.Rear.IsOpen
+  """
+  rearTrunkIsOpen: Boolean
+}
+
+"""
+Door status (open/locked state).
+"""
+type VehicleTheft_DoorStatus {
+  """
+  Whether the door is open.
+  """
+  isOpen: Boolean
+
+  """
+  Whether the door is locked.
+  """
+  isLocked: Boolean
+}
+
+"""
+THEFT04: Key authentication and inventory.
+"""
+type VehicleTheft_KeyAuthentication {
+  """
+  Count of functional smart card keys.
+  VSS SUGGESTED: Vehicle.Cabin.Keys.FunctioningSmartCardCount
+  """
+  smartCardKeyCount: UInt8
+
+  """
+  Count of functional physical keys.
+  VSS SUGGESTED: Vehicle.Cabin.Keys.FunctioningPhysicalKeyCount
+  """
+  physicalKeyCount: UInt8
+
+  """
+  Count of functional virtual/digital keys (phone-as-a-key).
+  VSS SUGGESTED: Vehicle.Cabin.Keys.FunctioningVirtualKeyCount
+  """
+  virtualKeyCount: UInt8
+
+  """
+  Transponder ID of the last-used key.
+  VSS SUGGESTED: Vehicle.Cabin.Keys.LastUsed.TransponderId
+  """
+  lastUsedKeyTransponderId: String
+
+  """
+  Driver seat position at time of theft (may correlate with key profile).
+  VSS: Vehicle.Cabin.Seat.Row1.DriverSide.Position
+  """
+  driverSeatPosition(unit: Length_Unit_Enum = MILLIMETER): UInt16
+
+  """
+  Driver seat height.
+  VSS: Vehicle.Cabin.Seat.Row1.DriverSide.Height
+  """
+  driverSeatHeight(unit: Length_Unit_Enum = MILLIMETER): UInt16
+
+  """
+  Driver seat recline.
+  VSS: Vehicle.Cabin.Seat.Row1.DriverSide.Recline
+  """
+  driverSeatRecline(unit: Angle_Unit_Enum = DEGREE): Float
+}
+
+"""
+THEFT05: Lost mode, alarm, and immobilization status.
+"""
+type VehicleTheft_LostModeAndAlarm {
+  """
+  Whether lost mode was active when theft was detected.
+  VSS SUGGESTED: Vehicle.Security.IsLostModeActive
+  """
+  lostModeActive: Boolean
+
+  """
+  ISO 8601 timestamp when lost mode was activated.
+  VSS SUGGESTED: Vehicle.Security.LostModeActivationTimestamp
+  """
+  lostModeActivationTimestamp: String
+
+  """
+  Whether remote immobilization (brick mode) was active.
+  VSS SUGGESTED: Vehicle.Security.IsBrickModeActive
+  """
+  brickModeActive: Boolean
+
+  """
+  Alarm status at time of theft.
+  VSS SUGGESTED: Vehicle.Security.AlarmStatus
+  """
+  alarmStatus: VehicleTheft_AlarmStatus_Enum
+
+  """
+  ISO 8601 timestamp when the alarm was triggered.
+  VSS SUGGESTED: Vehicle.Security.AlarmTriggerTimestamp
+  """
+  alarmTriggerTimestamp: String
+}
+
+"""
+Vehicle alarm status.
+"""
+enum VehicleTheft_AlarmStatus_Enum {
+  DISARMED
+  ARMED
+  TRIGGERED
+  SILENCED
+  FAULT
+}
+
+"""
+THEFT06: Security sensors — OBD tampering, jamming, spoofing detection.
+"""
+type VehicleTheft_SecuritySensors {
+  """
+  Device ID of the last connected OBD device (may indicate tampering).
+  VSS SUGGESTED: Vehicle.Diagnostics.OBD.LastConnectedDeviceId
+  """
+  lastOBDDeviceId: String
+
+  """
+  Count of detected Bluetooth devices in proximity.
+  VSS SUGGESTED: Vehicle.Connectivity.DetectedBluetoothDeviceCount
+  """
+  bluetoothDeviceCount: UInt8
+
+  """
+  Whether RF jamming was detected.
+  VSS SUGGESTED: Vehicle.Connectivity.IsRFJammingDetected
+  """
+  rfJammingDetected: Boolean
+
+  """
+  Whether offline logging mode was active (no cellular connectivity).
+  VSS SUGGESTED: Vehicle.Security.IsOfflineLoggingActive
+  """
+  offlineLoggingActive: Boolean
+
+  """
+  Whether GPS spoofing was detected.
+  VSS SUGGESTED: Vehicle.CurrentLocation.IsSpoofingDetected
+  """
+  gpsSpoofingDetected: Boolean
+
+  """
+  Positioning source (GPS/GNSS, cellular, WiFi, etc.).
+  VSS SUGGESTED: Vehicle.Connectivity.PositioningSource
+  """
+  positioningSource: String
+
+  """
+  Cellular signal strength (RSSI or quality indicator).
+  VSS SUGGESTED: Vehicle.Connectivity.CellularSignalStrength
+  """
+  cellularSignalStrength: Int8
+}
+
+"""
+THEFT07: Vehicle state at time of theft — ignition, engine, range, recovery aids.
+"""
+type VehicleTheft_VehicleState {
+  """
+  Low voltage system state (ignition status).
+  VSS: Vehicle.LowVoltageSystemState
+  """
+  ignitionState: Vehicle_LowVoltageSystemState_Enum
+
+  """
+  Whether the combustion engine was running.
+  VSS: Vehicle.Powertrain.CombustionEngine.IsRunning
+  """
+  engineRunning: Boolean
+
+  """
+  Estimated range remaining.
+  VSS: Vehicle.Powertrain.Range
+  """
+  estimatedRange(unit: Length_Unit_Enum = KILOMETER): Float
+
+  """
+  Fuel level (absolute volume).
+  VSS: Vehicle.Powertrain.FuelSystem.AbsoluteLevel
+  """
+  fuelLevel(unit: Volume_Unit_Enum = LITER): Float
+
+  """
+  EV traction battery state of charge (BEV/PHEV only).
+  VSS: Vehicle.Powertrain.TractionBattery.StateOfCharge.Current
+  """
+  batteryStateOfCharge(unit: Relation_Unit_Enum = PERCENT): Float @range(min: 0.0, max: 100.0)
+
+  """
+  Whether the horn was active (for recovery aid).
+  VSS: Vehicle.Body.Horn.IsActive
+  """
+  hornActive: Boolean
+
+  """
+  Whether hazard lights were signaling (for recovery aid).
+  VSS: Vehicle.Body.Lights.Hazard.IsSignaling
+  """
+  hazardLightsOn: Boolean
+
+  """
+  Whether low beam headlights were on.
+  VSS: Vehicle.Body.Lights.Beam.Low.IsOn
+  """
+  lowBeamOn: Boolean
+
+  """
+  Whether high beam headlights were on.
+  VSS: Vehicle.Body.Lights.Beam.High.IsOn
+  """
+  highBeamOn: Boolean
+}
+
+"""
+Recovery status of a stolen vehicle.
+"""
+enum VehicleTheft_RecoveryStatus_Enum {
+  OUTSTANDING
+  RECOVERED_INTACT
+  RECOVERED_DAMAGED
+  RECOVERED_TOTALED
+  NOT_RECOVERED
+}
+
+"""
+Low voltage system state (ignition status) — shared with VSS.
+Already defined in Incident_Enums.graphql, but repeated here for reference.
+"""
+enum Vehicle_LowVoltageSystemState_Enum {
+  UNDEFINED
+  LOCK
+  OFF
+  ACC
+  ON
+  START
+}
+
+"""
+Volume unit enum for fuel level.
+"""
+enum Volume_Unit_Enum {
+  LITER
+  GALLON
+  MILLILITER
+}

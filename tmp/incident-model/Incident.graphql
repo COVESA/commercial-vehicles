@@ -1,0 +1,82 @@
+"""
+Generic incident record. The base type for all incident-specific extensions
+(e.g., VehicleTheft, UnsafeDriving, AccidentReport).
+
+Follows the COVESA S2DM (Simplified Semantic Data Modeling) approach using
+GraphQL SDL. Specialized incident types extend or reference this type.
+"""
+type Incident {
+  """
+  Unique incident identifier.
+  """
+  id: ID!
+
+  """
+  Human-readable report reference number (e.g., assigned by a fleet
+  management system or law enforcement).
+  """
+  reportNumber: String
+
+  """
+  ISO 8601 timestamp when the incident occurred (or was first detected).
+  """
+  occurredAt: String!
+
+  """
+  ISO 8601 timestamp when the incident was reported into the system.
+  """
+  reportedAt: String
+
+  """
+  Classification of the incident (category, type, detection method).
+  """
+  classification: IncidentClassification!
+
+  """
+  Current lifecycle status of the incident record.
+  """
+  status: Incident_Status_Enum!
+
+  """
+  Severity level of the incident.
+  """
+  severity: Incident_Severity_Enum!
+
+  """
+  Location where the incident occurred.
+  """
+  location: IncidentLocation
+
+  """
+  Parties involved in the incident (vehicles, drivers, third parties,
+  organizations).
+  """
+  parties: [IncidentParty] @cardinality(min: 0)
+
+  """
+  Evidence collected in relation to the incident (telematics snapshots,
+  media, documents).
+  """
+  evidence: [IncidentEvidence] @cardinality(min: 0)
+
+  """
+  Response actions taken and outcomes recorded for this incident.
+  """
+  response: IncidentResponse
+
+  """
+  Free-text narrative description of the incident.
+  """
+  description: String
+
+  """
+  Source system or method that originated this incident record.
+  """
+  source: Incident_Source_Enum
+
+  """
+  Identifier of a related or parent incident (e.g., a sub-incident or
+  follow-up report).
+  """
+  relatedIncidentId: ID
+}

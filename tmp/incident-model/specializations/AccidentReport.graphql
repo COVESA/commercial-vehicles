@@ -1,0 +1,20 @@
+"""
+Accident/collision report specialization.
+Extends the generic Incident model with collision-specific fields.
+
+TODO: define AccidentReportIncident type and extend Incident.
+"""
+
+# Placeholder — to be implemented.
+# Expected fields:
+#   - collisionType: Accident_CollisionType_Enum
+#       (REAR_END, HEAD_ON, SIDE_SWIPE, ROLLOVER, HIT_AND_RUN,
+#        SINGLE_VEHICLE, MULTI_VEHICLE, PEDESTRIAN, FIXED_OBJECT, ...)
+#   - weatherConditions: Accident_WeatherCondition_Enum
+#   - roadConditions: Accident_RoadCondition_Enum
+#   - lightingConditions: Accident_LightingCondition_Enum
+#   - injuries: [IncidentInjury]
+#   - vehicleDamage: [IncidentVehicleDamage]
+#   - airbagDeployed: Boolean
+#   - postCrashFireOrHazmat: Boolean
+#   - dotReportable: Boolean

@@ -1,0 +1,146 @@
+"""
+Broad category of an incident. Top-level grouping shared across all
+specializations.
+"""
+enum Incident_Category_Enum {
+  THEFT
+  UNSAFE_DRIVING
+  ACCIDENT
+  MECHANICAL_FAILURE
+  COMPLIANCE_VIOLATION
+  ENVIRONMENTAL
+  OTHER
+}
+
+"""
+Lifecycle status of the incident record.
+"""
+enum Incident_Status_Enum {
+  DETECTED
+  REPORTED
+  UNDER_INVESTIGATION
+  RESOLVED
+  CLOSED
+  DISPUTED
+}
+
+"""
+Severity of the incident.
+"""
+enum Incident_Severity_Enum {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+"""
+How the incident was first detected or reported.
+"""
+enum Incident_DetectionMethod_Enum {
+  TELEMATICS_AUTOMATIC
+  DRIVER_REPORTED
+  THIRD_PARTY_REPORTED
+  LAW_ENFORCEMENT
+  BYSTANDER
+  FLEET_MANAGER
+  SENSOR_TRIGGERED
+}
+
+"""
+Source system or integration that originated the incident record.
+"""
+enum Incident_Source_Enum {
+  FLEET_MANAGEMENT_SYSTEM
+  ELD
+  MOBILE_APP
+  MANUAL_ENTRY
+  INSURANCE_PORTAL
+  LAW_ENFORCEMENT_SYSTEM
+  ROADSIDE_INSPECTION
+}
+
+"""
+Type of road or location context where the incident occurred.
+"""
+enum IncidentLocation_Type_Enum {
+  HIGHWAY
+  URBAN_ROAD
+  RURAL_ROAD
+  INTERSECTION
+  PARKING_LOT
+  DEPOT
+  PRIVATE_PROPERTY
+  OFF_ROAD
+  UNKNOWN
+}
+
+"""
+Role of a party in the incident.
+"""
+enum IncidentParty_Role_Enum {
+  SUBJECT_VEHICLE
+  SUBJECT_DRIVER
+  THIRD_PARTY_VEHICLE
+  THIRD_PARTY_DRIVER
+  PEDESTRIAN
+  WITNESS
+  REPORTING_OFFICER
+  FLEET_MANAGER
+  INSURER
+}
+
+"""
+High-level type of the party.
+"""
+enum IncidentParty_Type_Enum {
+  VEHICLE
+  PERSON
+  ORGANIZATION
+}
+
+"""
+Type of evidence collected.
+"""
+enum IncidentEvidence_Type_Enum {
+  TELEMATICS_SNAPSHOT
+  VIDEO_FOOTAGE
+  IMAGE
+  AUDIO
+  DOCUMENT
+  SENSOR_LOG
+  INSPECTION_REPORT
+  THIRD_PARTY_REPORT
+  OTHER
+}
+
+"""
+Types of response actions that can be taken for an incident.
+"""
+enum IncidentResponse_ActionType_Enum {
+  ALERT_SENT
+  DRIVER_CONTACTED
+  FLEET_MANAGER_NOTIFIED
+  EMERGENCY_SERVICES_DISPATCHED
+  VEHICLE_IMMOBILIZED
+  VEHICLE_RECOVERED
+  VEHICLE_TOWED
+  DRIVER_RELIEVED
+  INSPECTION_CONDUCTED
+  REPORT_FILED
+  INSURANCE_NOTIFIED
+  CORRECTIVE_TRAINING_ASSIGNED
+  OTHER
+}
+
+"""
+Status of an insurance claim linked to an incident.
+"""
+enum IncidentInsuranceClaim_Status_Enum {
+  NOT_FILED
+  FILED
+  UNDER_REVIEW
+  APPROVED
+  DENIED
+  SETTLED
+}

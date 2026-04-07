@@ -1,0 +1,62 @@
+"""
+Geographic location where an incident occurred.
+Coordinates use WGS84 (EPSG:4326), consistent with COVESA VSS
+Vehicle.CurrentLocation signal conventions.
+"""
+type IncidentLocation {
+  """
+  Latitude in decimal degrees (WGS84).
+  """
+  latitude: Float @range(min: -90.0, max: 90.0)
+
+  """
+  Longitude in decimal degrees (WGS84).
+  """
+  longitude: Float @range(min: -180.0, max: 180.0)
+
+  """
+  Altitude above sea level.
+  """
+  altitude(unit: Length_Unit_Enum = METER): Float
+
+  """
+  Estimated accuracy radius of the GPS fix.
+  """
+  accuracy(unit: Length_Unit_Enum = METER): Float
+
+  """
+  Human-readable street address or location description.
+  """
+  address: String
+
+  """
+  City or municipality.
+  """
+  city: String
+
+  """
+  State, province, or region.
+  """
+  region: String
+
+  """
+  ISO 3166-1 alpha-2 country code.
+  """
+  countryCode: String
+
+  """
+  Postal or ZIP code.
+  """
+  postalCode: String
+
+  """
+  Named zone or area identifier (e.g., geofence name, depot ID,
+  highway segment reference).
+  """
+  zone: String
+
+  """
+  Road or location context type.
+  """
+  locationType: IncidentLocation_Type_Enum
+}

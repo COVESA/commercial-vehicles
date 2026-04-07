@@ -1,0 +1,153 @@
+"""
+A party involved in the incident. May represent a vehicle, a person
+(driver, pedestrian, witness), or an organization (carrier, insurer,
+law enforcement agency).
+"""
+type IncidentParty {
+  """
+  Unique identifier of this party record within the incident.
+  """
+  id: ID!
+
+  """
+  Role this party plays in the incident.
+  """
+  role: IncidentParty_Role_Enum!
+
+  """
+  High-level type of this party.
+  """
+  partyType: IncidentParty_Type_Enum!
+
+  """
+  Vehicle details, populated when partyType is VEHICLE.
+  """
+  vehicle: IncidentPartyVehicle
+
+  """
+  Person details, populated when partyType is PERSON.
+  """
+  person: IncidentPartyPerson
+
+  """
+  Organization details, populated when partyType is ORGANIZATION.
+  """
+  organization: IncidentPartyOrganization
+
+  """
+  Whether this party has been determined to be at fault.
+  """
+  atFault: Boolean
+
+  """
+  Free-text notes about this party's involvement.
+  """
+  notes: String
+}
+
+"""
+Vehicle identification and attributes for a party.
+"""
+type IncidentPartyVehicle {
+  """
+  Vehicle Identification Number — 17 characters per ISO 3779.
+  """
+  vin: String
+
+  """
+  License plate number.
+  """
+  licensePlate: String
+
+  """
+  Jurisdiction that issued the license plate (state, province, or
+  ISO 3166-1 alpha-2 country code).
+  """
+  licensePlateJurisdiction: String
+
+  """
+  Vehicle manufacturer (make).
+  """
+  make: String
+
+  """
+  Vehicle model name.
+  """
+  model: String
+
+  """
+  Model year.
+  """
+  year: UInt16
+
+  """
+  Exterior color.
+  """
+  color: String
+
+  """
+  Internal fleet asset or unit identifier.
+  """
+  assetId: String
+}
+
+"""
+Person identification and contact details for a party.
+"""
+type IncidentPartyPerson {
+  """
+  Internal or anonymized identifier for this person.
+  """
+  id: ID
+
+  """
+  Given (first) name.
+  """
+  givenName: String
+
+  """
+  Family (last) name.
+  """
+  familyName: String
+
+  """
+  Driver's license number.
+  """
+  licenseNumber: String
+
+  """
+  Jurisdiction that issued the driver's license (state, province, or
+  ISO 3166-1 alpha-2 country code).
+  """
+  licenseJurisdiction: String
+
+  """
+  Contact phone number.
+  """
+  phone: String
+
+  """
+  Contact email address.
+  """
+  email: String
+}
+
+"""
+Organization identification for a party (carrier, insurer, agency, etc.).
+"""
+type IncidentPartyOrganization {
+  """
+  Organization name.
+  """
+  name: String!
+
+  """
+  Type of organization (e.g., motor carrier, insurer, law enforcement).
+  """
+  organizationType: String
+
+  """
+  Primary contact information (phone, email, or address).
+  """
+  contact: String
+}
