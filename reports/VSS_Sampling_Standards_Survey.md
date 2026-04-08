@@ -522,6 +522,300 @@ Eclipse Kuksa Databroker is a gRPC-based VSS signal broker. `Subscribe` calls wi
 
 ---
 
+## Third Survey Round — Automotive Industry and Adjacent Standards
+
+Standards in this round were selected by asking what is already widely deployed in vehicles, in automotive development toolchains, and in cloud telematics backends that the first two rounds missed. Entries with **🚗 Automotive Core** are broadly deployed across production vehicles or OEM toolchains today.
+
+---
+
+### 34. SOME/IP — Scalable service-Oriented MiddlewarE over IP 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+AUTOSAR's primary in-vehicle service-oriented communication protocol over Ethernet. Event-driven notifiers transmit either cyclically (at a configured cycle time) or on-change (`EventHandler` with optional filters). `SOME/IP-SD` (Service Discovery) dynamically negotiates publish/subscribe relationships. Per-service event configurable: cyclic period (ms), initial-repetition count, offer-delay. Field-level change filtering is implementation-defined; the spec does not standardize a numeric change threshold.
+
+**Format:** Binary framing over UDP/TCP (Ethernet). Configured via ARXML in AUTOSAR toolchains. Not YAML.
+
+**Adoption:** 🚗 **Dominant in Adaptive AUTOSAR Ethernet-connected ECUs.** Developed by BMW (2011), adopted into AUTOSAR 2014. In production at BMW, Audi, Mercedes-Benz, Porsche, Volkswagen, and their Tier-1 suppliers. Standard choice for domain controllers and central computing platforms on modern vehicles.
+
+**Open source:** vsomeip (C++ — Bosch, GENIVI/COVESA), CommonAPI C++ (COVESA), Eclipse Cyclone SOME/IP.
+
+**Curve logging relevance:** Cyclic period = fixed pmax; on-change event = binary change trigger (no amplitude threshold). No standardized numeric threshold or epsilon. Change filtering exists but at implementation level, not in the spec. Curve logging would need to be implemented as an application-layer filter upstream of SOME/IP publication — not expressible in SOME/IP metadata.
+
+---
+
+### 35. ASAM MDF4 / MF4 — Measurement Data Format 4 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+The dominant automotive measurement data file format. Hierarchical structure: `DG` (Data Group) → `CG` (Channel Group) → `CN` (Channel Block). Each CN block stores: signal name, byte/bit offset, data type, physical unit conversion (CompuMethod), min/max measured value, and display name. CG block carries the sampling rate as `cycle_count` and `time_values`. Supports multiple synchronization types: time, angle, distance, index. DZ blocks (MDF 4.1+) provide lossless Deflate compression at the chunk level. Variable-length samples and event-driven CG types enable on-change logging within the same file structure.
+
+**Format:** Binary file format (`.mf4`). Read/written by all major automotive measurement tools. ASAM open specification (free download).
+
+**Adoption:** 🚗 **De facto standard for automotive test and development measurement logging.** Originally developed by Vector Informatik and Bosch (1991); became ASAM standard 2009. Used by all OEMs and Tier-1s for CAN, CAN FD, LIN, FlexRay, Automotive Ethernet, and ECU internal signal logging during development, calibration, durability testing, and field data campaigns. MF4 files are the primary exchange format for measurement data between OEM and supplier.
+
+**Open source:** asammdf (Python — fastest), mdfreader (Python), MDF4 Lib (C++ — PEAK System), Cantools (limited MF4).
+
+**Curve logging relevance:** MDF4 is a *storage* format, not a *collection policy* standard — it stores whatever was sampled, at whatever rate the collection agent chose. However: (1) MDF4's event-driven CG type shows that the format can represent compressed/on-change data without a fixed rate; (2) a curve-logged data stream would store naturally in MDF4 with variable time spacing; (3) no epsilon or algorithm metadata field exists in MDF4 — a curve-logged file is indistinguishable from a sparsely-sampled file unless metadata is added via the MD (metadata) block as custom XML.
+
+---
+
+### 36. ASAM ASAP2 (A2L) + XCP — ECU Measurement Description and Protocol 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+**A2L (ASAP2 format):** ECU measurement and calibration description file. Per-measurement object: name, address, ECU type, conversion method (CompuMethod), min/max physical range, display format. DAQ (Data Acquisition) section defines: EVENT channels with `CYCLE_TIME` and `UNIT` (ms or μs granularity), `MAX_ODT` per DAQ list, `MAX_DAQ` count, `PRESCALER` support. Multiple measurements can share an event (same sample time). `PRESCALER` allows sub-sampling: sample every nth event tick.
+
+**XCP (Universal Measurement and Calibration Protocol, ASAM MCD-1):** Runtime protocol for configuring and streaming DAQ lists from an ECU. DAQ lists are groups of ODTs (Object Descriptor Tables); each ODT is a set of ECU memory addresses to read atomically at each event trigger. Events are ECU-side timing sources (e.g., "10ms task", "100ms task", "ignition event"). `SET_DAQ_LIST_MODE` sets the DAQ list to a specific event channel. `PRESCALER` halves or quarters effective sampling rate.
+
+**Format:** A2L is a text file format. XCP is a binary protocol over CAN, CAN FD, Ethernet, USB, or SPI. Both are ASAM open standards.
+
+**Adoption:** 🚗 **Universal in automotive ECU development.** Every OEM and Tier-1 supplier uses A2L + XCP during ECU development and calibration. Over 50,000 engineers use INCA (ETAS) or CANape (Vector) — the two dominant tools — both built on A2L/XCP. A2L files are delivered by ECU suppliers to OEM calibration engineers as part of the standard handoff.
+
+**Open source:** pya2l (Python A2L parser), python-can + XCP stack (limited). Commercial dominates.
+
+**Curve logging relevance:** XCP's DAQ mechanism is the most granular standardized ECU sampling configuration in automotive — per-measurement-object assignment to named event channels with prescaling. But it is a *fixed-rate* or *event-triggered* model (the ECU's task scheduler fires events at fixed periods). No amplitude deviation threshold: XCP transmits every sample at the configured rate. Curve logging as a downstream filter applied to XCP-captured data is feasible; encoding curve epsilon into A2L measurement descriptions would require an ASAM extension.
+
+---
+
+### 37. W3C VISSv2 — Vehicle Information Service Specification v2 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+W3C and COVESA standard for accessing VSS signal data over HTTP/REST, WebSocket, or MQTT. `Subscribe` method accepts a `VISSubscribeFilter` dictionary with three per-signal filter types:
+- **`interval`** (unsigned long, ms): Minimum sampling/delivery interval — direct pmin equivalent
+- **`minChange`** (unsigned long): Minimum value change before notification is sent — **direct step threshold**, per-signal configurable by the subscriber
+- **`range`** (`below` / `above` bounds): Notify only when value is within or outside a numeric range — equivalent to LwM2M `lt`/`gt`
+
+All three filters are per-subscription, per-signal. A single subscribe call can combine interval + minChange + range. VISSv2 server implementations decide whether filtering occurs server-side or client-side.
+
+**Format:** JSON over WebSocket, HTTP/REST, or MQTT. Simple and approachable.
+
+**Adoption:** 🚗 **Growing automotive adoption, especially in connected vehicle platforms.** Implemented by Volvo, BMW, Jaguar Land Rover, Renesas, Bosch, Visteon, Geotab, AGL (Automotive Grade Linux), Mitsubishi Electric. AWS FleetWise and BlackBerry IVY both align with VISSv2-style VSS access. The closest standard to a native VSS subscription API.
+
+**Open source:** [COVESA/vissr](https://github.com/COVESA/vissr) (Go — reference server), w3c-visserver (JavaScript, older).
+
+**Curve logging relevance:** `minChange` is a **direct per-signal step threshold** — the most directly useful standard field for `curve_epsilon` analogy in the VSS ecosystem, and the only one native to the VSS/automotive stack. Limitation: step-from-last-notified-value, not interpolation-path deviation. `interval` covers pmin. No pmax (heartbeat) defined. VISSv2 is the natural place to add a `curveDeviation` filter alongside `minChange` — same JSON subscription structure, same per-signal granularity.
+
+---
+
+### 38. IETF SenML — Sensor Measurement Lists (RFC 8428)
+
+**What sampling metadata it can express:**
+A lightweight JSON/CBOR/XML format for batching sensor readings. Base fields shared across records: `bn` (base name), `bt` (base time), `bu` (base unit), `bv` (base value), `bs` (base sum). Per-record: `n` (signal name), `u` (unit), `v` (numeric value), `sv` (string value), `bv` (boolean), `t` (time offset), `ut` (update time — interval since last update), `s` (running sum/integral). RFC 9100 adds versioning (`bver`) and extended data types. No sampling rate, threshold, or trigger-mode field. The format carries measurements; the sampling policy is out of scope.
+
+**Format:** JSON (primary), CBOR (binary, compact), XML, EXI. Very simple — entire format fits in one RFC.
+
+**Adoption:** Moderate in IoT sensor networks; limited direct automotive production use. Used in IETF CoAP/LwM2M ecosystems — SenML is the natural payload format when LwM2M attributes control the trigger. The `ut` (update time) field is useful for recording the interval between curve-logged points.
+
+**Open source:** senml (Python), senml-js (JavaScript), libsenml (C).
+
+**Curve logging relevance:** SenML has no sampling policy metadata. Its `ut` field could record the actual inter-sample interval for a curve-logged stream, making it a natural wire format for transmitting curve-logged points. Pair with LwM2M `pmin`/`pmax`/proposed `cd` for a complete lightweight stack.
+
+---
+
+### 39. MQTT v5 — OASIS MQTT Version 5.0
+
+**What sampling metadata it can express:**
+MQTT v5 adds to v3.1.1: **Message Expiry Interval** (per-message TTL in seconds — direct retention hint), **Subscription Options** (no-local, retain-as-published, retain-handling), **Subscription Identifier** (links notification to originating subscription), **User Properties** (arbitrary key-value string pairs on any packet — enables per-message custom metadata), **Shared Subscriptions** (load-balanced consumer groups), **Topic Aliases** (reduce header overhead for high-frequency topics), **Flow Control** (Receive Maximum — backpressure). No native amplitude threshold or change filter.
+
+**Format:** Binary over TCP/TLS or WebSocket. Widely supported.
+
+**Adoption:** 🚗 **Very widely used in automotive cloud telematics.** SAIC Volkswagen deployed EMQX (MQTT v5) for their IoV platform in 2018, now handling millions of vehicles. BMW, Audi, Porsche, and Tesla use MQTT in telematics pipelines. Cellular IoT (NB-IoT, LTE-M) automotive connections predominantly use MQTT.
+
+**Open source:** Eclipse Mosquitto, EMQX, HiveMQ, VerneMQ. Client libraries in every language.
+
+**Curve logging relevance:** `Message Expiry Interval` maps to retention policy. `User Properties` could carry `curve_epsilon`, `curve_algorithm`, or compression metadata per-message, making curve-logged data self-describing in transit. No native change threshold. MQTT v5's User Properties are the best existing mechanism for tagging curve-logged telemetry with its compression parameters in a standards-compliant way.
+
+---
+
+### 40. SAE J2735 / DSRC — Basic Safety Message 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+SAE J2735 defines the V2X message set dictionary for DSRC (5.9 GHz) and C-V2X. The **Basic Safety Message (BSM)** Part I contains: latitude, longitude, elevation, speed, heading, acceleration (longitudinal, lateral, vertical, yaw rate), brake system status, vehicle size. Transmission rate: **10 Hz (100 ms interval) — normative**, mandated for all DSRC-equipped vehicles. BSM Part II is event-driven (on-change), added when relevant (e.g., hazard lights on, disabled vehicle, emergency event).
+
+**Format:** ASN.1 (J2735 uses UPER — Unaligned Packed Encoding Rules) over DSRC/C-V2X. Dense binary.
+
+**Adoption:** 🚗 **Mandatory for V2X deployments in US, EU (C-V2X via ETSI), and China.** All DSRC-equipped vehicles transmit BSM at 10 Hz. This is one of the few automotive standards with a normatively mandated per-signal sampling rate for a defined set of safety signals.
+
+**Open source:** ASN1C (commercial), COHDA Wireless BSM stack. Limited open source.
+
+**Curve logging relevance:** Fixed 10 Hz is the antithesis of adaptive compression — it prioritizes deterministic latency for safety over efficiency. BSM Part II's event-driven extension is the closest concept: conditional transmission of additional data. No epsilon or path-deviation concept. The 10 Hz rate for position + kinematics matches Geotab FMD's GPS/speed collection rate before curve compression is applied.
+
+---
+
+### 41. Apache Kafka — Distributed Streaming Platform 🚗 Automotive Core (cloud backend)
+
+**What sampling metadata it can express:**
+Kafka topics carry byte-stream messages with: `timestamp` (producer or broker), `key` (for partitioning and log compaction), `value` (payload), and `headers` (string key-value pairs — analogous to MQTT v5 User Properties). **Log compaction**: retains only the latest message per key — equivalent to keeping the latest known state of a signal. **Time-based retention**: delete messages older than N days/hours. **Schema Registry** (Confluent): enforces Avro/Protobuf/JSON Schema per topic; version-controlled signal schema with compatibility checking. **Kafka Streams** and **Apache Flink** enable real-time windowed aggregation, anomaly detection, and per-signal processing applied to the stream.
+
+**Format:** Binary (Avro, Protobuf, or JSON with Schema Registry). Partitioned log. Distributed.
+
+**Adoption:** 🚗 **Widely used in automotive cloud backends for vehicle telemetry pipelines.** Rivian streams 5,500+ signals every 5 seconds per vehicle across 120+ Flink pipelines with 250+ unique consumers. BMW, Audi, Porsche, Tesla use Kafka for real-time driver behavior analysis, OTA orchestration, and autonomous vehicle training data pipelines.
+
+**Open source:** [apache/kafka](https://github.com/apache/kafka), Confluent Schema Registry (community), kafka-python, confluent-kafka-go.
+
+**Curve logging relevance:** Kafka headers could carry `curve_epsilon` and `curve_algorithm` as per-message metadata on curve-logged telemetry, making the compression parameters inspectable by downstream consumers. Log compaction aligns with the curve logging use case: retain only the kept points, discard intermediate samples. No native RDP or path-deviation filtering — curve compression happens upstream (at the vehicle or edge) before data enters Kafka. Kafka is the delivery and retention infrastructure, not the compression decision point.
+
+---
+
+### 42. CANopen / CiA 301 — CAN Application Layer Protocol 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+CANopen defines Process Data Objects (PDOs) with four transmission type categories and per-PDO timing parameters:
+
+**Transmission types:**
+- **Types 1–240** (Synchronous cyclic): TPDO transmitted every nth SYNC message — configurable fixed rate
+- **Type 0** (Synchronous acyclic): Event-driven but synchronized to SYNC boundary
+- **Type 254** (Asynchronous cyclic): Send on **value change** AND guarantee periodic heartbeat — exact HYBRID mode analog
+- **Type 255** (Asynchronous acyclic): Send on **value change** only — exact CHANGE mode analog
+
+**Timing parameters (per-PDO, object dictionary 0x1800–0x19FF):**
+- **Inhibit Time** (sub-index 0x03, unit: 100 μs): Minimum interval between successive PDO transmissions — **direct pmin equivalent**
+- **Event Timer** (sub-index 0x05, ms): In asynchronous modes, TPDO sent if no change occurs within this time — **direct pmax equivalent**
+
+**Format:** CAN frames (11-bit or 29-bit ID). Object dictionary described in EDS (Electronic Data Sheet) files — text format. Widely tooled.
+
+**Adoption:** 🚗 **Very widely deployed in vehicles and industrial automation.** CANopen is used in automotive body electronics, ADAS sensor interfaces, electric vehicle BMS, industrial robots, and medical devices. CiA 301 is the foundational standard. PDO transmission type 254 (HYBRID) is a routine configuration in production ECUs.
+
+**Open source:** CANopenNode (C — embedded, widely used), python-canopen, CANopen for Python.
+
+**Curve logging relevance:** CANopen is the **strongest structural match** for curve logging transmission parameters among production automotive standards. Type 254 (HYBRID: on-change + periodic heartbeat) directly implements the `transmission_mode: HYBRID` + `curve_max_interval_ms` combination. Inhibit Time = `curve_min_interval_ms`. Event Timer = `curve_max_interval_ms`. **Missing only:** an amplitude change threshold (the decision of whether the value has changed enough to transmit is binary, not epsilon-gated). Adding a `change_threshold` (deadband) parameter to asynchronous PDO types alongside Inhibit Time and Event Timer would complete the curve logging parameter set in CANopen.
+
+---
+
+### 43. AUTOSAR COM — Signal Filtering Modes 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+The AUTOSAR COM (Communication) module handles signal routing in Classic Platform ECUs. Per-signal/I-PDU filter configuration via `ComFilter`:
+- **`ALWAYS`**: Transmit unconditionally
+- **`NEVER`**: Never transmit
+- **`MASKED_NEW_DIFFERS_OLD`**: Transmit if `(new & mask) ≠ (old & mask)` — bit-mask change detection
+- **`MASKED_NEW_DIFFERS_MASKED_OLD`**: Transmit if `(new & mask) ≠ (old_masked & mask)`
+- **`ONE_EVERY_N`**: Transmit one sample for every N updates (prescaler/decimation)
+- **`NEW_IS_WITHIN`** / **`NEW_IS_OUTSIDE`**: Transmit if new value is within/outside a configured range
+- **`MASKED_NEW_EQUALS_X`**: Transmit if masked value equals a specific constant
+
+Transmission modes per I-PDU: `DIRECT` (event-driven), `PERIODIC` (cyclic), `MIXED` (both). `ComTxModeTimePeriod` sets cyclic period.
+
+**Format:** ARXML configuration (XML). Compiled into ECU firmware via AUTOSAR toolchain.
+
+**Adoption:** 🚗 **Universal — present in every AUTOSAR Classic Platform ECU.** All OEMs and Tier-1 suppliers. AUTOSAR CP is in tens of millions of production ECUs globally.
+
+**Curve logging relevance:** `NEW_IS_WITHIN` / `NEW_IS_OUTSIDE` are range-based transmission triggers analogous to LwM2M `lt`/`gt`. `MASKED_NEW_DIFFERS_OLD` is a bitmask change filter — structural analog to a step threshold at the bit level. `ONE_EVERY_N` is a prescaler (rate decimation). `MIXED` mode = HYBRID transmission. The full combination (MIXED + filter + period) covers the structural parameters of curve logging minus the epsilon/interpolation model. The closest standardized per-signal filtering in the in-vehicle domain.
+
+---
+
+### 44. ETSI CAM / DENM — Cooperative Awareness and Environmental Notification 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+**CAM (Cooperative Awareness Message, ETSI EN 302 637-2):** Mandatory V2X heartbeat message. Generation rules define a **dynamic rate between 1–10 Hz**, triggered by changes in vehicle kinematics:
+- Generate CAM if heading change > 4°, speed change > 0.5 m/s, or position change > 4 m since last CAM
+- OR if 1 second has elapsed since last CAM (1 Hz floor regardless of motion)
+- DCC (Dynamic Congestion Control) may further reduce rate down to 1 Hz under channel load
+
+**DENM (Decentralized Environmental Notification, ETSI TS 102 894-2):** Event-triggered hazard/incident message. Transmit when a hazard event is detected; retransmit at a configurable `repetitionInterval` while hazard persists.
+
+**Format:** ASN.1 (UPER) over ITS-G5 (ETSI DSRC) or C-V2X. Standardized in ETSI ITS suite.
+
+**Adoption:** 🚗 **Mandatory for V2X in EU (Day-1 services), deployed in China, Japan, US (C-V2X).** CAM/DENM are the baseline V2X messages for all connected vehicle mandates in Europe under Delegated Regulation 2019/2144.
+
+**Curve logging relevance:** CAM's kinematic-change trigger (heading > 4°, speed > 0.5 m/s, position > 4 m) is a **multi-dimensional change threshold** — each component is a step-from-last-value trigger in its own unit. The 1 Hz floor is a pmax analog. This is structurally equivalent to the LwM2M `st` + `pmax` combination but expressed as named physical thresholds rather than a single numeric epsilon. No interpolation-path model. However, CAM demonstrates that standards bodies are willing to define per-signal-type named change thresholds for safety signals — a useful precedent for the VSS proposal.
+
+---
+
+### 45. IEEE 802.1 TSN — Time-Sensitive Networking 🚗 Automotive Core (Ethernet)
+
+**What sampling metadata it can express:**
+TSN is a suite of IEEE 802.1 amendments for deterministic Ethernet. Relevant to sampling:
+- **Credit-Based Shaper (CBS, 802.1Qav)**: Per-traffic-class bandwidth reservation and burst shaping
+- **Time-Aware Shaper (TAS, 802.1Qbv)**: Gate control lists — time slots for traffic class transmission; ensures deterministic latency
+- **Frame Preemption (802.1Qbu)**: High-priority frames interrupt low-priority transmission
+- **IEEE 802.1DG-2025**: Automotive in-vehicle TSN profile specifying which 802.1 mechanisms are required for vehicle Ethernet networks
+
+**Format:** IEEE 802.1 Ethernet frames. Configured via YANG models or NETCONF. Not signal-level metadata.
+
+**Adoption:** 🚗 **Rapidly becoming mandatory in vehicle Ethernet.** Required for ADAS sensor fusion (camera, lidar, radar) over 100BASE-T1 / 1000BASE-T1. BMW, Toyota, GM, Ford deploying TSN in new programs. IEEE 802.1DG-2025 adoption driven by AUTOSAR AP and the shift to zonal/central compute architectures.
+
+**Curve logging relevance:** TSN operates at the network layer — it ensures deterministic delivery of frames but has no concept of signal value or change threshold. It is complementary to curve logging: TSN guarantees that curve-logged data frames arrive within bounded latency; TSN itself does not decide what to transmit. Not applicable to sampling parameterization.
+
+---
+
+### 46. COVESA FMD — Fleet Management Data Working Group 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+COVESA's Fleet Management Data (FMD) working group defines data collection campaign specifications using VSS as the signal model. FMD documents specify per-signal: use case, required/optional status, collection methodology, sampling rate. Publicly, FMD references **"intelligent data sampling (curve logic)"** as a sampling method but does not publish normative epsilon values or algorithm parameters. The group works with commercial vehicle OEMs, fleet operators, insurers, and telematics providers.
+
+**Adoption:** 🚗 **Directly relevant to the VSS overlay proposal — FMD is the primary COVESA working group addressing exactly this problem.** Its signal tables and use cases are the primary input for the `usecase` fields in the COVESA commercial vehicles insurance YAML.
+
+**Curve logging relevance:** FMD **explicitly references curve logic** as a sampling method — the only standards-adjacent body to do so by name. Epsilon values and algorithm parameters are not yet published normatively. The curve logging VSS overlay fields proposed in this document series are the natural formalization of what FMD intends. Contributing `curve_epsilon`, `curve_algorithm`, etc. to FMD is the highest-priority standardization path.
+
+---
+
+### 47. AUTOSAR SOVD — Service-Oriented Vehicle Diagnostics
+
+**What sampling metadata it can express:**
+ISO 17978-3, AUTOSAR's REST/HTTP/JSON diagnostic API for Adaptive Platform. Supports cyclic data queries (periodic polling at a configured interval) and trigger-based queries (on diagnostic event). Cycle time configurable in the SOVD request. No per-signal amplitude threshold or epsilon. Security via OAuth 2.0. HTTP/2 for performance.
+
+**Adoption:** Growing in Adaptive Platform diagnostic tooling. Vector DIVA, ETAS INCA, and Softing implementing. Not yet in production vehicle fleets at scale.
+
+**Curve logging relevance:** No amplitude threshold. Cyclic query = fixed pmax polling. Not applicable.
+
+---
+
+### 48. ISO 20078 — Extended Vehicle (ExVe) API
+
+**What sampling metadata it can express:**
+REST API standard for OEM backend services exposing vehicle data to third parties. Defines entity model (Vehicle, ECU, Driver, Fleet), resource patterns, authorization, and push/pull access modes. Part 2 (Access) defines REST URL structure. Part 4 (Control) defines preconditions. No normative per-signal sampling rate or change threshold in publicly available documentation.
+
+**Adoption:** Moderate — used by Denso, European OEM backend integrations. Less common in North America.
+
+**Curve logging relevance:** Not applicable — backend API standard, not a collection policy specification.
+
+---
+
+### 49. ISO 26262 — Functional Safety Heartbeat Monitoring
+
+**What sampling metadata it can express:**
+ISO 26262 defines safety architecture requirements including watchdog/heartbeat monitoring. The `FTTI` (Fault Tolerant Time Interval) constrains the maximum time from fault occurrence to detection. `DTI` (Diagnostic Test Interval) sets the monitoring frequency. Heartbeat monitors enforce a maximum silence interval — any safety-relevant signal that does not update within `pmax` is treated as a fault. This makes ISO 26262 the normative basis for `curve_max_interval_ms` in safety-critical signals: the heartbeat interval must satisfy ISO 26262 FTTI requirements.
+
+**Adoption:** 🚗 **Mandatory for all automotive functional safety — universal across all OEMs and suppliers.**
+
+**Curve logging relevance:** ISO 26262 directly motivates `curve_max_interval_ms` (pmax / heartbeat). Any curve logging deployment on safety-relevant signals must set `curve_max_interval_ms` to a value that satisfies the FTTI requirement for those signals. This provides a normative grounding for the heartbeat parameter.
+
+---
+
+### 50. Eclipse ICEORYX — Zero-Copy IPC for AUTOSAR AP
+
+**What sampling metadata it can express:**
+ICEORYX provides shared-memory IPC for zero-copy data transfer in AUTOSAR Adaptive Platform. `WaitSet` aggregates events from multiple subscribers; a thread blocks until any attached subscriber receives data. Per-subscriber: `SubscribeState`, event-based triggers. No built-in change threshold, amplitude filter, or rate limiting. Binary: event-occurred or not.
+
+**Adoption:** Growing in AUTOSAR AP implementations (Apex.AI, Apex.OS). Used in autonomous driving stacks with ROS 2 (ICEORYX as the RMW transport).
+
+**Curve logging relevance:** No amplitude filter. ICEORYX is a transport mechanism; curve filtering would live in the application layer upstream. Not applicable.
+
+---
+
+### 51. OBD-II / SAE J1979 🚗 Automotive Core
+
+**What sampling metadata it can express:**
+Mandated diagnostic interface for all light-duty vehicles sold in US/EU/China. Mode 01 PIDs provide real-time powertrain data on-demand: ~190+ standardized parameters (engine speed, coolant temp, fuel level, O2 sensors, MAF, throttle position, etc.). No standardized sampling rate — the host (scan tool or telematics device) polls at its own rate. ECU returns current-value snapshots; no history or on-change push mechanism. Mode 06 (on-board monitoring) and Mode 09 (vehicle information) are additional.
+
+**Adoption:** 🚗 **Universal — mandatory on all light-duty vehicles since 1996 (US), 2001 (EU).** The foundation of aftermarket diagnostics, fleet telematics dongles, and insurance telematics devices.
+
+**Curve logging relevance:** OBD-II is a pull-based query protocol — the telematics device polls at whatever rate it chooses. Geotab's curve logging is applied to OBD-II-sourced signals (speed, coolant temp, battery voltage, fuel level) after polling; the curve epsilon decisions happen in the telematics firmware, not in the OBD-II layer. OBD-II has no metadata for expressing sampling policy.
+
+---
+
+### 52. AWS IoT FleetWise / Cloud Vehicle Data Lakes 🚗 Automotive Core (cloud)
+
+**What sampling metadata it can express:**
+**AWS IoT FleetWise:** Campaign-based vehicle data collection. Signal catalog stores per-signal metadata: name, VSS path, data type, unit. Campaign definition specifies: collection condition (time-based, event-based with `conditionLanguage` — a signal-expression precondition), collection period (ms), campaign duration. **Collection condition** supports signal-expression predicates (`Vehicle.Speed > 80`) for conditional collection — a structured analog to `sampling_condition`. No per-signal amplitude threshold or epsilon in campaign spec; campaigns are all-or-nothing per signal.
+
+**Azure IoV / Google Cloud Fleet Routing:** Similar pattern — IoT Hub/Event Hubs ingestion, Parquet/Avro in data lake, per-vehicle telemetry pipelines. Schema defined per OEM, no standardized per-signal sampling metadata.
+
+**Adoption:** 🚗 **Rapidly becoming the dominant cloud telematics backend architecture.** AWS FleetWise used by major automotive OEMs in production. Rivian, with 5,500 signals streamed per vehicle every 5 seconds, exemplifies the scale. Azure IoT used by Ford Pro, GM, and others. Google Cloud used by select OEMs for AI/ML workloads.
+
+**Curve logging relevance:** AWS FleetWise `conditionLanguage` is the cloud-side equivalent of `sampling_condition` — signal-expression predicates for conditional collection. The signal catalog could carry `curve_epsilon` and `curve_algorithm` as per-signal attributes with a schema extension. Curve logging would execute on the vehicle-side FleetWise agent before data is uploaded; the cloud catalog would hold the parameters. This is the most scalable deployment path for curve logging parameters in a cloud-managed fleet.
+
+---
+
 ## Comparative Summary Table
 
 **Curve Logging column key:**
@@ -569,6 +863,25 @@ Eclipse Kuksa Databroker is a gRPC-based VSS signal broker. `Subscribe` calls wi
 | **OPC UA HDA** | ReadProcessed interval | No | ReadRaw | No | No | Security (built-in) | No | XML/binary — high | High | **/ read** (Interpolated aggregate validates reconstruction model) |
 | **ISA-18.2** | No | No | No | ✓ alarm deadband (step) | No | No | No | Specification text | Low (process) | **✗** (alarm context only) |
 | **Eclipse Kuksa / COVESA DIP** | No | No | Subscribe | No | No | No | No | gRPC/Protobuf — low | **Very High** | **○ ext** (reference implementation target) |
+| **SOME/IP 🚗** | cyclic period (ARXML) | No (cyclic only) | ✓ on-change events | No (impl-defined) | No | No | No | Binary/ARXML — high | **Very High** | **✗** (no normative threshold) |
+| **ASAM MDF4 🚗** | Per-CN sample rate | No | Event-driven CG type | No | No | No | No | Binary file — medium | **Very High** | **○ ext** (MD block custom XML) |
+| **ASAM ASAP2 + XCP 🚗** | EVENT cycle time + PRESCALER | No | Event-triggered DAQ | No | No | No | No | Text/binary — medium | **Very High** | **✗** (fixed-rate / event-triggered) |
+| **W3C VISSv2 🚗** | ✓ interval (ms) | ✓ interval (pmin) | ✓ minChange | ✓ minChange (step) + range | No | No | No | JSON/WebSocket — **low** | **Very High** | **~step** (minChange per-signal; closest to ε in VSS ecosystem; propose curveDeviation) |
+| **IETF SenML RFC 8428** | No (ut records elapsed) | No | No | No | No | No | No | JSON/CBOR — **low** | Low-Medium | **✗** (wire format; ut field useful for compressed streams) |
+| **MQTT v5 🚗** | No | No | No | No | No | No | ✓ Message Expiry | Binary — low | **Very High** | **✗** (User Properties can tag curve metadata) |
+| **SAE J2735 BSM 🚗** | 10 Hz (normative) | No | Part II (event) | No | No | No | No | ASN.1/binary — high | **Very High** | **✗** (fixed rate) |
+| **Apache Kafka 🚗** | No | No | No | No | No | No | ✓ log compaction / TTL | Binary/Avro — medium | **Very High** | **○ ext** (headers can tag curve metadata; log compaction retains kept points) |
+| **CANopen CiA 301 🚗** | SYNC cycle (types 1-240) | ✓ Inhibit Time (pmin) + Event Timer (pmax) | ✓ Type 254/255 | No (binary change only) | No | No | No | CAN/EDS — medium | **Very High** | **~step+pmax** (strongest in-vehicle match: HYBRID+pmin+pmax; missing amplitude threshold) |
+| **AUTOSAR COM 🚗** | ComTxModeTimePeriod | Partial (MIXED mode) | ✓ DIRECT/MIXED | ✓ NEW_IS_WITHIN/OUTSIDE, MASKED | No | No | No | ARXML — high | **Very High** | **~step** (NEW_IS_WITHIN = range threshold; MIXED = HYBRID mode) |
+| **ETSI CAM/DENM 🚗** | 1–10 Hz (dynamic DCC) | ✓ 1 Hz floor (pmax) | ✓ kinematic triggers | ✓ named thresholds (4°, 0.5 m/s, 4 m) | No | No | No | ASN.1/binary — high | **Very High** | **~step** (named per-dimension thresholds; 1 Hz pmax floor; no interpolation model) |
+| **IEEE 802.1 TSN 🚗** | Per traffic class | No | No | No | No | No | No | Ethernet frames — high | **Very High** | **✗** (network layer only) |
+| **COVESA FMD 🚗** | Per-signal (VSS) | Implied | Yes | Implied | No | No | No | YAML (VSS) — **low** | **Very High** | **○ ext** (**explicitly references curve logic** — primary standardization target) |
+| **AUTOSAR SOVD** | Cycle time (request) | No | Event-triggered | No | No | OAuth 2.0 | No | JSON/REST — medium | High | **✗** |
+| **ISO 20078 ExVe** | No | No | Push/pull | No | No | No | No | JSON/REST — medium | Medium | **✗** |
+| **ISO 26262 🚗** | DTI (diagnostic interval) | ✓ FTTI (max silence) | No | No | Safety mechanisms | No | No | Process standard | **Very High** | **✗** (motivates pmax for safety signals) |
+| **Eclipse ICEORYX** | No | No | WaitSet events | No | No | No | No | Shared memory — low | High | **✗** |
+| **OBD-II / SAE J1979 🚗** | On-demand only | No | No | No | No | No | No | CAN/binary — low | **Very High** | **✗** (poll-on-demand; no collection policy) |
+| **AWS IoT FleetWise 🚗** | Campaign period (ms) | No | conditionLanguage | conditionLanguage expressions | No | IAM | ✓ campaign duration | JSON/REST — medium | **Very High** | **○ ext** (signal catalog extensible; conditionLanguage = sampling_condition analog) |
 
 ---
 
@@ -599,55 +912,77 @@ Across all 34 standards surveyed, **no standard natively uses interpolation-path
 
 ### Tier 1: Structural match — step-from-last-value threshold + heartbeat (wrong reference model, right structure)
 
-These standards have the correct two-parameter architecture (`ε analog` + `pmax analog`), differing only in that they measure deviation from the last reported value rather than from the interpolated path. Replacing the reference model would convert them to curve logging.
+These standards have the correct two-parameter architecture (`ε analog` + `pmax analog`), differing only in that they measure deviation from the last reported value rather than from the interpolated path.
 
-| Standard | ε analog | pmax analog | Granularity | Deployment scale |
-|----------|----------|------------|-------------|-----------------|
-| **IEC 61850 deadbandMag + intgPd** | deadbandMag (per data attribute) | intgPd (per RCB, shared) | Per-signal deadband, RCB-level heartbeat | Global power grid |
-| **IEC 60870-5 P_ME** | Threshold parameter (per point) | Transmission period (per point) | Fully per-point | Legacy utility SCADA |
-| **BACnet COVIncrement** | COVIncrement (per object, REAL) | covLifetime (indirect) | Per-object | Global building automation |
-| **DNP3 Object 34** | Per-point deadband (integer) | Integrity poll (master-driven) | Per-point, not per-signal pmax | North American utility SCADA |
-| **OPC UA DeadbandValue** | DeadbandValue (per MonitoredItem) | Publishing interval (subscription-level) | Per-item, not per-signal pmax | Manufacturing, automotive |
+| Standard | ε analog | pmin analog | pmax analog | Granularity | Deployment scale |
+|----------|----------|------------|------------|-------------|-----------------|
+| **CANopen Type 254 + Inhibit + Event Timer 🚗** | — (binary change only) | Inhibit Time (per PDO) | Event Timer (per PDO) | Per-PDO | Very High — vehicles + industrial |
+| **IEC 61850 deadbandMag + intgPd** | deadbandMag (per data attribute) | — | intgPd (per RCB) | Per-signal deadband, shared heartbeat | Global power grid |
+| **IEC 60870-5 P_ME** | Threshold parameter (per point) | — | Transmission period (per point) | Fully per-point | Legacy utility SCADA |
+| **BACnet COVIncrement** | COVIncrement (per object, REAL) | — | covLifetime (indirect) | Per-object | Global building automation |
+| **DNP3 Object 34** | Per-point deadband (integer) | — | Integrity poll (master-driven) | Per-point | North American utility SCADA |
+| **OPC UA DeadbandValue** | DeadbandValue (per MonitoredItem) | — | Publishing interval (subscription) | Per-item | Manufacturing, automotive |
+| **AUTOSAR COM NEW_IS_WITHIN/OUTSIDE 🚗** | Value range threshold (per signal) | — | ComTxModeTimePeriod (MIXED mode) | Per-signal, compiled ARXML | Universal — all CP ECUs |
+| **ETSI CAM named thresholds 🚗** | Named: 4°, 0.5 m/s, 4 m (per dimension) | — | 1 Hz floor (system-wide) | Per-signal-type | Universal — all V2X vehicles |
 
-### Tier 2: Partial match — threshold only or temporal only
+**New finding:** CANopen PDO Type 254 is the strongest match among production automotive standards: it natively implements HYBRID mode (on-change + periodic heartbeat) with per-PDO pmin (Inhibit Time) and pmax (Event Timer). The only missing element is an amplitude threshold — adding a `change_threshold` object alongside Inhibit Time would complete the curve logging parameter set within the existing CiA 301 framework.
 
-These standards have one parameter but not both:
+### Tier 1b: Step threshold only — no native heartbeat per signal
 
-| Standard | What they have | What's missing |
-|----------|---------------|----------------|
-| **OMA LwM2M st** | st = change threshold (step) | No per-signal pmax (pmax is per-observation) |
-| **CoAP c.st** | c.st = change threshold (step) | Same limitation as LwM2M |
-| **DDS TIME_BASED_FILTER + DEADLINE** | pmin/pmax via QoS | No value-deviation concept at all |
-| **oneM2M** | pmin/pmax analogs | No value-deviation concept |
+| Standard | ε analog | What's missing |
+|----------|----------|----------------|
+| **OMA LwM2M st** | st (step threshold) | pmax is per-resource but shared at observation level |
+| **CoAP c.st** | c.st (step threshold) | Same as LwM2M |
+| **W3C VISSv2 minChange 🚗** | minChange (step threshold, per-signal subscription) | No pmax; closest to ε in the VSS ecosystem |
+| **OBD-II polling (implicit)** | — | Entirely poll-driven; threshold is application-level |
+
+**New finding:** VISSv2 `minChange` is the most automotive-relevant step threshold: per-signal, expressed in the VSS subscription API, native to the COVESA ecosystem. Adding a `curveDeviation` filter alongside `minChange` in VISSv2 is the highest-leverage near-term standards contribution.
+
+### Tier 2: Temporal parameters only (no value deviation)
+
+| Standard | pmin analog | pmax analog | Value deviation |
+|----------|------------|------------|-----------------|
+| **DDS TIME_BASED_FILTER + DEADLINE 🚗** | TIME_BASED_FILTER | DEADLINE | No |
+| **oneM2M** | minimumObservableInterval | periodicNotificationDuration | No |
+| **ISO 26262 FTTI 🚗** | — | FTTI-derived pmax for safety signals | No (liveness only) |
 
 ### Tier 3: Extension carriers — can hold curve logging parameters without natively defining them
 
-| Standard | Extension mechanism | What can be carried |
+| Standard | Extension mechanism | Automotive relevance |
 |----------|--------------------|--------------------|
-| **VSS Overlays** | YAML fields in .vspec | `curve_epsilon`, `curve_algorithm`, etc. — direct fit |
-| **AAS / IEC 63278** | Qualifier annotations + Submodel Templates | A curve logging SMT could be standardized via IDTA |
-| **W3C WoT TD** | JSON-LD @context extensions | `curve_epsilon` etc. via automotive WoT extension vocabulary |
-| **OGC SensorML 3.0** | Process description | RDP described as a sampling SamplingProcedure |
-| **Eclipse Kuksa** | Subscription filter implementation | Databroker could apply RDP before delivering to subscribers |
+| **COVESA FMD 🚗** | VSS overlay YAML — **explicitly references curve logic** | **Very High** — primary standardization target |
+| **VSS Overlays 🚗** | YAML fields in .vspec | Very High — proposed curve_epsilon, curve_algorithm fields |
+| **AWS IoT FleetWise 🚗** | Signal catalog + conditionLanguage | Very High — cloud-side parameter store |
+| **ASAM MDF4 🚗** | MD block (custom XML metadata) | Very High — store curve params with measurement files |
+| **MQTT v5 🚗** | User Properties (per-message key-value) | Very High — tag curve-logged messages in transit |
+| **Kafka headers 🚗** | Per-message headers | Very High — self-describing compressed telemetry |
+| **AAS / IEC 63278** | Qualifier annotations + Submodel Templates | Medium — IDTA submodel path |
+| **W3C WoT TD** | JSON-LD @context extensions | Medium — bridge to semantic web |
+| **OGC SensorML 3.0** | Process description | Medium — RDP as SamplingProcedure |
+| **Eclipse Kuksa 🚗** | Subscription filter implementation | Very High — reference implementation target |
 
-### Tier 4: Path-deviation model — correct algorithm, informative/research only
+### Tier 4: Path-deviation model — correct algorithm, informative or read-path only
 
 | Standard | Path-deviation concept | Status |
 |----------|----------------------|--------|
-| **ISO 19141 / OGC Moving Features** | SED (Synchronized Euclidean Distance) in associated trajectory simplification research | Research / informative |
-| **OPC UA HDA `Interpolated` aggregate** | Linear interpolation between kept points validates the reconstruction model | Read path only; not collection |
+| **ISO 19141 / OGC Moving Features** | SED in trajectory compression research | Research / informative |
+| **OPC UA HDA `Interpolated` aggregate** | Linear interpolation between kept points | Read path only |
 
-### Proposed standardization path for curve logging
+### Proposed standardization path for curve logging (updated)
 
-| Track | Action | Target body |
-|-------|--------|-------------|
-| **Immediate** | Add `curve_epsilon`, `curve_algorithm`, `curve_max_interval_ms`, `curve_min_interval_ms` to COVESA VSS overlay specification | COVESA FMD WG |
-| **Near-term** | Propose `cd` (curve deviation) attribute alongside `st` in OMA LwM2M notification attributes | OMA SpecWorks |
-| **Near-term** | Propose `c.cd` attribute alongside `c.st` in IETF CoAP Conditional Attributes draft | IETF CoRE WG |
-| **Medium-term** | Contribute normative trajectory simplification profile (SED + epsilon) to OGC Moving Features | OGC Moving Features SWG |
-| **Medium-term** | Publish IDTA AAS Submodel Template for vehicle signal collection parameters | IDTA / COVESA joint |
-| **Longer-term** | Propose `curveDev` trigger mode in IEC 61850 Report Control Blocks (alongside `dchg`/`dupd`) | IEC TC57 WG10 |
-| **Longer-term** | Propose per-point curve deviation object in DNP3 (new Object Group alongside Object 34) | DNP3 Technical Committee |
+| Track | Action | Target body | Priority |
+|-------|--------|-------------|----------|
+| **Immediate** | Contribute `curve_epsilon`, `curve_algorithm`, `curve_max_interval_ms`, `curve_min_interval_ms` to COVESA VSS overlay and FMD WG | COVESA FMD WG | **Highest** |
+| **Near-term** | Add `curveDeviation` filter alongside `minChange` in W3C VISSv2 subscription filter API | W3C Automotive WG / COVESA VISS | **High** |
+| **Near-term** | Propose `cd` (curve deviation) attribute alongside `st` in OMA LwM2M | OMA SpecWorks | **High** |
+| **Near-term** | Propose `c.cd` alongside `c.st` in IETF CoAP Conditional Attributes draft | IETF CoRE WG | High |
+| **Near-term** | Extend AWS IoT FleetWise signal catalog schema with `curve_epsilon` and `curve_algorithm` fields | AWS IoT / OEM partners | High |
+| **Medium-term** | Propose `change_threshold` object in CANopen CiA 301 alongside Inhibit Time for asynchronous PDO types | CAN in Automation (CiA) | Medium |
+| **Medium-term** | Extend ASAM MDF4 MD block schema with standard curve logging metadata vocabulary | ASAM e.V. | Medium |
+| **Medium-term** | Contribute normative trajectory simplification profile (SED + epsilon) to OGC Moving Features | OGC Moving Features SWG | Medium |
+| **Medium-term** | Publish IDTA AAS Submodel Template for vehicle signal collection parameters | IDTA / COVESA joint | Medium |
+| **Longer-term** | Propose `curveDev` trigger mode in IEC 61850 Report Control Blocks | IEC TC57 WG10 | Lower |
+| **Longer-term** | Propose per-point curve deviation in DNP3 (new Object Group alongside Object 34) | DNP3 Technical Committee | Lower |
 
 ---
 
@@ -762,3 +1097,38 @@ Privacy, access control, and retention remain gaps in all evaluated standards an
 - [Geotab Curve Algorithm Overview](https://www.geotab.com/blog/gps-logging-curve-algorithm/)
 - [Geotab/curve — open source implementation (GitHub)](https://github.com/Geotab/curve)
 - [Ramer-Douglas-Peucker Algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm)
+- [SOME/IP Protocol Specification — AUTOSAR FO R22-11](https://www.autosar.org/fileadmin/standards/R22-11/FO/AUTOSAR_PRS_SOMEIPServiceDiscoveryProtocol.pdf)
+- [vsomeip — COVESA/GENIVI open source SOME/IP](https://github.com/COVESA/vsomeip)
+- [ASAM MDF4 Specification v4.3.0](https://www.asam.net/index.php?eID=dumpFile&t=f&f=9630&token=39c75c0c8841fd89a6caa29376c9483b5ecc40d4)
+- [MDF4 / MF4 explainer — CSS Electronics](https://www.csselectronics.com/pages/mf4-mdf4-measurement-data-format)
+- [asammdf Python library (GitHub)](https://github.com/danielhrisca/asammdf)
+- [ASAM ASAP2 / A2L explainer — CSS Electronics](https://www.csselectronics.com/pages/a2l-file-asap2-intro-xcp-on-can-bus)
+- [XCP Protocol overview — CSS Electronics](https://www.csselectronics.com/pages/ccp-xcp-on-can-bus-calibration-protocol)
+- [XCP Protocol — MathWorks](https://www.mathworks.com/discovery/xcp-protocol.html)
+- [W3C VISSv2 Core Specification](https://www.w3.org/TR/viss2-core/)
+- [COVESA vehicle-information-service-specification (GitHub)](https://github.com/COVESA/vehicle-information-service-specification)
+- [COVESA vissr — VISSv2 reference server (Go)](https://github.com/COVESA/vissr)
+- [RFC 8428 — SenML Sensor Measurement Lists](https://www.rfc-editor.org/rfc/rfc8428.html)
+- [RFC 9100 — SenML Features and Versions](https://datatracker.ietf.org/doc/rfc9100/)
+- [OASIS MQTT Version 5.0 Specification](https://docs.oasis-open.org/mqtt/mqtt/v5.0/mqtt-v5.0.html)
+- [MQTT in Connected Cars — EMQX](https://www.emqx.com/en/blog/mqtt-for-internet-of-vehicles)
+- [SAE J2735 BSM overview — TOME Software](https://www.tomesoftware.com/wp-content/uploads/2019/08/5-2019-B2V-Workshop-Detroit-Farid-Ahmed-Zaid-BSM-Messages.pdf)
+- [Apache Kafka in automotive — Kai Waehner](https://www.kai-waehner.de/blog/2021/07/19/kafka-automotive-industry-use-cases-examples-bmw-porsche-tesla-audi-connected-cars-industrial-iot-manufacturing-customer-360-mobility-services/)
+- [Rivian Kafka + Flink architecture — Confluent](https://www.confluent.io/industry-solutions/automotive/)
+- [Kafka Log Compaction — Confluent Docs](https://docs.confluent.io/kafka/design/log_compaction.html)
+- [CANopen PDO Protocol — CAN in Automation (CiA)](https://www.can-cia.org/can-knowledge/pdo-protocol)
+- [CANopenNode — embedded open source (GitHub)](https://github.com/CANopenNode/CANopenNode)
+- [AUTOSAR COM SWS R23-11](https://www.autosar.org/fileadmin/standards/R23-11/CP/AUTOSAR_CP_SWS_COM.pdf)
+- [COM Filters theory and configuration — AutosarToday](https://www.autosartoday.com/posts/com_filters_-_theory_and_configuration)
+- [ETSI EN 302 637-2 v1.4.1 — CAM Standard](https://www.etsi.org/deliver/etsi_en/302600_302699/30263702/01.04.01_60/en_30263702v010401p.pdf)
+- [ETSI TS 102 894-2 — DENM Data Dictionary](https://www.etsi.org/deliver/etsi_ts/102800_102899/10289402/02.01.01_60/ts_10289402v020101p.pdf)
+- [IEEE 802.1 TSN Task Group](https://1.ieee802.org/tsn/)
+- [IEEE 802.1DG — Automotive In-Vehicle TSN Profile](https://standards.ieee.org/ieee/802.1DG/10318/)
+- [COVESA Fleet Management Data overview](https://covesa.global/driving-progress-in-commercial-and-fleet-vehicle-connectivity/)
+- [AUTOSAR SOVD Explanation — AUTOSAR R24-11](https://www.autosar.org/fileadmin/standards/R24-11/AP/AUTOSAR_AP_EXP_SOVD.pdf)
+- [ISO 20078-2:2021 Extended Vehicle API](https://www.iso.org/standard/80184.html)
+- [ISO 26262-1:2018 Automotive Functional Safety](https://www.iso.org/standard/43464.html)
+- [Eclipse ICEORYX — zero-copy IPC (GitHub)](https://github.com/eclipse-iceoryx/iceoryx)
+- [OBD-II PIDs — Wikipedia](https://en.wikipedia.org/wiki/OBD-II_PIDs)
+- [AWS IoT FleetWise Features](https://aws.amazon.com/iot-fleetwise/features/)
+- [AWS Connected Vehicle Architecture](https://docs.aws.amazon.com/architecture-diagrams/latest/aws-connected-vehicle/aws-connected-vehicle.html)
