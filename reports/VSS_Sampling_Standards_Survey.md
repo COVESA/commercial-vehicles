@@ -298,7 +298,7 @@ Not on the original list but highly relevant to automotive:
 - **Publishing interval** — subscription-level notification rate
 - **Queue size** — buffered samples between publications
 - **PubSub WriterGroup publishing interval** — data set writer publication rate
-- **Time-based filter** — minimum notification period
+- **DeadbandValue** (DataChangeFilter) — per-MonitoredItem absolute or percentage deadband; step-from-last-value threshold
 - Companion Specifications allow domain-specific data models
 
 Used in automotive manufacturing and increasingly in vehicle ECU/domain controller communication. OPC UA PubSub is used in some automotive cloud-ingestion pipelines.
@@ -307,30 +307,268 @@ Used in automotive manufacturing and increasingly in vehicle ECU/domain controll
 
 ---
 
+## Extended Survey — Standards Not in Original Assessment
+
+### 20. BACnet / ASHRAE 135 — COV Subscriptions with `COVIncrement`
+
+**What sampling metadata it can express:**
+Change of Value (COV) subscriptions allow a client to receive a push notification when `Present_Value` changes by more than `COVIncrement` (type REAL, in engineering units). `COVIncrement` is set per analog object instance and can be overridden per subscription via the `SubscribeCOVProperty` service. `covLifetime` sets subscription duration. For analog output objects the same mechanism applies via `COVIncrement` on the object. COV reporting is a core service in BACnet, broadly implemented across building controllers worldwide.
+
+**Format:** BACnet/IP or BACnet MS/TP wire protocol. Object model expressed in ASHRAE 135 specification text; not YAML-native. COVIncrement is a single REAL property value.
+
+**Adoption:** Dominant in building automation and HVAC — all major BMS vendors (Siemens Desigo, Honeywell, Johnson Controls, Schneider EcoStruxure). Mature and stable since 1995.
+
+**Open source:** bacpypes (Python), BACnet4J (Java), bacnet-stack (C).
+
+**Curve logging relevance:** COVIncrement is the most mature industry deployment of per-signal configurable deadband in engineering units — structurally the closest analog to `curve_epsilon` of any standard found. Limitation: step-from-last-reported-value reference model, not interpolation-path deviation. BACnet has no minimum-interval (pmin) concept in COV. Adding a path-deviation mode alongside COV step mode would be the BACnet extension path for curve logging.
+
+---
+
+### 21. IEC 61850 — `deadbandMag` on Measurement Data Attributes
+
+**What sampling metadata it can express:**
+Common Data Classes (CDC) for measured values (MX functional constraint) carry a `db` (deadband) configuration attribute whose value `deadbandMag` defines the minimum change before a new buffered or unbuffered report is generated. Each data attribute within an IED can carry its own deadband. Report Control Blocks (RCB) carry `intgPd` (integrity period) — a mandatory periodic report regardless of deadband state — making IEC 61850 the only standard in this survey with both a per-signal threshold and a heartbeat as a standard paired configuration. `optFlds` can include reason-for-inclusion distinguishing deadband-filtered from integrity-period reports.
+
+**Format:** IEC 61850 MMS (Manufacturing Message Specification) or GOOSE/Sampled Values at the protocol level. SCL (Substation Configuration Language, an XML format) for configuration. Not YAML.
+
+**Adoption:** Power utility sector universally — transmission and distribution substations, grid protection systems, IEC 61850 Edition 2 is mandatory in many national grid standards. Also adopted in wind turbine control (IEC 61400-25) and railway signalling.
+
+**Open source:** libIEC61850 (C), OpenIEC61850 (Java/C++), MZAutomation library.
+
+**Curve logging relevance:** `deadbandMag` + `intgPd` is the most structurally complete existing standard match for the curve logging parameter pair (`curve_epsilon` + `curve_max_interval_ms`). The only algorithmic difference: `deadbandMag` uses step-from-last-reported-value; curve logging uses deviation from interpolated path. Proposing a `curveDev` trigger mode alongside `dchg`/`dupd` in a future IEC 61850 edition would be the standards path.
+
+---
+
+### 22. DNP3 / IEEE 1815 — Analog Input Deadband per Point
+
+**What sampling metadata it can express:**
+DNP3 (Distributed Network Protocol 3) supports per-point analog input deadband via Object Group 34 (`Analog Input Deadband`). A deadband value is configured per-point; the outstation generates a Class 1 event when the current value differs from the last-reported value by more than the deadband. Deadband = 0 reports every change. Integrity polls (master-initiated) send all current values regardless of change — a coarse pmax. Runtime configuration of deadband values is supported via `Direct Operate` or `Select-Before-Operate`.
+
+**Format:** DNP3 binary application protocol over serial or TCP/IP. Configuration typically in vendor-specific files. Not YAML.
+
+**Adoption:** Dominant in North American electric utility SCADA, water treatment, and oil and gas telemetry. IEEE 1815-2012 is the formal standardization. Very widely deployed (hundreds of thousands of RTUs and IEDs).
+
+**Open source:** OpenDNP3 (C++/Java), dnp3 (Rust — Step Function Biosystems).
+
+**Curve logging relevance:** Per-point deadband (Object 34) demonstrates that per-signal tolerance configuration is routine in regulated infrastructure. Step-from-last-value only; integrity poll is master-driven and not per-point. A per-point curve deviation mode could be specified as a new Object Group alongside Object 34.
+
+---
+
+### 23. IEC 60870-5 — Telecontrol Protocol with Parameter Loading
+
+**What sampling metadata it can express:**
+IEC 60870-5-101/104 (telecontrol companion standard for serial and TCP/IP) supports measurement parameter loading via `P_ME_NA_1` (parameter of measured values). Each analog measurement point can receive three parameter types: normalized value threshold (deadband), smoothing factor, and transmission period. A station configured with both a deadband and a transmission period will transmit when the value changes beyond the threshold OR when the transmission period expires — making IEC 60870-5 the oldest standard to explicitly standardize the ε + pmax combination as paired per-point configuration.
+
+**Format:** IEC 60870-5 binary protocol. Parameter loading via `C_IC` (interrogation) and `P_ME` message sequences. Not YAML.
+
+**Adoption:** Legacy global power utility telemetry. Still widely deployed in distribution automation, especially outside North America (where DNP3 dominates). Being superseded by IEC 61850 for new installations.
+
+**Open source:** lib60870 (C/Java — libIEC61850 project), OpenMRTS.
+
+**Curve logging relevance:** Earliest standardized expression of the ε + pmax paired configuration. The per-point `transmission period` is a per-signal pmax, which IEC 60870-5 more fully specifies than IEC 61850 (where `intgPd` lives at the RCB level). Step-from-last-value only.
+
+---
+
+### 24. ISO 19141 / OGC Moving Features — Trajectory Compression
+
+**What sampling metadata it can express:**
+ISO 19141:2008 (Schema for Moving Features) defines a geometry/trajectory schema — foliation, prism, leaf (instantaneous position/state), and motion curve representations. OGC Moving Features JSON encoding (OGC 19-045r3, 2021) and the OGC Moving Features Access API define representations for moving object trajectories with temporal geometry. The standard is schema-focused (what a trajectory is), not algorithm-prescriptive (how to compress it).
+
+**Critical finding — associated research uses interpolation-path deviation:**
+Academic work directly associated with OGC Moving Features uses **Synchronized Euclidean Distance (SED)** — the deviation of a sample from the *linearly interpolated position between two kept points* — as the compression metric. This is algorithmically identical to Geotab's curve logging (which uses vertical deviation, a 1D simplification of SED). Papers: LiMITS (Linear Interpolation Method for Trajectory Simplification), STTrace, DPTS, direction-based error minimization. These are referenced in OGC trajectory working group discussions.
+
+**Format:** JSON (OGC 19-045r3), XML, CSV encodings. Schema-level standard.
+
+**Adoption:** GIS platforms (QGIS, GeoServer, ArcGIS), OGC API implementations, smart transportation research. ISO 19141 revision underway.
+
+**Open source:** pygeoapi (Python), OGC Moving Features API reference implementations, Trajectools (QGIS plugin).
+
+**Curve logging relevance:** The only standards-adjacent body of work using interpolation-path deviation (SED) as the compression criterion — the same model as curve logging. SED for geospatial trajectories is directly analogous to vertical-deviation RDP for 1D vehicle signals. A VSS curve logging proposal could formally cite the OGC Moving Features SED vocabulary as precedent. This is research/informative, not normative, but it validates the model in a standards community context.
+
+---
+
+### 25. oneM2M TS-0001 — IoT Service Layer Subscriptions
+
+**What sampling metadata it can express:**
+oneM2M `<subscription>` resource carries: `notificationEventType` (resource update, deletion, creation), `periodicNotificationDuration` (periodic push regardless of change — pmax analog), `minimumObservableInterval` (minimum interval between notifications — pmin analog). `<semanticDescriptor>` resources allow SPARQL-based semantic annotation. No analog value deviation threshold.
+
+**Format:** JSON or XML REST API. Moderate complexity.
+
+**Adoption:** Strong in IoT platform market — ETSI, TSDSI (India), ARIB/TTC (Japan), ATIS (North America). HiveMQ, Eclipse om2m, OpenMTC platform implementations. Less traction in automotive than LwM2M.
+
+**Open source:** Eclipse om2m (Java), OpenMTC (Python).
+
+**Curve logging relevance:** `periodicNotificationDuration` (pmax) and `minimumObservableInterval` (pmin) cover the temporal parameters of curve logging. No value-deviation concept. Cannot express curve epsilon without extension.
+
+---
+
+### 26. DLMS/COSEM — IEC 62056 Smart Meter Data Push
+
+**What sampling metadata it can express:**
+DLMS/COSEM (Device Language Message Specification / Companion Specification for Energy Metering) defines data push via `Push Setup` (IC 40) objects. Periodic data capture via `Profile Generic` objects with configurable capture periods. Threshold-based push is available for alarm/event conditions via `Register Monitor` objects, but these are Boolean/alarm thresholds, not analog deadbands. For LPWAN deployments, SCHC (Static Context Header Compression, RFC 8724) compresses protocol headers — this is not value compression.
+
+**Format:** DLMS/COSEM binary protocol or XML/JSON wrappers. Complex specification set.
+
+**Adoption:** Global smart metering — dominant in European AMI (Landis+Gyr, Itron, Sagemcom, Kamstrup). IEC standard for electricity metering globally.
+
+**Open source:** gurux.dlms (Python/Java/C#), jdlms (Java).
+
+**Curve logging relevance:** No analog deadband or curve epsilon concept. Periodic capture period is fixed-rate only. Not applicable.
+
+---
+
+### 27. ISOBUS / ISO 11783 — Agricultural Vehicle Data
+
+**What sampling metadata it can express:**
+ISO 11783-10 (Task Controller) defines structured logging of machine state during field operations. ISO 11783-11 (Mobile Data Element Dictionary) standardizes 2,000+ data elements with units and scaling. Logging cadence is configured in task files (XML-based). Data elements have defined ranges and units but no per-element adaptive threshold in the normative standard. File-level compression (DEFLATE/LZ77) has been applied in research (28–63% reduction) but is outside the standard's normative scope.
+
+**Format:** ISO 11783 XML task data, CAN bus messages (J1939-based). Not YAML.
+
+**Adoption:** Agricultural machinery — John Deere, AGCO, CNH, Claas, Fendt, Trimble, Raven. Widely deployed in precision agriculture.
+
+**Open source:** IsoBus-Inspector tools, ISODesigner (limited). Mostly vendor tooling.
+
+**Curve logging relevance:** No per-element adaptive threshold. The ISO 11783-11 data element dictionary is a precedent for a domain-specific signal catalog carrying per-signal metadata — relevant as a structural analogy for the VSS signal catalog proposal. Not applicable to curve logging parameterization.
+
+---
+
+### 28. Asset Administration Shell (AAS) / IEC 63278
+
+**What sampling metadata it can express:**
+AAS defines a digital twin container (Submodel, SubmodelElementCollection, Property, Operation, Event). `Qualifier` elements can annotate any SubmodelElement with arbitrary semantic metadata. `EventElement` supports change notification. IDTA publishes standardized Submodel Templates (SMTs) for specific domains (Nameplate, Predictive Maintenance, Time Series Data). SMT `Time Series Data` (IDTA 02008) defines a structure for storing time-series observations including a `SamplingInterval` property. No deadband, epsilon, or trigger mode in the core metamodel.
+
+**Format:** JSON/XML (AAS serialization), AASX package. REST API (AAS Part 2). Moderate complexity.
+
+**Adoption:** German manufacturing industry (VDW, VDMA), European Industry 4.0 ecosystem. Catena-X supply chain. Growing in automotive supply chain (IDTA working groups).
+
+**Open source:** Eclipse BaSyx (Java/C#/Python), PyAAS (Python), AAS Web UI.
+
+**Curve logging relevance:** AAS Qualifier elements could carry `curve_epsilon`, `curve_algorithm`, etc. as typed annotations on a SubmodelElement — a viable carrier for curve logging metadata. The `Time Series Data` SMT could be extended with a sampling algorithm submodel. Not a vocabulary source, but a viable container for a future standardized curve logging Submodel Template.
+
+---
+
+### 29. Prometheus / OpenMetrics
+
+**What sampling metadata it can express:**
+Prometheus scrapes metrics at a global `scrape_interval` (default 1 minute, configurable per scrape config). `staleness markers` (special NaN) signal metric series disappearance. Recording rules pre-compute and store aggregated series. `track_timestamps_staleness` tracks when staleness markers arrive. OpenMetrics 1.0 specifies metric exposition format with TYPE, HELP, UNIT, and TIMESTAMP annotations per sample. No per-metric sampling rate, trigger mode, or analog threshold.
+
+**Format:** Text exposition format (OpenMetrics) over HTTP; OTLP for push. Very simple.
+
+**Adoption:** Dominant in cloud-native software observability. CNCF graduated project. Near-universal in Kubernetes ecosystems.
+
+**Open source:** [prometheus/prometheus](https://github.com/prometheus/prometheus), OpenMetrics Go/Python clients, Grafana Alloy, VictoriaMetrics, Thanos.
+
+**Curve logging relevance:** Staleness is a binary lifecycle marker, not an analog deviation concept. Pull-based scrape model means threshold-based filtering is not the primary design concern. Not applicable to curve logging. Downsampling in Prometheus-compatible TSDBs (Thanos, Cortex) uses aggregates (max/min/avg), which destroy signal shape — the opposite of curve logging's shape preservation.
+
+---
+
+### 30. Apache IoTDB — Time-Series Database Encoding
+
+**What sampling metadata it can express:**
+Per-timeseries encoding configuration: RLE (run-length encoding), GORILLA (XOR-based float compression from Facebook/Meta Beringei — very efficient for slowly changing signals), 2DIFF (second-order differential — efficient for linearly trending signals), PLAIN, CHIMP, SPRINTZ. Chunk-level compression: Snappy, LZ4, GZIP applied on top of encoding. Storage engine (TsFile) is columnar with page-level chunk management. An in-development `IoTDB-SQL` function `compress` is proposed but not normative.
+
+**Format:** TsFile (binary columnar), IoTDB SQL, REST API. Open source (Apache).
+
+**Adoption:** Growing in Industrial IoT and IIoT — Alibaba, THU research groups, and a growing ecosystem. Not yet widely deployed in automotive.
+
+**Open source:** [apache/iotdb](https://github.com/apache/iotdb) (Java/C++).
+
+**Curve logging relevance:** Storage-layer encoding algorithms are complementary to curve logging, not alternatives. Gorilla and 2DIFF reduce bits per stored point; curve logging reduces the number of points. A pipeline using both would compound savings. IoTDB does not define a collection-agent curve-logging policy; it optimizes storage of whatever points are given to it.
+
+---
+
+### 31. OPC UA Historical Access (HDA)
+
+**What sampling metadata it can express:**
+OPC UA Historical Access (Part 11) defines read operations over historical data: `ReadRaw` (actual recorded values), `ReadProcessed` (aggregate functions applied over intervals), `ReadAtTime` (value at specific timestamp, interpolated if not recorded), `ReadModified` (modification log). `ReadProcessed` aggregates include: `Interpolated` (linear interpolation between adjacent recorded values), `Average`, `Maximum`, `Minimum`, `Count`, `StartBound`, `EndBound`. `ExtrapolationMode` extends the last known value beyond recorded data.
+
+**Format:** OPC UA binary or JSON protocol. Part of the full OPC UA stack.
+
+**Adoption:** Process industry historians (OSIsoft PI, Aveva Historian, Kepware), manufacturing MES, SCADA. Widely deployed.
+
+**Open source:** open62541 (C), Eclipse Milo (Java), opcua-asyncio (Python).
+
+**Curve logging relevance:** The `Interpolated` aggregate in HDA's read path demonstrates that linear interpolation between kept points is an accepted industrial reconstruction technique. This is precisely the reconstruction model that curve logging assumes: the consumer uses linear interpolation between kept points to recover the signal between them. HDA validates the reconstruction side; curve logging is the compression-side dual. HDA does not drive the collection decision — it reconstructs at query time. However, it provides standards language for specifying that a signal "can be reconstructed by linear interpolation between kept points within tolerance ε" — exactly what `curve_epsilon` means.
+
+---
+
+### 32. ANSI/ISA-18.2 — Management of Alarm Systems
+
+**What sampling metadata it can express:**
+ISA-18.2 (Management of Alarm Systems for the Process Industries) defines deadband (also called dead zone or hysteresis) for alarm setpoints: a process variable must cross back through the deadband before an alarm can re-activate. Deadband is per-alarm configurable in engineering units. Purpose: suppress alarm chattering near the setpoint — the same noise-suppression motivation as `curve_min_interval_ms`. Also defines alarm priority (4 levels), shelving, suppression, and alarm rationalization.
+
+**Format:** Standard specification text; implemented in DCS/SCADA alarm management systems. Not a wire protocol.
+
+**Adoption:** Universal in petrochemical, pharmaceutical, and power generation control rooms. ISA-18.2 compliance is often required by process industry regulations.
+
+**Open source:** No open-source implementation of ISA-18.2 alarm management as a library; embedded in DCS vendors (Emerson, Honeywell, ABB, Yokogawa).
+
+**Curve logging relevance:** ISA-18.2 deadband is a well-established industrial concept for per-signal numeric threshold in engineering units — confirms the concept is proven in regulated environments. Alarm context (hysteresis) differs from data compression context (epsilon), but the underlying mechanism is the same. Not applicable to curve logging directly.
+
+---
+
+### 33. Eclipse Kuksa Databroker / COVESA DIP
+
+**What sampling metadata it can express:**
+Eclipse Kuksa Databroker is a gRPC-based VSS signal broker. `Subscribe` calls with `FieldMask` filter to specific VSS paths. `GetValue`/`SetValue` for current-value access. Kuksa supports actuator targets and current-value separation. COVESA Data Information Provisioning (DIP) architecture proposes separating signal production from consumption via a broker layer, but does not yet define sampling algorithm parameters. No native deadband, epsilon, or curve logging in published Kuksa specifications.
+
+**Format:** gRPC + Protobuf (Kuksa wire), VSS YAML (signal catalog), COVESA JSON (DIP).
+
+**Adoption:** Eclipse SDV (Software Defined Vehicle) reference architecture — Eclipse Leda, Eclipse Kuksa, Eclipse Velocitas. BMW, Bosch, Microsoft Azure contributing. Growing automotive platform standard.
+
+**Open source:** [eclipse-kuksa/kuksa-databroker](https://github.com/eclipse-kuksa/kuksa-databroker) (Rust), [eclipse-kuksa/kuksa-python-sdk](https://github.com/eclipse-kuksa/kuksa-python-sdk).
+
+**Curve logging relevance:** Kuksa Databroker is the reference implementation target for any VSS overlay sampling metadata — including `curve_epsilon`. Adding curve logging as a Databroker subscription filter (compress the stream before delivering to subscribers using RDP) would be the natural reference implementation path. Not a vocabulary source, but the deployment platform where the proposed fields would be implemented.
+
+---
+
 ## Comparative Summary Table
 
-| Standard | Sampling Rate | Min / Max Period (pmin/pmax) | On-Change Trigger | Threshold Trigger | Data Quality | Privacy / Access Control | Retention / Lifespan | Complexity | Vehicle Relevance |
-|----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|---|
-| **W3C SOSA/SSN** | Via extension | No | Yes (Observation) | No | Via ssn:hasSystemCapability | No | No | RDF/OWL — high | High (research) |
-| **OGC SensorML 3.0** | Via sml:output | Via constraints | Partial | Via constraints | swe:quality (built-in) | No | No | XML/JSON — medium-high | Medium |
-| **OGC SWE Common** | Via DataStream | Partial | Yes | Via quality | swe:quality (built-in) | No | No | XML/JSON — medium | Medium |
-| **OMA LwM2M** | pmin/pmax (direct) | ✓ pmin / pmax | ✓ st | ✓ gt / lt | Stale/Good (indirect) | No | No | CoAP attr — **low** | **High** |
-| **ETSI SAREF** | saref4envi:FrequencyMeasurement | saref4envi:PeriodMeasurement | No | No | No | No | No | OWL/RDF — high | Medium |
-| **FIWARE NGSI-LD** | Via throttling | throttling param | Yes (subscription) | No | Property-of-property | No | No | JSON-LD — medium | Medium |
-| **Eclipse Vorto** | No | No | No | No | No | No | No | Deprecated DSL | **None** |
-| **VSS Overlays** | interval_ms (informal) | No | No | No | No | No | No | YAML — **lowest** | **Very High** |
-| **OpenTelemetry** | Global SDK interval | No | No | No | Exemplar filters | No | No | OTLP/Protobuf | **Low** (SW only) |
-| **InfluxDB / Flux** | Telegraf poll interval | No | No | No | Via tags (convention) | No | Retention policy | Line Protocol — low | Medium (storage) |
-| **ISO 22837** | Not specified | No | No | No | No | No | No | ITS msgs — high | Medium |
-| **ISO 23150** | Implicit output rate | No | No | No | Confidence values | No | No | ARXML — high | High (ADAS) |
-| **AUTOSAR AP** | cycleTime (ARXML) | Partial | Yes (events) | No | No | No | No | ARXML — **high** | **Very High** |
-| **CoAP + Cond. Attrs** | c.pmin / c.pmax | ✓ c.pmin / c.pmax | ✓ c.st | ✓ c.gt / c.lt | No | No | No | CoAP attr — low | High |
-| **MQTT Sparkplug B** | No | No | RBE (by exception) | No | is_null, STALE flag | No | No | Protobuf — low | High |
-| **W3C WoT TD** | Via protocol binding | No | observable (boolean) | No | No | Security defs | No | JSON-LD — medium | High |
-| **DDS QoS** | TIME_BASED_FILTER | ✓ DEADLINE / LIFESPAN | DEADLINE violation | No | LIVELINESS | No | ✓ DURABILITY / LIFESPAN | XML/API — **high** | **Very High** |
-| **IEEE 1451 TEDS** | update_rate (TEDS) | Yes | No | No | Calibration, uncertainty | No | No | Binary/JSON — high | Medium |
-| **OASIS AMQP** | Via app-properties | ttl / expiry_time | No | No | No | No | ✓ ttl | Wire proto — medium | Medium |
-| **OPC UA** | MonitoredItem interval | ✓ sampling + publishing | Yes (subscription) | Via data change filter | No | Security (built-in) | No | XML/binary — high | High |
+**Curve Logging column key:**
+- **✗** — No support; concept absent from standard
+- **~step** — Nearest analog exists as step-from-last-value deadband (wrong reference model; per-signal configurable in engineering units)
+- **~step+pmax** — Step deadband paired with a per-signal or per-group heartbeat (strongest structural match; still wrong reference model)
+- **○ ext** — Standard is extensible; curve logging parameters could be carried as extension fields or annotations
+- **★ path** — Uses or references interpolation-path deviation (correct model, though informative/research rather than normative collection policy)
+- **/ read** — Interpolation in read/query path only; does not drive collection decisions
+- **—** — Deprecated / not applicable
+
+| Standard | Sampling Rate | pmin / pmax | On-Change | Threshold Trigger | Data Quality | Privacy / Access | Retention | Complexity | Vehicle Relevance | **Curve Logging** |
+|----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---|---|:---|
+| **W3C SOSA/SSN** | Via extension | No | Yes (Observation) | No | ssn:hasSystemCapability | No | No | RDF/OWL — high | High (research) | **○ ext** (via Procedure) |
+| **OGC SensorML 3.0** | Via sml:output | Via constraints | Partial | Via constraints | swe:quality | No | No | XML/JSON — med-high | Medium | **○ ext** (Process description) |
+| **OGC SWE Common** | Via DataStream | Partial | Yes | Via quality | swe:quality | No | No | XML/JSON — medium | Medium | **✗** |
+| **OMA LwM2M** | pmin/pmax | ✓ pmin / pmax | ✓ st | ✓ gt / lt | Stale/Good (indirect) | No | No | CoAP attr — **low** | **High** | **~step** (st; propose cd) |
+| **ETSI SAREF** | FrequencyMeasurement | PeriodMeasurement | No | No | No | No | No | OWL/RDF — high | Medium | **✗** |
+| **FIWARE NGSI-LD** | Via throttling | throttling param | Yes | No | Property-of-property | No | No | JSON-LD — medium | Medium | **✗** |
+| **Eclipse Vorto** | No | No | No | No | No | No | No | Deprecated DSL | **None** | **—** |
+| **VSS Overlays** | interval_ms (informal) | No | No | No | No | No | No | YAML — **lowest** | **Very High** | **○ ext** (proposed curve_epsilon) |
+| **OpenTelemetry** | Global SDK interval | No | No | No | Exemplar filters | No | No | OTLP/Protobuf | Low (SW only) | **✗** |
+| **InfluxDB / Flux** | Telegraf poll interval | No | No | No | Via tags | No | Retention policy | Line Protocol — low | Medium (storage) | **✗** |
+| **ISO 22837** | Not specified | No | No | No | No | No | No | ITS msgs — high | Medium | **✗** |
+| **ISO 23150** | Implicit output rate | No | No | No | Confidence values | No | No | ARXML — high | High (ADAS) | **✗** |
+| **AUTOSAR AP** | cycleTime (ARXML) | Partial | Yes (events) | No | No | No | No | ARXML — **high** | **Very High** | **✗** |
+| **CoAP + Cond. Attrs** | c.pmin / c.pmax | ✓ c.pmin / c.pmax | ✓ c.st | ✓ c.gt / c.lt | No | No | No | CoAP attr — low | High | **~step** (c.st; propose c.cd) |
+| **MQTT Sparkplug B** | No | No | RBE (by exception) | No | is_null, STALE | No | No | Protobuf — low | High | **✗** |
+| **W3C WoT TD** | Via protocol binding | No | observable (boolean) | No | No | Security defs | No | JSON-LD — medium | High | **○ ext** (JSON-LD context) |
+| **DDS QoS** | TIME_BASED_FILTER | ✓ DEADLINE / LIFESPAN | DEADLINE violation | No | LIVELINESS | No | ✓ DURABILITY / LIFESPAN | XML/API — **high** | **Very High** | **✗** (no value deviation) |
+| **IEEE 1451 TEDS** | update_rate (TEDS) | Yes | No | No | Calibration, uncertainty | No | No | Binary/JSON — high | Medium | **✗** |
+| **OASIS AMQP** | Via app-properties | ttl / expiry_time | No | No | No | No | ✓ ttl | Wire proto — medium | Medium | **✗** |
+| **OPC UA** | MonitoredItem interval | ✓ sampling + publishing | Yes | ✓ DeadbandValue (step) | No | Security (built-in) | No | XML/binary — high | High | **~step** (DeadbandValue per item) |
+| **BACnet COVIncrement** | No | covLifetime (indirect) | ✓ COV | ✓ COVIncrement (step) | No | No | No | BACnet — medium | Low (buildings) | **~step** (best-deployed ε analog) |
+| **IEC 61850 deadbandMag** | No | ✓ intgPd (RCB-level) | ✓ dchg | ✓ deadbandMag (step) | optFlds reason | No | No | MMS/SCL — high | Low (utility) | **~step+pmax** (strongest structural match) |
+| **DNP3 Object 34** | No | Integrity poll (master) | ✓ Class 1 event | ✓ per-point deadband | No | No | No | DNP3 — medium | Low (utility) | **~step** (per-point; proven at scale) |
+| **IEC 60870-5 P_ME** | No | ✓ transmission period (per-point) | ✓ threshold crossing | ✓ deadband parameter | No | No | No | IEC 60870 — high | Low (legacy) | **~step+pmax** (per-point ε+pmax pair) |
+| **ISO 19141 / OGC Moving Features** | No | No | No | No | No | No | No | JSON/XML schema | Medium (geo) | **★ path** (SED = interpolation-path deviation in associated research) |
+| **oneM2M TS-0001** | No | ✓ pmin / pmax analogs | ✓ resourceUpdate | No | No | No | No | JSON/XML — medium | Medium | **✗** |
+| **DLMS/COSEM IEC 62056** | Capture period (fixed) | No | No | No (alarm only) | No | No | No | Binary — high | Low (metering) | **✗** |
+| **ISOBUS ISO 11783** | Capture period | No | No | No | No | No | No | CAN/XML — medium | Low (ag vehicle) | **✗** |
+| **AAS / IEC 63278** | SamplingInterval (SMT) | No | EventElement | No | No | No | No | JSON/XML — medium | Medium (supply chain) | **○ ext** (Qualifier / Submodel Template) |
+| **Prometheus / OpenMetrics** | scrape_interval (global) | No | No | No | staleness marker | No | No | Text — **low** | Low (SW only) | **✗** |
+| **Apache IoTDB** | Per-timeseries encoding | No | No | No | No | No | No | Binary/SQL — medium | Low (storage) | **✗** (storage encoding only) |
+| **OPC UA HDA** | ReadProcessed interval | No | ReadRaw | No | No | Security (built-in) | No | XML/binary — high | High | **/ read** (Interpolated aggregate validates reconstruction model) |
+| **ISA-18.2** | No | No | No | ✓ alarm deadband (step) | No | No | No | Specification text | Low (process) | **✗** (alarm context only) |
+| **Eclipse Kuksa / COVESA DIP** | No | No | Subscribe | No | No | No | No | gRPC/Protobuf — low | **Very High** | **○ ext** (reference implementation target) |
 
 ---
 
@@ -345,21 +583,85 @@ Used in automotive manufacturing and increasingly in vehicle ECU/domain controll
 | `quality_factor_signal` | OGC SWE Common swe:quality, IEEE 1451 TEDS uncertainty | SWE Common most standardized |
 | `signal_validity` | OMA LwM2M epmin/epmax, Ford signal_context | No direct standard; LwM2M closest |
 | `signal_type` (cumulative/instantaneous) | OpenTelemetry Temporality (DELTA/CUMULATIVE), Sparkplug is_historical | OTel Temporality closest |
-| `privacy_classification` | **Not covered by any standard** | Gap across all candidates |
+| `privacy_classification` | **Not covered by any standard** | Gap across all 34 candidates |
 | `access_control` | WoT TD Security Definitions (per-device), OPC UA Security | Only per-device, not per-signal |
 | `retention_policy` | DDS LIFESPAN (sample TTL), InfluxDB bucket retention, AMQP ttl | All at message/bucket level, not signal definition level |
+| `curve_epsilon` | **Not covered by any standard** — nearest analog: BACnet COVIncrement, IEC 61850 deadbandMag, DNP3 Object 34 (all step-from-last-value) | Gap: no standard uses interpolation-path deviation as collection trigger |
+| `curve_algorithm` (RDP/PRDP) | **Not covered by any standard** | OGC Moving Features SED research is closest (informative only) |
+| `curve_max_interval_ms` | IEC 61850 intgPd (RCB-level), IEC 60870-5 transmission period (per-point), oneM2M periodicNotificationDuration | Per-signal pmax exists in IEC 60870-5 and oneM2M |
+| `curve_min_interval_ms` | OMA LwM2M pmin, CoAP c.pmin, oneM2M minimumObservableInterval | Well covered |
+
+---
+
+## Curve Logging Support — Dedicated Assessment
+
+Across all 34 standards surveyed, **no standard natively uses interpolation-path deviation (RDP / SED) as a collection trigger**. The gap is complete. Standards cluster into four tiers:
+
+### Tier 1: Structural match — step-from-last-value threshold + heartbeat (wrong reference model, right structure)
+
+These standards have the correct two-parameter architecture (`ε analog` + `pmax analog`), differing only in that they measure deviation from the last reported value rather than from the interpolated path. Replacing the reference model would convert them to curve logging.
+
+| Standard | ε analog | pmax analog | Granularity | Deployment scale |
+|----------|----------|------------|-------------|-----------------|
+| **IEC 61850 deadbandMag + intgPd** | deadbandMag (per data attribute) | intgPd (per RCB, shared) | Per-signal deadband, RCB-level heartbeat | Global power grid |
+| **IEC 60870-5 P_ME** | Threshold parameter (per point) | Transmission period (per point) | Fully per-point | Legacy utility SCADA |
+| **BACnet COVIncrement** | COVIncrement (per object, REAL) | covLifetime (indirect) | Per-object | Global building automation |
+| **DNP3 Object 34** | Per-point deadband (integer) | Integrity poll (master-driven) | Per-point, not per-signal pmax | North American utility SCADA |
+| **OPC UA DeadbandValue** | DeadbandValue (per MonitoredItem) | Publishing interval (subscription-level) | Per-item, not per-signal pmax | Manufacturing, automotive |
+
+### Tier 2: Partial match — threshold only or temporal only
+
+These standards have one parameter but not both:
+
+| Standard | What they have | What's missing |
+|----------|---------------|----------------|
+| **OMA LwM2M st** | st = change threshold (step) | No per-signal pmax (pmax is per-observation) |
+| **CoAP c.st** | c.st = change threshold (step) | Same limitation as LwM2M |
+| **DDS TIME_BASED_FILTER + DEADLINE** | pmin/pmax via QoS | No value-deviation concept at all |
+| **oneM2M** | pmin/pmax analogs | No value-deviation concept |
+
+### Tier 3: Extension carriers — can hold curve logging parameters without natively defining them
+
+| Standard | Extension mechanism | What can be carried |
+|----------|--------------------|--------------------|
+| **VSS Overlays** | YAML fields in .vspec | `curve_epsilon`, `curve_algorithm`, etc. — direct fit |
+| **AAS / IEC 63278** | Qualifier annotations + Submodel Templates | A curve logging SMT could be standardized via IDTA |
+| **W3C WoT TD** | JSON-LD @context extensions | `curve_epsilon` etc. via automotive WoT extension vocabulary |
+| **OGC SensorML 3.0** | Process description | RDP described as a sampling SamplingProcedure |
+| **Eclipse Kuksa** | Subscription filter implementation | Databroker could apply RDP before delivering to subscribers |
+
+### Tier 4: Path-deviation model — correct algorithm, informative/research only
+
+| Standard | Path-deviation concept | Status |
+|----------|----------------------|--------|
+| **ISO 19141 / OGC Moving Features** | SED (Synchronized Euclidean Distance) in associated trajectory simplification research | Research / informative |
+| **OPC UA HDA `Interpolated` aggregate** | Linear interpolation between kept points validates the reconstruction model | Read path only; not collection |
+
+### Proposed standardization path for curve logging
+
+| Track | Action | Target body |
+|-------|--------|-------------|
+| **Immediate** | Add `curve_epsilon`, `curve_algorithm`, `curve_max_interval_ms`, `curve_min_interval_ms` to COVESA VSS overlay specification | COVESA FMD WG |
+| **Near-term** | Propose `cd` (curve deviation) attribute alongside `st` in OMA LwM2M notification attributes | OMA SpecWorks |
+| **Near-term** | Propose `c.cd` attribute alongside `c.st` in IETF CoAP Conditional Attributes draft | IETF CoRE WG |
+| **Medium-term** | Contribute normative trajectory simplification profile (SED + epsilon) to OGC Moving Features | OGC Moving Features SWG |
+| **Medium-term** | Publish IDTA AAS Submodel Template for vehicle signal collection parameters | IDTA / COVESA joint |
+| **Longer-term** | Propose `curveDev` trigger mode in IEC 61850 Report Control Blocks (alongside `dchg`/`dupd`) | IEC TC57 WG10 |
+| **Longer-term** | Propose per-point curve deviation object in DNP3 (new Object Group alongside Object 34) | DNP3 Technical Committee |
 
 ---
 
 ## Gap Areas Not Covered by Any Existing Standard
 
-Three critical metadata dimensions are absent from every evaluated standard:
+Four critical metadata dimensions are absent from every evaluated standard:
 
 1. **Privacy classification at the signal level** — No standard defines per-signal PII sensitivity (personal / pseudonymous / sensitive). GDPR compliance requires this; standards leave it to implementation.
 
 2. **Retention policy at the signal catalog level** — DDS LIFESPAN covers message-level TTL; InfluxDB covers bucket-level retention; AMQP `ttl` covers per-message expiry. None define per-signal-type retention policy in a specification catalog.
 
 3. **Access control at the signal level** — WoT TD and OPC UA define per-device/per-service access control. No standard defines which role or party may receive a specific signal's values in a signal catalog annotation.
+
+4. **Interpolation-path deviation compression (curve logging)** — All 34 evaluated standards either use step-from-last-value thresholds or have no value-deviation concept. No standard defines deviation from the interpolated path between kept points as a collection trigger. The RDP/SED model is used in OGC Moving Features research but is not normative in any collection specification.
 
 ---
 
@@ -435,3 +737,28 @@ Privacy, access control, and retention remain gaps in all evaluated standards an
 - [IEEE 1451.0-2024 — NIST announcement](https://www.nist.gov/news-events/news/2024/07/ieee-14510-2024-standard-published-under-leadership-nist-researchers)
 - [OASIS AMQP Core Messaging](https://docs.oasis-open.org/amqp/core/v1.0/amqp-core-messaging-v1.0.html)
 - [OPC UA Sampling Interval](https://reference.opcfoundation.org/Core/Part4/v104/docs/5.12.1.2)
+- [OPC UA Historical Access Part 11](https://reference.opcfoundation.org/Core/Part11/v104/docs/)
+- [BACnet COV — Change of Value overview (Chipkin)](https://store.chipkin.com/articles/bacnet-cov-change-of-value)
+- [ASHRAE 135 BACnet Standard](https://www.ashrae.org/technical-resources/bookstore/bacnet)
+- [IEC 61850 Deadband Reporting and Logging (Netted Automation Blog)](https://blog.nettedautomation.com/2019/11/iec-61850-deadband-reporting-and.html)
+- [libIEC61850 client tutorial](https://libiec61850.com/documentation/iec-61850-client-tutorial/)
+- [OpenDNP3 — DNP3 per-point deadband](https://dnp3.github.io/)
+- [IEEE 1815-2012 — DNP3 Standard](https://standards.ieee.org/ieee/1815/4414/)
+- [IEC 60870-5-104 Communication Protocol Manual (ABB)](https://library.e.abb.com/public/68021e6c8f654aca98c5b10d1a02134e/1MAC306892-MB%20C%20IEC%20104%20Comm%20Protocol.pdf)
+- [ISO 19141 Moving Features — ISO TC211](https://committee.iso.org/sites/tc211/home/projects/projects---complete-list/iso-19141.html)
+- [OGC Moving Features JSON Encoding (OGC 19-045r3)](https://docs.ogc.org/is/19-045r3/19-045r3.html)
+- [LiMITS: Linear Interpolation Method for Trajectory Simplification (arXiv)](https://arxiv.org/pdf/2010.08622)
+- [Moving Object Trajectory Compression (Hindawi)](https://www.hindawi.com/journals/mpe/2016/6587309/)
+- [oneM2M TS-0001 Functional Architecture](https://www.onem2m.org/images/files/deliverables/TS-0001-Functional_Architecture-V3_15_1.pdf)
+- [IEC 62056 / DLMS-COSEM (Wikipedia)](https://en.wikipedia.org/wiki/IEC_62056)
+- [ISOBUS ISO 11783 Introduction (CSS Electronics)](https://www.csselectronics.com/pages/isobus-introduction-tutorial-iso-11783)
+- [Asset Administration Shell Metamodel — IDTA](https://industrialdigitaltwin.org/wp-content/uploads/2023/06/IDTA-01001-3-0_SpecificationAssetAdministrationShell_Part1_Metamodel.pdf)
+- [IEC 63278-1 AAS — IEC Webstore](https://webstore.iec.ch/en/publication/65628)
+- [Prometheus Staleness (Brian Brazil, PromCon 2017)](https://promcon.io/2017-munich/slides/staleness-in-prometheus-2-0.pdf)
+- [Apache IoTDB Encoding and Compression](https://iotdb.apache.org/UserGuide/V1.2.x/Basic-Concept/Encoding-and-Compression.html)
+- [Improving Time Series Compression in IoTDB (VLDB)](https://www.vldb.org/pvldb/vol18/p3406-tang.pdf)
+- [Eclipse Kuksa Databroker GitHub](https://github.com/eclipse-kuksa/kuksa-databroker)
+- [ANSI/ISA-18.2 Management of Alarm Systems](https://www.isa.org/products/ansi-isa-18-2-2016-management-of-alarm-systems-for)
+- [Geotab Curve Algorithm Overview](https://www.geotab.com/blog/gps-logging-curve-algorithm/)
+- [Geotab/curve — open source implementation (GitHub)](https://github.com/Geotab/curve)
+- [Ramer-Douglas-Peucker Algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm)
