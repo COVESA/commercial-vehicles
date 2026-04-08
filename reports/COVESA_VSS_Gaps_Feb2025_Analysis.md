@@ -132,17 +132,108 @@ PowerTrainInfoStruct:
 
 ## Data Collection / Sampling Subset
 
-The following proposed extensions are most directly relevant to **how and when signals are sampled**:
+The following proposed extensions are most directly relevant to **how and when signals are sampled, transmitted, governed, and retained**. Fields are grouped by concern.
 
-| Field | Location | Relevance |
-|-------|----------|-----------|
-| `update_period` | Slide 3–4 text | Sampling rate / cadence |
-| `init_value` | Slide 3–4 text | Value at collection start / baseline |
-| `operational_conditions` | image 3 (`signal_context`) | Preconditions under which signal is valid for collection |
-| `e2e_properties` | Slide 3–4 text | Transmission integrity from sensor to consumer |
-| `dependencies` | image 3 (`signal_context`) | Co-sampling relationships — signals that must be read together |
+### Sampling / Collection Conditions
 
-The `signal_context.operational_conditions` field is the only one visually demonstrated in an image. The others (`update_period`, `init_value`, `e2e_properties`) are named in slide text without accompanying example syntax.
+| Field | Source | Relevance |
+|-------|--------|-----------|
+| `update_period` | Slide 3–4 text | Sampling rate / cadence (e.g. 100ms, on-change) |
+| `init_value` | Slide 3–4 text | Baseline/default value at collection start |
+| `operational_conditions` | image 3 (`signal_context`) | Preconditions under which signal is valid for collection (e.g. "Normal operation, not during engine startup") |
+| `dependencies` | image 3 (`signal_context`) | Co-sampling relationships — signals that must be observed together for valid interpretation |
+
+### Transmission
+
+| Field | Source | Relevance |
+|-------|--------|-----------|
+| `transmission_mode` | Implied by slide 3–4 (`e2e_properties`, Network Serialization) | How signal values are sent: periodic, event-driven (on-change), or on-request/pull |
+| `e2e_properties` | Slide 3–4 text | End-to-end transmission properties — integrity, latency, ordering guarantees from sensor to consumer |
+
+### Privacy and Access Control
+
+Ford's slide 3 identifies **cybersecurity** as one of the four cross-functional metadata categories alongside data collection. The following fields elaborate that concern as it applies to sampled signal data:
+
+| Field | Source | Relevance |
+|-------|--------|-----------|
+| `privacy_consideration` | Cybersecurity category (slide 3–4) | Whether sampled values require consent, anonymization, or pseudonymization (e.g. location, biometric-adjacent signals) |
+| `access_control` | Cybersecurity category (slide 3–4) | Role or party allowed to read sampled data — e.g. OEM-only, fleet operator, public |
+
+### Retention
+
+| Field | Source | Relevance |
+|-------|--------|-----------|
+| `retention_policy` | Implied by data collection + cybersecurity (slide 3–4) | How long sampled data may be stored before mandatory deletion or anonymization; relevant to GDPR and regional regulatory compliance |
+
+### Additional Collection Guidelines Derived from Image Patterns
+
+Beyond the named metadata fields, the image examples reveal several implicit conventions that should inform data collection design:
+
+#### 1. Quality Factor (QF) as a Mandatory Companion
+
+Image 2 lists `Vehicle.Powertrain.EngineCoolant.QualityFactor` as a `depends_on` entry for temperature — not just a related signal but a precondition for valid interpretation. Image 6 makes this structural: `AccumulatedBrakingEnergyStruct` bundles `Value` and `QualityFactor` as siblings using `PlatformTypes.QualityFactor` as a standardized type.
+
+**Guideline:** Sampled values should be paired with a quality factor as a typed struct. Collection systems should evaluate QF before transmitting or acting on a sample. A low QF should suppress downstream analytics or trigger a sensor-health alert, not silently propagate a bad reading.
+
+```yaml
+# Implied standard pattern from image 6:
+AccumulatedBrakingEnergyStruct:
+  type: struct
+  elements:
+    - Value: PowerTrain.AccumulatedBrakingEnergy   # the measurement
+    - QualityFactor: PlatformTypes.QualityFactor   # confidence in the measurement
+```
+
+#### 2. Atomic Sampling of Dependency Chains
+
+Image 2's `depends_on` list and image 3's `dependencies` block both express that certain signals are only meaningful when observed together. Sampling them at different timestamps invalidates the declared relationship (e.g. a temperature reading correlated against stale coolant pressure data).
+
+**Guideline:** Signals sharing a `depends_on` / `dependencies` relationship should be sampled atomically — same timestamp, same collection event. Individual signal polling intervals should not break apart a declared dependency group.
+
+#### 3. Operational Validity Gating
+
+Image 3 shows `operational_conditions: "Normal operation, not during engine startup"`. This is not merely informational — it defines when a sample is physically meaningful.
+
+**Guideline:** Collection pipelines should evaluate `operational_conditions` before recording or transmitting a sample. Samples collected outside valid conditions should either be:
+- suppressed (not transmitted), or
+- flagged with a validity/status bit alongside the value
+
+This connects directly to `init_value`: a value recorded before operational conditions are met may be an artefact of startup state, not a real measurement.
+
+#### 4. Cumulative vs. Instantaneous Signal Distinction
+
+Image 5 shows two structurally different signals in the same struct:
+- `AccumulatedBrakingEnergy` (float, kWh) — a lifetime aggregate, increases monotonically
+- `Range` (uint32, m) — an instantaneous estimate, changes continuously
+
+These require fundamentally different collection strategies:
+
+| Signal type | Example | Appropriate cadence |
+|-------------|---------|---------------------|
+| Cumulative / lifetime | `AccumulatedBrakingEnergy` | On significant delta, or periodic low-frequency |
+| Instantaneous / real-time | `Range`, `Temperature` | Periodic or on-change with threshold |
+| Remaining / derived | `TimeRemaining` | On-change with threshold |
+
+**Guideline:** Signal metadata should declare whether a value is cumulative or instantaneous, as this determines valid sampling strategies. Treating a lifetime aggregate as a real-time signal wastes bandwidth and creates false change events.
+
+#### 5. Struct-Based Transmission Units
+
+Images 5 and 6 both propose grouping related signals into structs rather than transmitting them individually. This has direct data collection implications:
+
+**Guideline:** Logically related signals (same subsystem, same validity window, same dependency group) should be collected and transmitted as a unit. This:
+- prevents partial-state inconsistencies (consumer receives some signals but not their dependents)
+- enables atomic QF evaluation across the group
+- reduces per-signal framing overhead
+
+The `time` nested struct in image 5 (`PowerTrainInfoStruct.time.TimeRemaining`) further suggests that **temporal metadata should be a first-class struct member**, not an out-of-band convention.
+
+### Notes on Source Attribution
+
+- `operational_conditions` and `dependencies` are explicitly shown in image 3 with example syntax.
+- `QualityFactor` as a value companion is shown in image 6 struct definition; as a dependency in image 2.
+- `update_period`, `init_value`, and `e2e_properties` are named in slide text without accompanying example syntax.
+- `transmission_mode`, `privacy_consideration`, `access_control`, and `retention_policy` are not named verbatim in the document but are directly implied by Ford's four stated metadata categories (cybersecurity, functional safety, data collection, network serialization) and are pertinent additions for a complete data collection/sampling metadata model.
+- Guidelines for atomic sampling, validity gating, cumulative vs. instantaneous distinction, and struct-based transmission units are derived from patterns in the image examples, not stated explicitly in the document.
 
 ---
 
