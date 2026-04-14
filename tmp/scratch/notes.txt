@@ -1,5 +1,11 @@
 An initial representation of Sensoris' MovableObject in COVESA VSS, see Object.vspec in same directory. Remaining is the whole spatial and relative speed and acceleration part which is going to take some thought to try to represent concisely and in a manner that it is a reusable concept. There is an existing notion in VSS ADAS.vspec already called ObstacleDetection which although cruder seems like a logical place for MovableObject. As I am writing this, I am wondering if this makes sense as StaticObject and subsequently signage, traffic lights under that are not necessarily Obstacles to avoid.
 
+This has been on hold for considerable time, pending discussion in the Technical Steering Team (TST) on how far we might want to go in representing ADAS, external objects, road conditions and the like leveraging Sensoris.
+
+This was part of the TST 2026-04-13 meeting where there was agreement to proceed, reviewing contributions in VSS calls and determining where to draw the line as to what should be in VSS or another data domain. The basic premise was any data point that originates in a vehicle could be represented in VSS. A major part of this consideration is the perception that Sensoris has decent uptake and even if OEM are choosing proprietary solutions, can still map to Sensoris/VSS data point definitions.
+
+See Sensoris assessment report: https://github.com/COVESA/commercial-vehicles/blob/main/reports/sensoris-here-analysis-2026-04-13.md
+
 I could not think of a practical reason to include EventEnvelope.DetectionType.Type but may revisit and add for completeness.
 
 https://github.com/COVESA/vehicle_signal_specification/blob/master/spec/ADAS/ADAS.vspec
