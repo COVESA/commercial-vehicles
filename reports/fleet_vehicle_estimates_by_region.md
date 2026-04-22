@@ -43,7 +43,7 @@
 | Heavy-Duty Trucks (7–8)   | ~100%         | ~100%     | ~100%     | ~100%         | ~100%       | ~95–100%  | Owner-operators count as fleet; no meaningful private retail market |
 | Medium-Duty Trucks (4–6)  | ~95–100%      | ~95–100%  | ~90–100%  | ~90–95%       | ~90–95%     | ~85–95%   | Occasional private buyers in developing markets |
 | Delivery Vans             | ~85–90%       | ~95–100%  | ~80–90%   | ~75–85%       | ~80–90%     | ~70–85%   | Small share bought privately; higher retail in less formal economies |
-| Pickup Trucks             | ~20–25%       | ~60–75%   | ~50–70%   | ~40–55%       | ~55–70%     | ~60–75%   | Low in NA because pickups are mass consumer vehicles; viewed as work vehicles most elsewhere |
+| Pickup Trucks             | ~20–25%       | ~60–75%   | ~50–70%   | ~40–55%       | ~55–70%     | ~60–75%   | Low in NA because pickups are mass consumer vehicles; viewed as work vehicles most elsewhere. Also skewed by independent contractors and US IRS tax code Section 179 |
 | Passenger Cars / SUVs     | ~12–13%       | ~36–38%   | ~10–15%   | ~12–15%       | ~20–30%     | ~15–20%   | Fleet is a minority of total car sales; remainder is private retail |
 
 **Key observations:**
