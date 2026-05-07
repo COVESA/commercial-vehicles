@@ -13,6 +13,15 @@
 
 ---
 
+## SENSORIS / VSS 
+
+Several VSS signals definitions were derived from or influenced by Sensoris with more being considered, some developed independently overlap.
+
+![SENSORIS_VSS](SENSORIS-Data_Model_Overview_v1.6.0_compared_to_COVESA_VSS_v6.0.drawio.png)
+
+
+---
+
 ## SENSORIS Members (as of 2026-04-13)
 
 | Category | Members |
