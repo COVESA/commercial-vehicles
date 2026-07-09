@@ -1,7 +1,7 @@
 # CA DMV Vehicle Credentials Collaboration: Benefits to COVESA Stakeholders
 
 **Date:** July 2026  
-**Author:** Ted Guild, Geotab / COVESA Fleet Management Data Group  
+**Author:** Ted Guild, Geotab / COVESA Commercial and Fleet Expert Group  
 **Status:** Draft for discussion  
 ---
 
@@ -29,6 +29,8 @@ The CA DMV is deploying a suite of digitally-verifiable vehicle and driver crede
 These credentials are designed to be stored **in the vehicle itself**, not only in a phone wallet, enabling vehicle-to-vehicle, vehicle-to-infrastructure, and vehicle-to-cloud credential exchanges.
 
 COVESA is the logical industry home for this vocabulary because it creates connected vehicle standards adopted by the world's largest OEMs (BMW, Ford, GM, Honda, Hyundai, Volvo, Nissan) and Tier-1 suppliers (Bosch, NXP, ARM, Renesas, Michelin). If CA DMV wants their digital credentials integrated into automobiles and industry verticals such as insurance, E911, fleet management, and vehicle maintenance, **COVESA is the place to establish those standards**.
+
+COVESA will seek to collaborate with organizations like the [American Association of Motor Vehicle Administrators](https://aamva.org/) to promote wider adoption of these verifiable credentials. We understand other North American states/provinces are already considering adoption.
 
 ---
 
