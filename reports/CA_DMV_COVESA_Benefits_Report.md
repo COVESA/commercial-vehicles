@@ -221,7 +221,7 @@ Total well-documented addressable problem scope in California alone exceeds **$9
 | Paul Boyes | Executive Director | COVESA |
 | Daniel Alvarez-Coello | Vehicle Credentials Project Lead | BMW Group / COVESA |
 | Chaitanya Podalakuru | Standards/Digital Programs | Ford Motor Company |
-| Ted Guild | FMDG / W3C / IETF | Geotab / COVESA |
+| Ted Guild | Commercial Vehicle Expert Group / W3C  | Geotab / COVESA |
 
 ---
 
