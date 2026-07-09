@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-The California Department of Motor Vehicles (CA DMV) — the leading state agency deploying Verifiable Credentials (VCs) at scale in production — has initiated a collaboration with COVESA to transfer and evolve a Vehicle Credential vocabulary for broad industry adoption. The collaboration is structured as a phased contribution: CA DMV transfers the `vehicle-credentials-vocabulary` repository (now licensed MPLv2 and hosted at [github.com/stateofca/vehicle-credentials-vocabulary](https://github.com/stateofca/vehicle-credentials-vocabulary)) to COVESA's GitHub organization, COVESA shapes the work to address industry use cases, and CA DMV participates in setting vehicle standards through COVESA's technical bodies.
+The California Department of Motor Vehicles (CA DMV) — the leading state agency deploying Verifiable Credentials (VCs) at scale in production — has initiated a collaboration with COVESA to transfer and evolve a Vehicle Credential vocabulary for broad industry adoption. The collaboration is structured as a phased contribution: CA DMV transfers the `vehicle-credentials-vocabulary` repository (now licensed MPLv2 and hosted at [github.com/covesa/vehicle-credentials-vocabulary](https://github.com/covesa/vehicle-credentials-vocabulary)) to COVESA's GitHub organization, COVESA shapes the work to address industry use cases, and CA DMV participates in setting vehicle standards through COVESA's technical bodies.
 
 This work directly addresses high-impact, high-cost challenges in California — and by extension across the US and internationally — covering vehicle sales fraud, insurance verification, traffic stop safety, emergency response, emissions compliance, commercial licensing, and fleet registration. The total addressable problem set exceeds **$9 billion per year** in California alone.
 
@@ -113,9 +113,6 @@ The accident response use case directly integrates insurers into the emergency r
 **Anti-Fraud for Vehicle Transactions**  
 Vehicle sales fraud costs California residents roughly **$3.4B/year** (US total ~$30B/year), with 1 in 44 vehicle titles in circulation believed to be fraudulent. Dealer-related fraud losses exceeded **$200M in 2024**. A digital vehicle title with cryptographic verification of ownership and lien status — shareable directly from the vehicle to a buyer's device — eliminates the "title washing" and identity theft vectors that plague the current paper-based system. Insurers benefit through reduced fraudulent title-linked insurance claims.
 
-**EV and Battery Passport Angles**  
-Early email discussions specifically flagged EV-related credentials as a collaborative angle with CA DMV. Battery state-of-health and charging history as verifiable credentials are relevant both to insurers (for underwriting EVs) and to COVESA's existing battery passport work.
-
 ### Other Data Consumers
 
 **Law Enforcement**  
@@ -155,9 +152,18 @@ Hosting the vehicle credential vocabulary at COVESA creates a natural home for a
 
 The MPLv2 licensing negotiation — secured by CA DMV after engagement with California Department of Technology — establishes an important precedent: government-developed vehicle data standards can be open-sourced under terms that include patent grants and copyleft protections suitable for an industry consortium. COVESA's experience governing open-source projects (VSS is Apache 2.0, for example) makes it a natural steward.
 
-### 4. W3C and IETF Liaison Opportunities
+### 4. W3C Liaison
 
-The credential vocabulary is grounded in W3C Verifiable Credentials and related standards. COVESA already has engagement with W3C and IETF through members including Ted Guild (active in IETF connected vehicle data sampling work). Formalizing a liaison between COVESA's vehicle credential work and W3C's Verifiable Credentials Working Group would be a natural next step, potentially making COVESA the automotive sector's voice in that standards body.
+The credential vocabulary is grounded in W3C Verifiable Credentials and related standards. COVESA already has engagement with W3C through members including Ted Guild. There is an informal liaison between COVESA's vehicle credential work and W3C's Verifiable Credentials Working Group would be a natural next step, potentially making COVESA the automotive sector's voice in that standards body.
+
+**EV and Battery Passport Angles**  
+Early email discussions specifically flagged EV-related credentials as a collaborative angle with CA DMV. Battery state-of-health and charging history as verifiable credentials are relevant both to insurers (for underwriting EVs) and to COVESA's existing battery passport work.
+
+COVESA is collaborating with W3C, UNECE, EU Webuild and others on Digital Product Passports initially for EU Battery Passport but also other potential vehicle originated regulated data exchanges. 
+
+[More on why Digital Product Passport collaboration may be important to COVESA.](https://docs.google.com/document/d/1Du_4R6TYQ0z-cgB3GomLOjIDMq4uROhg9Hnotor1WdQ/edit?tab=t.0#heading=h.iw5wf7uodttv)
+
+The Digital Product Passport work will be able to bridge the [different driver's license](https://github.com/COVESA/commercial-vehicles/blob/main/reports/vc-driver-license-global-status-2025.md) and other Decentralized Identifier (DID) platforms that are not W3C Verifiable Credentials based. 
 
 ### 5. California as a Global Regulatory Bellwether
 
@@ -217,4 +223,4 @@ Total well-documented addressable problem scope in California alone exceeds **$9
 
 ---
 
-*This report is based on the COVESA Vehicle Credentials Use Cases for California (2026) presentation and correspondence from the COVESA–CA DMV collaboration thread (December 2025 – July 2026). The GitHub repository for the Vehicle Credentials Vocabulary is: [https://github.com/stateofca/vehicle-credentials-vocabulary](https://github.com/stateofca/vehicle-credentials-vocabulary)*
+*This report is based on the COVESA Vehicle Credentials Use Cases for California (2026) presentation and correspondence from the COVESA–CA DMV collaboration thread (December 2025 – July 2026). The GitHub repository for the Vehicle Credentials Vocabulary is: [https://github.com/covesa/vehicle-credentials-vocabulary](https://github.com/covesa/vehicle-credentials-vocabulary)*
