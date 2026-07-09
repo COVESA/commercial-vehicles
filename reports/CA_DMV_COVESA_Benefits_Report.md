@@ -218,7 +218,7 @@ Total well-documented addressable problem scope in California alone exceeds **$9
 | Ajay Gupta | Chief Digital Transformation Officer | CA DMV |
 | Navneet Grewal | IT Specialist III / Product Manager, Digital Transformation | CA DMV |
 | Wesley Smith | DMV Digital Programs | CA DMV |
-| Paul Boyes | Executive Director | COVESA |
+| Paul Boyes | Community Director | COVESA |
 | Daniel Alvarez-Coello | Vehicle Credentials Project Lead | BMW Group / COVESA |
 | Chaitanya Podalakuru | Standards/Digital Programs | Ford Motor Company |
 | Ted Guild | Commercial Vehicle Expert Group / W3C  | Geotab / COVESA |
