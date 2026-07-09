@@ -145,7 +145,7 @@ The AAMVA question was explicitly raised in collaboration discussions: CA DMV en
 The vehicle credential vocabulary complements and extends existing COVESA work:
 
 - **VSS / S2DM**: the signal and data model layer beneath credentials — crash telemetry, occupant data, and vehicle state signals are already within VSS scope
-- **Fleet Management Data Group (FMDG)**: fleet registration, CDL, and commercial vehicle use cases align directly with ongoing FMDG work
+- **Commercial and Fleet Vehicle Expert Group**: fleet registration, CDL, and commercial vehicle use cases align directly with ongoing work
 - **ACEA FMS / Heavy Duty**: the Commercial Driver's License and Long-Haul Trucker Safety use cases extend naturally into COVESA's heavy-duty vehicle work
 
 Hosting the vehicle credential vocabulary at COVESA creates a natural home for a new expert group focused on verifiable vehicle and driver credentials, potentially attracting new COVESA members from the insurance and legal identity sectors.
