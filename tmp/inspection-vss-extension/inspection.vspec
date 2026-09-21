@@ -1,0 +1,401 @@
+# COVESA VSS overlay — proposed signals for vehicle inspection evidence
+# Companion to reports/vehicle-inspection-credential-data-requirements.md §11.11
+# Base: VSS 6.1. Apply with vss-tools: --overlays tmp/inspection-vss-extension/inspection.vspec
+# Status: PROPOSAL for discussion in the COVESA Commercial and Fleet Vehicle Group; not adopted.
+
+#
+# Tire tread depth — per wheel, alongside existing Tire.Pressure / RubberTemperature
+#
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.TreadDepth:
+  datatype: float
+  type: sensor
+  unit: mm
+  min: 0
+  description: Minimum remaining tread depth across the main grooves.
+  comment: Measured (gauge, drive-over scanner) or estimated (wheel-speed or tire-mounted-sensor model); see TreadDepthSource.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.TreadDepthInner:
+  datatype: float
+  type: sensor
+  unit: mm
+  min: 0
+  description: Remaining tread depth in the innermost main groove.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.TreadDepthCenter:
+  datatype: float
+  type: sensor
+  unit: mm
+  min: 0
+  description: Remaining tread depth in the central main groove(s).
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.TreadDepthOuter:
+  datatype: float
+  type: sensor
+  unit: mm
+  min: 0
+  description: Remaining tread depth in the outermost main groove.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.IsTreadDepthLow:
+  datatype: boolean
+  type: sensor
+  description: True when TreadDepth is at or below the applicable legal or fleet threshold.
+  comment: Threshold is jurisdiction- and axle-specific (e.g. 1.6 mm; 3.2 mm steer axle in China and US commercial vehicles).
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.TreadDepthSource:
+  datatype: string
+  type: sensor
+  allowed: ['MEASURED_GAUGE', 'MEASURED_SCANNER', 'ESTIMATED_WHEEL_SPEED', 'ESTIMATED_TIRE_SENSOR', 'UNKNOWN']
+  description: Provenance of the TreadDepth value.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.TreadDepthTimestamp:
+  datatype: string
+  type: sensor
+  unit: iso8601
+  description: Time at which TreadDepth was last measured or estimated.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.Identifier:
+  datatype: string
+  type: attribute
+  description: Tire identity (DOT/TIN serial or RFID EPC) so wear history follows the tire rather than the wheel position.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.IsRetread:
+  datatype: boolean
+  type: attribute
+  description: True if the fitted tire is a retread.
+
+#
+# Malfunction indicator — catalogue home for the MIL state removed with the OBD branch in VSS 6.0
+#
+Vehicle.Diagnostics.IsMILOn:
+  datatype: boolean
+  type: sensor
+  description: Malfunction Indicator Lamp (check-engine) commanded on.
+
+Vehicle.Diagnostics.ReadinessMonitors:
+  datatype: string[]
+  type: sensor
+  allowed: ['MISFIRE', 'FUEL_SYSTEM', 'COMPREHENSIVE_COMPONENT', 'CATALYST', 'HEATED_CATALYST', 'EVAPORATIVE_SYSTEM', 'SECONDARY_AIR', 'OXYGEN_SENSOR', 'OXYGEN_SENSOR_HEATER', 'EGR_VVT', 'NMHC_CATALYST', 'NOX_AFTERTREATMENT', 'BOOST_PRESSURE', 'EXHAUST_GAS_SENSOR', 'PM_FILTER']
+  description: Emissions readiness monitors reported complete (ready) since last DTC clear.
+  comment: Complements DTCCount/DTCList for I/M programmes; monitors not listed are incomplete or unsupported.
+
+Vehicle.Diagnostics.DistanceSinceDTCClear:
+  datatype: float
+  type: sensor
+  unit: km
+  description: Distance travelled since diagnostic trouble codes were last cleared.
+  comment: Catalogue counterpart of the OBD-overlay DistanceSinceDTCClear; detects codes cleared immediately before inspection.
+
+#
+# Lighting — defect signals for light groups that have none today
+#
+Vehicle.Body.Lights.Beam.Low.AimDeviation:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Vertical beam aim deviation from nominal as measured by an aim tester or by ADAS camera self-calibration.
+  comment: Positive = aimed high. Populated by inspection equipment or by vehicles with automatic headlamp levelling diagnostics.
+
+Vehicle.Body.Horn.IsDefect:
+  datatype: boolean
+  type: sensor
+  description: Horn circuit fault detected.
+
+#
+# Steering and suspension condition
+#
+Vehicle.Chassis.SteeringWheel.IsPowerSteeringError:
+  datatype: boolean
+  type: sensor
+  description: Power-steering system fault detected.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Suspension:
+  type: branch
+  description: Suspension condition at this wheel.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Suspension.IsDamperDefect:
+  datatype: boolean
+  type: sensor
+  description: Shock absorber / damper fault detected (vehicles with electronic damping or ride-height sensing).
+
+#
+# Brakes — add service-brake performance where the vehicle can measure it
+#
+Vehicle.Chassis.Axle.Row1.Brake:
+  type: branch
+  description: Axle-level service brake performance (wheel-level brake signals are under Wheel.*.Brake).
+
+Vehicle.Chassis.Axle.Row1.Brake.EfficiencyRatio:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Axle braking force as a percentage of axle load, as measured on a roller brake tester or estimated from deceleration and load.
+  comment: EU Directive 2014/45/EU Annex I minimum service-brake efficiency thresholds apply per category.
+
+Vehicle.Chassis.Axle.Row1.Brake.ImbalanceRatio:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Left/right braking force imbalance across the axle.
+
+#
+# Exhaust and noise
+#
+Vehicle.Powertrain.CombustionEngine.Exhaust:
+  type: branch
+  description: Exhaust system condition.
+
+Vehicle.Powertrain.CombustionEngine.Exhaust.IsLeakDetected:
+  datatype: boolean
+  type: sensor
+  description: Exhaust system leak or aftertreatment tamper detected by the engine controller.
+
+Vehicle.Exterior.NoiseLevel:
+  datatype: float
+  type: sensor
+  unit: dB
+  description: Stationary exhaust / pass-by noise level measured at inspection (A-weighted).
+
+#
+# Restraints
+#
+Vehicle.Cabin.Seat.Row1.DriverSide.Seatbelt:
+  type: branch
+  description: Seat-belt condition for this seat.
+
+Vehicle.Cabin.Seat.Row1.DriverSide.Seatbelt.IsDefect:
+  datatype: boolean
+  type: sensor
+  description: Seat-belt buckle, pretensioner or retractor fault detected.
+
+#
+# Derived / calculated signals — no direct sensor; description states the computation and how a value is assigned
+#
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.WearRate:
+  datatype: float
+  type: sensor
+  unit: mm
+  description: Tread loss per 10,000 km, derived from successive TreadDepth values (measured or estimated) divided by TraveledDistance between them; refined by load, pressure and road-class history where available.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.EstimatedRemainingDistance:
+  datatype: float
+  type: sensor
+  unit: km
+  description: Distance until TreadDepth reaches the applicable legal threshold, calculated as (TreadDepth - threshold) / WearRate. Set to 0 when IsTreadDepthLow is true.
+
+Vehicle.Chassis.SteeringWheel.FreePlayAngle:
+  datatype: float
+  type: sensor
+  unit: degrees
+  description: Steering free play, derived as the SteeringWheel.Angle travelled before Axle.Row1.SteeringAngle begins to respond, measured over slow steering reversals at standstill or low speed. Exceeding the jurisdiction's limit (typically 10-30 degrees depending on vehicle class) indicates linkage wear; equivalent to the inspector's manual play check.
+
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Suspension.DampingRatio:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Damper effectiveness derived from the decay of wheel or body vertical acceleration after a road input (or from a shaker-plate suspension tester at inspection), expressed as a percentage of nominal. Values below the tester threshold (commonly 40 percent) indicate a worn damper.
+
+Vehicle.Body.Lights.Beam.Low.AimDeviationSource:
+  datatype: string
+  type: sensor
+  allowed: ['MEASURED_AIM_TESTER', 'ESTIMATED_ADAS_CAMERA', 'ESTIMATED_LEVELLING_SYSTEM', 'UNKNOWN']
+  description: How AimDeviation was obtained. ESTIMATED_ADAS_CAMERA is derived from the forward camera's view of the vehicle's own beam cut-off on a flat surface; ESTIMATED_LEVELLING_SYSTEM from automatic headlamp levelling diagnostics.
+
+Vehicle.Powertrain.CombustionEngine.EstimatedCatalystEfficiency:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Catalyst conversion efficiency estimated by the engine controller from upstream and downstream oxygen sensor switching ratio (the basis of the OBD catalyst monitor). Proxy for tailpipe emissions where no analyser is present; not a substitute for a measured value in jurisdictions that require one.
+
+#
+# Inspection assessment branch — items that today can only be assessed by a human inspector.
+# Values are assigned by the inspector (or an inspection-station device) and written to the vehicle
+# so they travel with it and can be compared at the next inspection. Grades follow Directive 2014/45/EU
+# Article 7: NONE (no deficiency), MINOR, MAJOR, DANGEROUS. Jurisdictions with pass/fail only map PASS->NONE, FAIL->MAJOR.
+#
+Vehicle.Inspection:
+  type: branch
+  description: Results of the most recent roadworthiness inspection, including inspector-assessed items with no sensor coverage.
+
+Vehicle.Inspection.Timestamp:
+  datatype: string
+  type: sensor
+  unit: iso8601
+  description: Date and time of the most recent inspection.
+
+Vehicle.Inspection.Result:
+  datatype: string
+  type: sensor
+  allowed: ['PASS', 'PASS_WITH_MINOR_DEFICIENCIES', 'FAIL', 'FAIL_DANGEROUS']
+  description: Overall inspection result.
+
+Vehicle.Inspection.NextDueDate:
+  datatype: string
+  type: sensor
+  unit: iso8601
+  description: Date by which the next periodic inspection is due.
+
+Vehicle.Inspection.Jurisdiction:
+  datatype: string
+  type: sensor
+  description: ISO 3166-2 code of the jurisdiction whose rules the inspection was performed under (e.g. US-NY, DE-BY, CA-ON).
+
+Vehicle.Inspection.CredentialReference:
+  datatype: string
+  type: sensor
+  description: Identifier (URN/UUID) of the VehicleInspectionCredential issued for this inspection.
+
+Vehicle.Inspection.Bodywork:
+  type: branch
+  description: Body and structure, assessed visually.
+
+Vehicle.Inspection.Bodywork.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed condition of body panels, bumpers, doors, hinges and load-bearing structure. Assigned by visual and tactile inspection for corrosion, cracks, sharp edges, insecure or missing parts; graded per the jurisdiction's defect manual.
+
+Vehicle.Inspection.Underbody:
+  type: branch
+  description: Chassis, subframe and underbody, assessed on a lift or over a pit.
+
+Vehicle.Inspection.Underbody.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed corrosion or damage to chassis members, mountings, brake and fuel lines. Assigned by visual inspection and hammer/probe test of structural sections.
+
+Vehicle.Inspection.Glazing:
+  type: branch
+  description: Windshield and windows.
+
+Vehicle.Inspection.Glazing.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed windshield and window condition - cracks or chips in the driver's field of view, delamination, non-compliant tint, obstructions. Assigned visually; tint by light-transmission meter where the jurisdiction sets a limit.
+
+Vehicle.Inspection.Mirrors:
+  type: branch
+  description: Rear-view and exterior mirrors.
+
+Vehicle.Inspection.Mirrors.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed presence, security, glass condition and adjustability of required mirrors or camera-monitor systems. Mirror electrical state is available from Body.Mirrors; glass condition is visual only.
+
+Vehicle.Inspection.Steering:
+  type: branch
+  description: Steering system mechanical condition.
+
+Vehicle.Inspection.Steering.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed steering linkage, joints, rack mounting and boots, checked by rocking the wheels and turning the steering at standstill. Free play may be taken from Chassis.SteeringWheel.FreePlayAngle where computed.
+
+Vehicle.Inspection.Suspension:
+  type: branch
+  description: Suspension mechanical condition.
+
+Vehicle.Inspection.Suspension.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed springs, dampers, bushes, ball joints and mountings, checked visually and with a play detector. Damper effectiveness may be taken from Wheel.*.Suspension.DampingRatio where computed.
+
+Vehicle.Inspection.WheelAlignment:
+  type: branch
+  description: Wheel geometry.
+
+Vehicle.Inspection.WheelAlignment.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Alignment assessed by side-slip plate or alignment rig at inspection, or inferred from uneven tread wear (TreadDepthInner vs TreadDepthOuter) between inspections.
+
+Vehicle.Inspection.WheelAlignment.SideSlip:
+  datatype: float
+  type: sensor
+  unit: mm
+  description: Side-slip measured on the inspection lane plate, in metres per kilometre expressed as mm/m.
+
+Vehicle.Inspection.Exhaust:
+  type: branch
+  description: Exhaust system condition and analyser-measured emissions.
+
+Vehicle.Inspection.Exhaust.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed exhaust security, leaks, corrosion and presence of required aftertreatment components, checked visually and audibly with the engine running.
+
+Vehicle.Inspection.Exhaust.CO:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Carbon monoxide concentration measured by the station's exhaust gas analyser at the test condition (idle or raised idle) prescribed by the jurisdiction.
+
+Vehicle.Inspection.Exhaust.HC:
+  datatype: float
+  type: sensor
+  unit: ppm
+  description: Hydrocarbon concentration measured by the station's exhaust gas analyser.
+
+Vehicle.Inspection.Exhaust.NOx:
+  datatype: float
+  type: sensor
+  unit: ppm
+  description: Nitrogen oxides concentration measured by the station's analyser (where the jurisdiction tests NOx).
+
+Vehicle.Inspection.Exhaust.Lambda:
+  datatype: float
+  type: sensor
+  description: Air-fuel equivalence ratio measured by the station's analyser at raised idle.
+
+Vehicle.Inspection.Exhaust.Opacity:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Diesel smoke opacity (or absorption coefficient converted to percent) measured by the station's opacimeter under free acceleration.
+
+Vehicle.Inspection.Exhaust.ParticleNumber:
+  datatype: float
+  type: sensor
+  description: Particle number concentration in particles per cubic centimetre measured by a PN counter at idle (Netherlands, Belgium, Germany procedures; proposed EU-wide).
+
+Vehicle.Inspection.Restraints:
+  type: branch
+  description: Seat belts and restraint anchorages.
+
+Vehicle.Inspection.Restraints.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed webbing, buckles, retractors and anchorages, checked by pulling each belt to full extension and loading the buckle. Electrical faults may be taken from Seat.*.Seatbelt.IsDefect.
+
+Vehicle.Inspection.Lights:
+  type: branch
+  description: Lighting items requiring visual or instrument assessment.
+
+Vehicle.Inspection.Lights.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed lens condition, colour, security and aim of all lamps. Function is taken from Body.Lights.*.IsOn/IsDefect cycled during the inspection; aim from Body.Lights.Beam.Low.AimDeviation.
+
+Vehicle.Inspection.Brakes:
+  type: branch
+  description: Brake items requiring test-lane measurement.
+
+Vehicle.Inspection.Brakes.Condition:
+  datatype: string
+  type: sensor
+  allowed: ['NONE', 'MINOR', 'MAJOR', 'DANGEROUS', 'NOT_ASSESSED']
+  description: Inspector-assessed condition of discs, drums, hoses, pipes and linkages; performance taken from Chassis.Axle.*.Brake.EfficiencyRatio and ImbalanceRatio measured on the roller brake tester.
+
+Vehicle.Inspection.Brakes.ParkingBrakeEfficiency:
+  datatype: float
+  type: sensor
+  unit: percent
+  description: Parking brake force as a percentage of vehicle weight, measured on the roller brake tester or by hold test on a gradient.
