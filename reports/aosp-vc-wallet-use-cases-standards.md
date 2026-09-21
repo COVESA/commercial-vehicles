@@ -1,6 +1,6 @@
 # Digital Wallet for the COVESA AOSP Platform: Use Cases and Open-Source Foundations
 
-**Date:** 2026-08-12  
+**Date:** 2026-08-12 (fact-checked and updated 2026-09-21 — see Revision Notes at end)  
 **Author:** Ted Guild (COVESA)  
 **Intended audience:** COVESA AOSP App Framework Standardization Group  
 **Related work:** COVESA Vehicle Credentials Vocabulary (VCV), COVESA In-Car Wallet project, W3C VC v2.0, ISO 18013-5
@@ -9,7 +9,7 @@
 
 ## Purpose
 
-DRAFT - contains known flaws wrt regulations and workflows
+DRAFT — regulatory and workflow details remain to be validated with the relevant authorities.
 
 This document is a proposal input for the COVESA AOSP App Framework Standardization Group to consider whether to establish a **digital wallet workstream** within the COVESA AOSP SDK.
 
@@ -27,9 +27,9 @@ Two distinct automotive Android ecosystems are relevant here:
 
 **Android Automotive OS (AAOS)** is Google's commercial automotive Android product. Vehicles shipping with Google Automotive Services (GAS) get the full Google stack — Google Maps, Google Play, Google Pay, and the Android Digital Credentials API via Google Play Services. GAS is a licensing agreement; the wallet and identity credential functionality it provides is not open source and not available without Google's involvement.
 
-**COVESA AOSP App Framework Standardization Group** works on the complementary open-source layer: AOSP *without* GAS. Chaired by representatives from FORVIA, BMW, and GM, this group standardizes shared libraries (the COVESA SDK) that enable automotive apps to work across any AOSP-based head unit, regardless of manufacturer or GAS licensing status. Current workstreams include UnifiedPush Notifications, Entertainment Stream, Emulator, and Vehicle Data. Digital wallet is not yet a COVESA AOSP workstream — it is a gap.
+**COVESA AOSP App Framework Standardization Group** works on the complementary open-source layer: AOSP *without* GAS. Chaired by representatives from FORVIA, BMW, and GM, this group standardizes shared libraries (the COVESA SDK) that enable automotive apps to work across any AOSP-based head unit, regardless of manufacturer or GAS licensing status. Current workstreams are UnifiedPush Notifications, Entertainment, Emulator, Data, and the COVESA SDK itself (with an Automotive AOSP App Host under discussion). Digital wallet is not yet a COVESA AOSP workstream — it is a gap.
 
-**COVESA In-Car Wallet – Payments & Orchestration** is a separate COVESA project (also called "Vehicle as a Wallet") focused on the payment and transaction layer. Active participants include GM, Infineon, Verra Mobility, Pair Point, Sheeva.AI, FIDO Alliance, Starfish, and Mavi. Its primary focus is in-vehicle payments (toll, parking, EV charging, fuel), with some overlap into authentication via the FIDO Alliance connection. A white paper is in progress and Plug & Charge (ISO 15118) demonstrations have taken place.
+**COVESA In-Car Wallet – Payments & Orchestration** is a separate COVESA project (also called "Vehicle as a Wallet") focused on the payment and transaction layer. It is led by Mavi and Starfish; participants include GM, Infineon, Worldpay, Appsfactory, Endava, and (as additional or pending members) Verra Mobility, Pair Point, Sheeva.AI and the FIDO Alliance. Its primary focus is in-vehicle payments (toll, parking, EV charging, fuel), with some overlap into authentication via the FIDO Alliance connection. A white paper is in progress and a Plug & Charge demonstration was planned for the May 2025 AMM in Berlin.
 
 **The gap:** Neither the COVESA AOSP group nor the In-Car Wallet project currently addresses W3C VC / ISO 18013-5 credential management as a distinct software layer on AOSP head units without GAS. That gap is where the use cases below live, and where an open-source wallet solution is needed.
 
@@ -53,8 +53,8 @@ Before the full enumeration below, this section identifies the three use cases t
 | Priority | Use Case | Why Head-Unit Holds (Not Phone) | Standards Ready |
 |---|---|---|---|
 | 1 | UC-1: mDL / vehicle registration presentation | Registration is vehicle-bound; phone is an acceptable relay but not the primary holder | ISO 18013-5, COVESA VCV — production |
-| 2 | UC-5 / UC-6: Proof of Insurance + eFNOL | POI must be accessible when phone is absent/damaged; eFNOL is autonomously triggered by sensors | COVESA VCV fnolEndpoint, OpenID4VCI — active |
-| 3 | UC-10: Plug & Charge / EV fleet billing | ISO 15118-20 vehicle-to-charger authentication requires no phone; fleet billing binds to vehicle identity | ISO 15118-20 — EU AFIR-mandated by Jan 2027 |
+| 2 | UC-5 / UC-6: Proof of Insurance + eFNOL | POI must be accessible when phone is absent/damaged; eFNOL is autonomously triggered by sensors | COVESA VCV ProofOfInsuranceCredential (released); `fnolEndpoint` and FNOL credential proposed (see FNOL report); OpenID4VCI 1.0 final |
+| 3 | UC-10: Plug & Charge / EV fleet billing | ISO 15118-20 vehicle-to-charger authentication requires no phone; fleet billing binds to vehicle identity | ISO 15118-20 — required for new/renovated EU charging points from 1 Jan 2027 (Delegated Regulation (EU) 2025/656 under AFIR) |
 
 Everything else in this document is **extended scope** — real use cases, but better addressed once the MVP verifier and core holder capabilities are proven.
 
@@ -67,21 +67,23 @@ Everything else in this document is **extended scope** — real use cases, but b
 | W3C VC Data Model v2.0 | W3C Recommendation (May 2025) |
 | W3C Data Integrity (EdDSA, ECDSA) | W3C Recommendation (May 2025) |
 | W3C Bitstring Status List v1.0 | W3C Recommendation (May 2025) |
-| W3C VC API | W3C CCG Community Report (active); HTTP API for wallet-to-issuer and wallet-to-verifier interactions; used in CA DMV deployment |
-| SD-JWT VC | IETF RFC (2025) |
-| ISO 18013-5 (mDL) | Published; TSA-accepted in 21+ US states |
-| ISO 18013-7 | Published (2025); Digital Credentials API binding |
-| OpenID4VP 1.0 | Final specification |
-| OpenID4VCI 1.0 | Final specification |
+| W3C VC API | W3C CCG Community Report (active); HTTP API for issuer and verifier interactions; used by CA DMV's OpenCred verifier |
+| SD-JWT | IETF RFC 9901 (Nov 2025) |
+| SD-JWT VC | IETF Internet-Draft (draft-ietf-oauth-sd-jwt-vc, in IESG processing as of Sept 2026) |
+| ISO/IEC 18013-5:2021 (mDL) | Published; TSA accepts mDLs from 21 states plus Puerto Rico (Sept 2026) |
+| ISO/IEC TS 18013-7:2025 | Technical Specification (2025 edition replaces 2024); adds Digital Credentials API binding (Annex C) |
+| OpenID4VP 1.0 | Final specification (July 2025) |
+| OpenID4VCI 1.0 | Final specification (Sept 2025) |
 | Android Digital Credentials API | GA (April 2025); GAS devices only |
-| eIDAS 2.0 / EUDIW | Member state rollout deadline: late 2026 |
-| ISO 15118-20 | EU AFIR mandate: all new public chargers by Jan 2027 |
-| COVESA Vehicle Credentials Vocabulary | Active; CA DMV production deployment underway |
-| IEEE 1609.2 / 1609.2.1 | Published; SCMS pseudonym certificate management for V2X |
+| eIDAS 2.0 / EUDIW | Member states must provide at least one wallet by 24 December 2026 (Reg. (EU) 2024/1183 Art. 5a) |
+| ISO 15118-20 | Delegated Regulation (EU) 2025/656 (amending AFIR Annex II): EN ISO 15118-20 communication required for recharging points newly installed or renovated from 1 Jan 2027 (public and private); ISO 15118-2 for public points from 8 Jan 2026 |
+| COVESA Vehicle Credentials Vocabulary | Active (v1 release candidates); defines Registration, Title, VehicleInsurance and ProofOfInsurance credentials; CA DMV production deployment underway |
+| IEEE 1609.2 / 1609.2.1 | Published; IEEE 1609.2.1-2026 (July 2026) supersedes the 2022 edition; SCMS pseudonym certificate management for V2X |
 | 3GPP NR-V2X (Release 16/17) | Published; PC5 sidelink unicast/groupcast/broadcast |
 | ETSI ITS / EN 302 636 series | Published; European C-ITS message and security standards |
 | SAE J2735 | Published; Basic Safety Message and V2X data dictionary |
-| 5GAA SCMS Certificate Policy (TR) | Active (2025); North American V2X credential policy |
+| 5GAA SCMS Certificate Policy (TR) | Published July 2025 ("Credential Management Supporting V2X Commercial Deployments"); North American V2X credential policy |
+| CCC Digital Key | Release 4.x current (DK 4.0 announced July 2025); BLE/UWB/NFC phone-as-key |
 
 ---
 
@@ -130,31 +132,32 @@ Five open-source wallet projects are viable candidates for automotive deployment
 
 | Project | License | Language | Credential Formats | Protocols | GAS-Free? | Maturity | Automotive Fit |
 |---|---|---|---|---|---|---|---|
-| OWF Multipaz | Apache 2.0 | Kotlin Multiplatform | mdoc, SD-JWT VC, W3C VC | OpenID4VP, 18013-5/7, Digital Credentials API | Yes | Pre-1.0 (~late 2026) | **Best fit** |
-| EUDI Reference Wallet | Apache 2.0 | Kotlin (Android) | mdoc, SD-JWT VC, W3C VC | OpenID4VP, OpenID4VCI, 18013-5 | Partial | Production (EU pilot) | Good for EU scope |
-| Procivis One | Apache 2.0 | Rust core + React Native | mdoc, SD-JWT VC, W3C VC | OID4VC, 18013-5 | Yes (core) | Production | Moderate fit |
-| OWF Bifold | Apache 2.0 | React Native | W3C VC, AnonCreds | DIDComm, OID4VC | Yes | Production | Low fit (phone-first) |
-| SpruceID Credible / SpruceKit | Apache 2.0 / MIT | Flutter + Rust | W3C VC, DID, 18013-5 | OpenID4VP, DIDComm | Yes | Production | Moderate fit |
+| OWF Multipaz | Apache 2.0 | Kotlin Multiplatform | mdoc, SD-JWT VC (no W3C VC Data Model) | OpenID4VP, OpenID4VCI, 18013-5/7, Digital Credentials API | Yes | Pre-1.0 (0.101, Sept 2026; 1.0 expected late 2026/early 2027) | **Best fit** |
+| EUDI Reference Wallet | Libraries Apache 2.0; UI app EUPL-1.2 | Kotlin (Android) | mdoc, SD-JWT VC (no W3C VC) | OpenID4VP, OpenID4VCI, 18013-5 | Partial | Reference implementation (basis for LSPs and national wallets; not itself production) | Good for EU scope |
+| Procivis One | Apache 2.0 | Rust core + React Native | mdoc, SD-JWT VC, W3C VC (JSON-LD/JWT) | OID4VC, 18013-5 | Yes (core) | Production (Swiss public sector) | Moderate fit |
+| OWF Bifold | Apache 2.0 | React Native | W3C VC, AnonCreds, SD-JWT VC, mdoc (via Credo) | DIDComm, OID4VC | Yes | Production; removed from OWF active roster June 2026 | Low fit (phone-first) |
+| SpruceID SpruceKit Mobile | Apache 2.0 (Rust crates MIT/Apache 2.0) | Kotlin/Swift over Rust | W3C VC, DID, 18013-5, SD-JWT | OpenID4VP, 18013-5 | Yes | Pre-1.0, unaudited (Credible app archived 2025) | Moderate fit |
 
 ---
 
 ### 1. OWF Multipaz (OpenWallet Foundation)
 
-**Repository:** `openwallet-foundation-labs/identity-credential` (renamed Multipaz)  
-**Origin:** Originally Google's Android Identity Credential library; donated to OWF
+**Repository:** `openwallet-foundation/multipaz` (formerly `openwallet-foundation-labs/identity-credential`; OWF Growth-stage project since June 2026)  
+**Origin:** Originally Google's Android Identity Credential library; contributed to OWF Labs in 2023. Google stated in Sept 2026 that Multipaz is a foundational component of Google Wallet and of the EUDI reference wallet.
 
-**What it is:** Kotlin Multiplatform libraries providing core building blocks for ISO mdoc, SD-JWT VC, and W3C VC credential management. Includes proximity presentment (BLE/NFC per ISO 18013-5) and remote presentment via OpenID4VP / ISO 18013-7. Targets Android, iOS, and server-side environments from a shared codebase.
+**What it is:** Kotlin Multiplatform libraries providing core building blocks for ISO mdoc and IETF SD-JWT VC credential management (it does not implement the W3C VC Data Model; W3C involvement is via the Digital Credentials API). Includes proximity presentment (BLE/NFC per ISO 18013-5) and remote presentment via OpenID4VP / ISO 18013-7. Targets Android, iOS, and server-side environments from a shared codebase.
 
 **Strengths for AOSP head units:**
 - Written in Kotlin — the native language for AOSP app development; minimal porting overhead
-- Android-specific library (`identity-android`) uses Android Keystore for hardware-backed key storage, and Android BLE/NFC APIs directly — no GAS dependency
+- Android support (`AndroidKeystoreSecureArea` in the core library) uses Android Keystore/StrongBox for hardware-backed key storage, and Android BLE/NFC APIs directly — no GAS dependency
 - Supports ISO 18013-5 proximity presentment natively, which is the protocol for roadside/weigh-station presentation scenarios
 - Covers ISO 18013-7:2025 (Digital Credentials API binding) for when GAS is present
 - Zero-knowledge proof support (Google Longfellow-ZK integration) for privacy-preserving selective disclosure
 - OWF governance means no single-vendor lock-in; royalty-free
 
 **Weaknesses:**
-- Pre-1.0 (API and storage formats subject to change); production-readiness expected late 2026 or early 2027
+- Pre-1.0 (API and storage formats subject to change); 1.0 expected late 2026 or early 2027
+- No W3C VC Data Model (JSON-LD) support — COVESA VCV credentials would need to be issued as SD-JWT VC or mdoc, or the library extended
 - No head-unit–specific adaptations yet; proximity presentment assumes a handheld form factor (screen, NFC reader at user height)
 - No UX layer — purely a library; the COVESA AOSP group would need to build the wallet application on top
 - Kotlin Multiplatform maturity on iOS/embedded is still evolving; Android path is solid
@@ -166,19 +169,19 @@ Five open-source wallet projects are viable candidates for automotive deployment
 ### 2. EU Digital Identity Wallet (EUDI) Reference Implementation
 
 **Repository:** `eu-digital-identity-wallet/eudi-app-android-wallet-ui` and associated libraries  
-**Governance:** European Commission; open source under Apache 2.0
+**Governance:** European Commission; libraries under Apache 2.0, the wallet UI app under EUPL-1.2
 
-**What it is:** The official Android reference implementation for eIDAS 2.0 compliance. Comprises a wallet UI app and a set of modular Android libraries (`eudi-lib-android-wallet-core`, `eudi-lib-android-iso18013-data-transfer`, `eudi-lib-android-verifier-core`). Production-deployed in EU member state pilots.
+**What it is:** The official Android reference implementation for eIDAS 2.0 compliance. Comprises a wallet UI app and modular Android libraries (`eudi-lib-android-wallet-core`, which now also contains the former `eudi-lib-android-iso18013-data-transfer`, and `eudi-lib-android-verifier-core`); the libraries build on Multipaz. Supports mdoc and SD-JWT VC, not W3C VC Data Model credentials. It is the basis for the Large Scale Pilots and national wallet implementations; the repository itself is not offered as production software.
 
 **Strengths for AOSP head units:**
-- Production-quality Android code with active EU government backing; libraries are more mature than Multipaz for immediate deployment
+- Well-exercised Android code with active EU government backing; the libraries wrap Multipaz with EUDI-specific issuance, presentation and trust handling
 - Strongest eIDAS 2.0 / EUDIW alignment — if EU fleet vehicles must present EUDIW-compatible credentials, this is the reference implementation to build from
 - Modular: the core library layer can be extracted from the phone UI and embedded in a head unit app
 - OpenID4VCI + OpenID4VP implemented and tested in real deployments
 
 **Weaknesses:**
 - Architecturally phone-centric; the UI shell assumes a touchscreen smartphone, not a vehicle display or ambient/voice interaction
-- Regulatory focus is EU identity documents (PID, mDL); fleet and commercial vehicle credential types (USDOT, IFTA, VCV) are out of scope without extension
+- Regulatory focus is EU identity documents (PID, mDL); no W3C VC Data Model support, so fleet and commercial vehicle credential types (USDOT, IFTA, VCV) are out of scope without extension
 - GAS-independence not a design goal — tested primarily on standard Android devices with Play Services; adaptation for GAS-free AOSP requires validation
 - EC governance moves at regulatory pace; adding COVESA VCV credential types would require either forking or upstream contribution with EU Commission alignment
 
@@ -195,14 +198,14 @@ Five open-source wallet projects are viable candidates for automotive deployment
 
 **Strengths for AOSP head units:**
 - Rust core is portable to constrained environments; could be compiled for embedded Android without the full React Native layer
-- Broad credential format support (ISO 18013-5, SD-JWT VC, W3C VC, AnonCreds) out of the box
-- eIDAS 2.0 compliance already validated in production (Swiss public sector deployments)
+- Broad credential format support (ISO 18013-5 mdoc, SD-JWT VC, W3C VC as JSON-LD and JWT) out of the box
+- eIDAS 2.0 alignment and production experience in the Swiss public sector (City of Zug live credentials since 2024; interoperability-tested with the federal swiyu wallet)
 - Apache 2.0 license with no CLA requirement
 
 **Weaknesses:**
 - React Native UI layer is not appropriate for automotive head units; OEMs would need to replace it entirely with an AOSP-native UI
 - Rust-on-Android build chain adds complexity for COVESA AOSP integration compared to a Kotlin-native library
-- No Android Keystore / hardware security integration in the open-source layer (handled in the proprietary backend); GAS-free key management needs custom work
+- Hardware key storage (Android Keystore/StrongBox, Secure Enclave, HSM) is in the open-source core, but the automotive head-unit configuration has not been exercised
 - Swiss-government–centric development priorities; automotive credential types not represented in the roadmap
 
 **Verdict:** The Rust core is technically sound and could underpin an embedded wallet. But the architectural split between Rust core and React Native UX means more integration work than Multipaz for AOSP head units. Best suited if a cross-platform (Android + non-Android IVI OS) wallet is required.
@@ -215,46 +218,46 @@ Five open-source wallet projects are viable candidates for automotive deployment
 **Governance:** OpenWallet Foundation; Apache 2.0  
 **Origin:** Hyperledger Aries Bifold
 
-**What it is:** A React Native mobile agent built on OWF Credo-ts (TypeScript), targeting Hyperledger Aries / AnonCreds and W3C VC ecosystems. Designed for person-held identity wallets in government and enterprise contexts.
+**What it is:** A React Native mobile agent built on OWF Credo-ts (TypeScript), targeting Hyperledger Aries / AnonCreds, W3C VC, SD-JWT VC and (via Credo's mdoc module) ISO 18013-5/-7 ecosystems. Designed for person-held identity wallets in government and enterprise contexts. Bifold was removed from the OWF active project roster in June 2026, although development continues on GitHub.
 
 **Strengths for AOSP head units:**
-- OWF governance; active community; production deployments (several Canadian province government ID programs)
+- Active community; production deployment as BC Wallet (Government of British Columbia), which BC is now folding into its BC Services Card app
 - Strong DIDComm v2 + AnonCreds support, which is relevant if the issuer ecosystem uses Hyperledger-stack issuers
 - React Native allows a single codebase across Android and iOS if dual-platform support is needed
 
 **Weaknesses:**
 - React Native is a poor fit for automotive head unit deployment: heavy JavaScript runtime, assumes phone UX paradigms (touch, notifications, biometric auth), not designed for ambient or voice interaction
-- AnonCreds / Aries DIDComm lineage is diverging from ISO 18013-5 and OpenID4VP mainstream; ISO mDL and mdoc formats are not natively supported
-- No hardware key storage integration in the base library; relies on React Native Keychain which does not use Android Keystore directly
+- AnonCreds / Aries DIDComm lineage; ISO mdoc and OpenID4VP 1.0 support arrived later via Credo and is less proven than in Multipaz
+- Wallet unlock key is derived via react-native-keychain; hardware-backed (Keystore/Secure Enclave) keys are used only for OID4VC credential binding via `expo-secure-environment`
 - No automotive credential types; community focus is government ID and enterprise HR credentials
 - GAS-free AOSP not tested; React Native on AOSP without Play Services has known limitations
 
-**Verdict:** Not recommended as the primary wallet for an AOSP head unit. The Aries/AnonCreds lineage is misaligned with ISO 18013-5 and COVESA VCV. React Native on non-GAS AOSP is a significant engineering risk. Consider only if interoperability with an existing Hyperledger Aries issuer ecosystem is a hard requirement.
+**Verdict:** Not recommended as the primary wallet for an AOSP head unit. The Aries/AnonCreds lineage and phone-first UX are misaligned with head-unit needs, and its OWF governance status is now uncertain. React Native on non-GAS AOSP is a significant engineering risk. Consider only if interoperability with an existing Hyperledger Aries issuer ecosystem is a hard requirement.
 
 ---
 
-### 5. SpruceID / SpruceKit
+### 5. SpruceID / SpruceKit Mobile
 
-**Repositories:** `spruceid/wallet` (Credible, Flutter), `spruceid/openid4vp`, various Rust libraries  
-**Governance:** Spruce Systems, Inc.; Apache 2.0 / MIT  
+**Repositories:** `spruceid/sprucekit-mobile` (Rust core with Kotlin and Swift SDKs and a sample "Showcase" app), `spruceid/ssi`, `spruceid/openid4vp`. The earlier `spruceid/wallet` (Credible, Flutter), `spruceid/mobile-sdk-*` and `spruceid/didkit` repositories are archived (2025).  
+**Governance:** Spruce Systems, Inc.; Apache 2.0 (Rust crates MIT/Apache 2.0)  
 
-**What it is:** A family of open-source libraries and a reference wallet (Credible, built in Flutter) covering W3C VC, DIDs, ISO 18013-5 mDL, and OpenID4VP. SpruceKit provides native Kotlin, Swift, and Rust library bindings alongside the Flutter app. Spruce has been a significant contributor to mDL interoperability work with AAMVA, NIST, Google, Panasonic, Samsung, and CA DMV.
+**What it is:** A family of open-source libraries covering W3C VC, DIDs, ISO 18013-5 mDL, SD-JWT and OpenID4VP, with native Kotlin and Swift bindings over a Rust core. SpruceID built the CA DMV Wallet app and has been a significant contributor to mDL interoperability work with AAMVA, NIST, Google, Panasonic, Samsung, and CA DMV. The current `sprucekit-mobile` README describes it as pre-audit, exploratory work.
 
 **Strengths for AOSP head units:**
-- Rust libraries (`ssi`, `didkit`) compile to native Android via JNI — no React Native or Flutter runtime required in a pure library deployment
-- Strong track record in mDL / ISO 18013-5 interoperability; CA DMV mDL deployment used SpruceID technology
+- Rust libraries (`ssi`, `sprucekit-mobile` core) compile to native Android — no React Native or Flutter runtime required
+- Strong track record in mDL / ISO 18013-5 interoperability; the CA DMV Wallet was built by SpruceID
 - OpenID4VP implementation is well-tested; used in production government identity programs
 - Apache 2.0 / MIT licensing; no CLA
 - Actively engaged with AAMVA and state DMV programs — relevant given CA DMV's COVESA VCV involvement
 
 **Weaknesses:**
-- Credible (Flutter wallet app) is a phone-first application; the Flutter runtime adds overhead inappropriate for embedded head units
-- The Rust library layer is the valuable part for automotive; extracting it from the Flutter application and writing AOSP-native UX is significant work
+- The reference app is phone-first; AOSP-native UX must be written
+- `sprucekit-mobile` is pre-1.0 and not yet security-audited; several predecessor repositories were archived within a year, so API stability is a risk
 - DID method support is broad but opinionated (heavy `did:key`, `did:web`); some COVESA VCV use cases may require additional DID method registration
 - Company-controlled project (Spruce Systems) rather than foundation-governed; roadmap depends on commercial priorities
 - Less direct community overlap with COVESA than OWF projects
 
-**Verdict:** The Rust library core (especially the ISO 18013-5 and OpenID4VP layers) is production-grade and has the strongest government mDL deployment track record of any open-source option. For a COVESA AOSP wallet where CA DMV interoperability is a near-term requirement, SpruceID's Rust libraries are worth integrating as a dependency even if Multipaz is the primary framework.
+**Verdict:** SpruceID has the strongest government mDL deployment track record of any vendor here (CA DMV Wallet), but its current open-source mobile stack is pre-1.0 and unaudited. For a COVESA AOSP wallet where CA DMV interoperability is a near-term requirement, SpruceID's Rust libraries are worth evaluating as a dependency even if Multipaz is the primary framework.
 
 ---
 
@@ -266,7 +269,9 @@ Given the constraints of GAS-free AOSP, COVESA governance, and the credential ty
 
 **EU compliance layer:** EUDI library set (`eudi-lib-android-wallet-core`) as a dependency for eIDAS 2.0 attestation types; keeps EU jurisdiction credentials conformant without rebuilding that work.
 
-**mDL / government credential interoperability:** SpruceID Rust libraries (via JNI) where CA DMV or AAMVA interoperability is the immediate requirement and Multipaz's pre-1.0 state is a risk.
+**mDL / government credential interoperability:** SpruceID Rust libraries where CA DMV or AAMVA interoperability is the immediate requirement, noting that both Multipaz and SpruceKit Mobile are pre-1.0.
+
+**W3C VC Data Model support:** None of Multipaz, the EUDI libraries or SpruceKit Mobile alone covers COVESA VCV credentials expressed as W3C VC 2.0 JSON-LD. Either VCV credentials are also profiled as SD-JWT VC, or a JSON-LD/Data Integrity verifier (e.g. from Credo, walt.id, Procivis One or Digital Bazaar's libraries) is added alongside Multipaz.
 
 **COVESA In-Car Wallet alignment:** The payment and orchestration layer (toll, parking, EV) developed by the In-Car Wallet project should be integrated as the transaction layer sitting above the VC wallet layer — the VC wallet provides identity and credential management; In-Car Wallet provides payment orchestration and UX.
 
@@ -290,7 +295,7 @@ The reader — an officer's handheld scanner, a weigh station fixed terminal, a 
 
 #### Sub-mode A2: Extended-range / high-speed (C-V2X PC5 Sidelink)
 
-The head unit and a Roadside Unit (RSU), police vehicle terminal, or port gantry exchange credentials over the 5.9 GHz NR-V2X PC5 sidelink. Range is 50–300 m; operates at vehicle speeds up to 250 km/h with latency below 20 ms. No cellular network is involved — it is a direct radio link, making it the same class of exchange as A1 but freed from the proximity and low-speed constraints of BLE/NFC.
+The head unit and a Roadside Unit (RSU), police vehicle terminal, or port gantry exchange credentials over the 5.9 GHz NR-V2X PC5 sidelink. Typical range is on the order of 50–300 m (5GAA evaluations use ~220 m) and 3GPP TS 22.186 requirements span 3–100 ms latency by use case, with ~20 ms typical for cooperative awareness; the 3GPP requirement covers absolute vehicle speeds up to 250 km/h (500 km/h relative). No cellular network is involved — it is a direct radio link, making it the same class of exchange as A1 but freed from the proximity and low-speed constraints of BLE/NFC.
 
 Under 3GPP NR-V2X (Release 16/17), the PC5 sidelink supports three transmission modes — broadcast (unsuitable for VC due to privacy exposure), groupcast (useful for port clusters and convoys), and unicast (a bidirectional, authenticated session between two UEs, the mode relevant to VC exchange). Over a unicast PC5 session the vehicle can transmit: (1) a **VC URI** pointing to its credential endpoint for out-of-band retrieval; (2) a **compact VC or VP directly** (SD-JWT VC or ISO mdoc, within NR-V2X payload limits — compact formats preferred); or (3) respond to a **VP request from the RSU** mirroring the QR-initiated flow in ISO 18013-7 but using the sidelink radio as transport.
 
@@ -303,7 +308,7 @@ Under 3GPP NR-V2X (Release 16/17), the PC5 sidelink supports three transmission 
 
 The pseudonym certificate tells the RSU "this message came from a legitimate V2X device." The VC tells the RSU "this specific vehicle has a valid registration, is insured by X, and is authorized to carry hazmat cargo." Both are needed.
 
-*Standards (current):* 3GPP NR-V2X Release 16/17; IEEE 1609.2 / 1609.2.1; ETSI EN 302 636-x; SAE J2735; 5GAA SCMS Certificate Policy.
+*Standards (current):* 3GPP NR-V2X Release 16/17; IEEE 1609.2 / 1609.2.1-2026; ETSI EN 302 636-x; SAE J2735; 5GAA SCMS Certificate Policy (July 2025).
 *Standards (gaps):* No current standard defines VC payload types for SAE J2735 / ETSI ITS messages; no OpenID4VP profile exists for PC5 unicast transport; no trust federation mechanism links SCMS trust anchors to VC issuer trust anchors. These three gaps must be resolved before interoperable deployment is possible — COVESA, 5GAA, and 3GPP SA6 are the natural homes for the work.
 
 **Operational differences between A1 and A2:**
@@ -333,7 +338,7 @@ The pseudonym certificate tells the RSU "this message came from a legitimate V2X
 - Holder-binding to a vehicle (rather than a person) requires adaptation of ISO 18013-5 engagement assumptions (antenna placement, QR display location, pairing model)
 
 **Additional weaknesses of A2 (C-V2X):**
-- NR-V2X unicast session establishment takes 50–200 ms; not suitable for sub-100 ms pass-through
+- NR-V2X PC5 unicast requires a link-establishment handshake before data exchange (tens to a few hundred milliseconds in published evaluations); not suitable for sub-100 ms pass-through
 - LTE-V2X (Release 14, widely deployed) supports only broadcast sidelink, not unicast — unicast requires NR-V2X (Release 16+) RSUs, which are not yet widely deployed as of 2026
 - Head units require a dedicated C-V2X modem (e.g., Qualcomm 9150 C-V2X) in addition to the cellular modem; not all non-GAS AOSP vehicles will have this
 - Privacy risk: a unique VC (VIN-linked claims) over V2X radio is linkable across RSUs even with SCMS pseudonym rotation; selective disclosure and short-lived tokens are important mitigations
@@ -356,7 +361,7 @@ The pseudonym certificate tells the RSU "this message came from a legitimate V2X
 
 A cloud service initiates or responds to a credential exchange with the vehicle head unit as the client endpoint. Two sub-patterns:
 
-**Issuance (push):** A cloud issuer — insurer, fleet manager, DMV — delivers a new or updated VC to the head unit wallet via OpenID4VCI or the **W3C VC API** over HTTPS. The head unit is the holder. This is how the POI credential gets into the wallet in the first place, and how fleet assignment credentials are provisioned at scale. The W3C VC API (W3C CCG Community Report) defines a standardized HTTP interface for credential issuance and presentation that is used in CA DMV production deployments; OpenID4VCI is the OpenID Foundation's parallel issuance protocol. Both are viable — implementors should choose based on ecosystem alignment (W3C VC API for COVESA VCV / CA DMV integration; OpenID4VCI for broader OpenID4VP ecosystem interop).
+**Issuance (push):** A cloud issuer — insurer, fleet manager, DMV — delivers a new or updated VC to the head unit wallet via OpenID4VCI or the **W3C VC API** over HTTPS. The head unit is the holder. This is how the POI credential gets into the wallet in the first place, and how fleet assignment credentials are provisioned at scale. The W3C VC API (W3C CCG Community Report) defines a standardized HTTP interface for credential issuance and presentation; CA DMV's OpenCred verifier (Digital Bazaar) supports it alongside OpenID4VP. OpenID4VCI is the OpenID Foundation's parallel issuance protocol. Both are viable — implementors should choose based on ecosystem alignment (W3C VC API for COVESA VCV / CA DMV integration; OpenID4VCI for broader OpenID4VP ecosystem interop).
 
 **Presentation request (pull):** A cloud-connected verifier sends an OpenID4VP presentation request to the vehicle over a network channel; the head unit wallet responds with a signed verifiable presentation. The canonical example in this document is the police Mobile Data Terminal (MDT): the officer's MDT is a ruggedized computer connected to law enforcement cloud systems — CJIS, NCIC, and the state DMV — via secure cellular. Rather than carrying a proximity NFC reader, the officer sends a presentation request from the MDT to the vehicle's registered network endpoint. The vehicle's head unit wallet processes the request, applies the requested selective disclosure, and responds with a signed VP. The MDT receives the VP, verifies the signature locally, and can simultaneously forward it to NCIC or a state DMV lookup for cross-reference against outstanding warrants or suspended licenses. This approach reaches vehicles before an officer has left their cruiser, and works even if the officer's reader hardware is unavailable.
 
@@ -582,7 +587,7 @@ The following ASCII diagrams show the credential exchange flow for each model. I
 
 ## VSS Data in Verifiable Credentials
 
-COVESA's Vehicle Signal Specification (VSS) defines a standardized, hierarchical tree of named signals describing vehicle state — speed, acceleration, GPS position, odometer, fuel level, tire pressure, airbag deployment status, engine diagnostics, driver behavior metrics, and more. VSS signals are identified by dot-notation paths (e.g., `Vehicle.Speed`, `Vehicle.ADAS.ABS.IsActive`, `Vehicle.CurrentLocation.Latitude`) and carry typed values with defined units.
+COVESA's Vehicle Signal Specification (VSS) defines a standardized, hierarchical tree of named signals describing vehicle state — speed, acceleration, GPS position, odometer, fuel level, tire pressure, airbag deployment status, engine diagnostics, driver behavior metrics, and more. VSS signals are identified by dot-notation paths (e.g., `Vehicle.Speed`, `Vehicle.ADAS.ABS.IsEngaged`, `Vehicle.CurrentLocation.Latitude`) and carry typed values with defined units. Signal paths below follow VSS 6.1 (Sept 2026); note that the `Vehicle.OBD` branch was removed in VSS 6.0 (available only as an overlay) and a new `Vehicle.Safety` branch (`Rollover`, `IsFire`, `IsSubmersed`, and others) was added in 6.1.
 
 When vehicle data needs to accompany a VC — either as proof of what the vehicle was doing at a moment in time, or as the subject of a consent or insurance claim — there are two distinct integration patterns. Both are appropriate in different circumstances and are not mutually exclusive.
 
@@ -599,7 +604,7 @@ VSS signal values are encoded directly as claims within the VC's credential subj
   "@context": ["https://www.w3.org/ns/credentials/v2", "https://covesa.org/vss/v1"],
   "type": ["VerifiableCredential", "VehicleIncidentCredential"],
   "issuer": "did:example:vehicle:VIN1234567890",
-  "issuanceDate": "2026-08-12T14:32:01Z",
+  "validFrom": "2026-08-12T14:32:01Z",
   "credentialSubject": {
     "id": "did:example:vehicle:VIN1234567890",
     "incidentTimestamp": "2026-08-12T14:31:58Z",
@@ -607,8 +612,9 @@ VSS signal values are encoded directly as claims within the VC's credential subj
     "Vehicle.Acceleration.Longitudinal": -8.3,
     "Vehicle.CurrentLocation.Latitude": 37.4419,
     "Vehicle.CurrentLocation.Longitude": -122.1430,
-    "Vehicle.Chassis.Axle.Row1.Airbag.IsDeployed": true,
-    "Vehicle.OBD.RelativeThrottlePosition": 0.0
+    "Vehicle.Cabin.Seat.Row1.DriverSide.Airbag.IsDeployed": true,
+    "Vehicle.Safety.Rollover": "NONE",
+    "Vehicle.Chassis.Accelerator.PedalPosition": 0
   }
 }
 ```
@@ -667,9 +673,9 @@ In these cases the VC acts as a **capability token and provenance anchor**: it a
 
 - **UBI telematics data collection (UC-9):** The insurer needs weeks of trip data. The UBI VC encodes the driver's consent (which signals, what time window, which aggregation policy) and a VISS endpoint URI. The telematics platform pulls the VSS stream from the vehicle using the VC as the authorization token. At renewal, a separate attestation VC encodes the aggregate summary statistics derived from that stream.
 
-- **Fleet compliance reporting — HOS / IFTA (UC-15, UC-19):** The VC is the driver identity and consent assertion; the underlying ELD log (VSS-formatted trip segments, driver activity states keyed to `Vehicle.Driver.*` signals) is submitted as a structured file to FMCSA. The VC's hash commitment lets FMCSA verify the log file matches what the vehicle signed.
+- **Fleet compliance reporting — HOS / IFTA (UC-15, UC-19):** The VC is the driver identity and consent assertion; the underlying ELD log (VSS-formatted trip segments, driver activity states — VSS has no duty-status signals today, so an ELD extension would be needed) is submitted as a structured file to FMCSA. The VC's hash commitment lets FMCSA verify the log file matches what the vehicle signed.
 
-- **Emissions compliance (UC-19, fleet):** `Vehicle.OBD.*` and `Vehicle.Powertrain.*` signals over a reporting period are submitted as a VSS data file. The VC asserts vehicle identity and calibration attestation; the emissions authority verifies the data file against the VC's hash.
+- **Emissions compliance (UC-19, fleet):** `Vehicle.Diagnostics.*`, `Vehicle.Powertrain.*` and OBD-overlay signals over a reporting period are submitted as a VSS data file. The VC asserts vehicle identity and calibration attestation; the emissions authority verifies the data file against the VC's hash.
 
 - **Port and border pre-clearance (UC-20):** The cargo manifest VC references a VSS-encoded cargo sensor payload (load cell readings, refrigeration temperature via `Vehicle.Cargo.*` signals if defined in the VSS extension) as a separate attachment. Customs can verify both the manifest credential and the sensor data independently.
 
@@ -678,7 +684,7 @@ In these cases the VC acts as a **capability token and provenance anchor**: it a
 **Design constraints for dual-channel pattern:**
 
 - **Hash commitment:** The VC must carry a cryptographic commitment to the VSS data (SHA-256 content hash of the data file, or Merkle root of a time-series batch) at issuance time. This requires the data to be finalized before the VC is signed — workable for historical data (trip logs, incident snapshots post-processing) but not for live streams; for streaming use cases, the VC scopes the consent and the stream is authenticated by the vehicle's DID separately.
-- **VSS endpoint reference:** A `vssEndpoint` URI in the VC credentialSubject (analogous to the existing `fnolEndpoint` pattern in COVESA VCV) points to the VISS server or data API where the VSS data can be retrieved. The verifier authenticates to this endpoint using the VC as the bearer credential.
+- **VSS endpoint reference:** A `vssEndpoint` URI in the VC credentialSubject (analogous to the `fnolEndpoint` proposed for COVESA VCV in the FNOL report) points to the VISS server or data API where the VSS data can be retrieved. The verifier authenticates to this endpoint using the VC as the bearer credential.
 - **COVESA VISS alignment:** W3C Vehicle Information Service Specification (VISS) v2 defines the REST/WebSocket API for accessing VSS signals from a vehicle server. The dual-channel pattern maps naturally onto VISS: the VC is the authorization artifact; VISS is the data delivery channel. A `vssEndpoint` claim pointing to a VISS server URI, combined with OpenID4VP for VC presentation as the auth step, would constitute a complete, standards-based vehicle data sharing protocol.
 
 ---
@@ -687,20 +693,20 @@ In these cases the VC acts as a **capability token and provenance anchor**: it a
 
 | UC | VSS Role | Pattern | Key VSS Signals |
 |---|---|---|---|
-| UC-6 (eFNOL) | Incident evidence — speed, location, airbag at moment of impact | Embedded in VC | `Vehicle.Speed`, `Vehicle.Acceleration.*`, `Vehicle.CurrentLocation.*`, `Vehicle.Chassis.Axle.Row1.Airbag.IsDeployed` |
+| UC-6 (eFNOL) | Incident evidence — speed, location, airbag at moment of impact | Embedded in VC | `Vehicle.Speed`, `Vehicle.Acceleration.*`, `Vehicle.CurrentLocation.*`, `Vehicle.Cabin.Seat.Row1.DriverSide.Airbag.IsDeployed`, `Vehicle.Safety.Rollover` |
 | UC-7 (Theft alert) | Location trajectory from detection to recovery | Embedded in VC (array of timestamped samples) | `Vehicle.CurrentLocation.*`, `Vehicle.Speed` |
 | UC-8 (eCall bridge) | Same incident snapshot as UC-6, parallel insurer channel | Embedded in VC | Same as UC-6 |
 | UC-9 (UBI) | Consent scope and aggregate stats in VC; raw trip data via separate feed | Dual-channel | `Vehicle.TraveledDistance`, `Vehicle.Speed` (aggregated), `Vehicle.Driver.AttentiveProbability` (if available) |
 | UC-10 (Plug & Charge) | Charging session receipt — energy delivered, SoC delta | Embedded in VC | `Vehicle.Powertrain.TractionBattery.StateOfCharge.Current`, session timestamps |
-| UC-15 (ELD / HOS) | Driver activity log submitted as VSS file; VC provides identity + hash commitment | Dual-channel | `Vehicle.Driver.*`, trip waypoints, duty-status state transitions |
-| UC-19 (Fleet compliance) | Emissions and diagnostic data filed as VSS batch; VC is identity + calibration attestation | Dual-channel | `Vehicle.OBD.*`, `Vehicle.Powertrain.*` |
+| UC-15 (ELD / HOS) | Driver activity log submitted as VSS file; VC provides identity + hash commitment | Dual-channel | `Vehicle.TraveledDistance`, `Vehicle.CurrentLocation.*`, duty-status transitions (VSS ELD extension needed) |
+| UC-19 (Fleet compliance) | Emissions and diagnostic data filed as VSS batch; VC is identity + calibration attestation | Dual-channel | `Vehicle.Diagnostics.DTCList`, `Vehicle.Powertrain.*` (OBD PIDs via the VSS OBD overlay) |
 | UC-20 (Border pre-clearance) | Cargo sensor attestation attached to cargo manifest VC | Dual-channel | `Vehicle.Cargo.*` (VSS extension), refrigeration temp, load sensor readings |
 
 ---
 
 ### Gap: VSS Claim Vocabulary in COVESA VCV
 
-Currently, COVESA VCV defines credential types for vehicle registration, proof of insurance, and incident reporting, but does not yet formally register VSS signal paths as named claim types within the VCV vocabulary. Doing so would:
+Currently, COVESA VCV defines credential types for vehicle registration, vehicle title, vehicle insurance and proof of insurance (an incident/FNOL credential and `fnolEndpoint` are proposed in the FNOL report but not yet in the vocabulary), and does not register VSS signal paths as named claim types within the VCV vocabulary. Doing so would:
 
 1. Allow verifiers to resolve the semantics of VSS claims in a VC without a custom context extension per deployment
 2. Enable selective disclosure policies to be expressed in terms of named VSS claim groups (e.g., "location claims", "powertrain claims") rather than individual signal paths
@@ -719,7 +725,7 @@ This is a concrete work item for COVESA VCV in coordination with the Commercial 
 A law enforcement officer or roadside inspector presents a QR code or NFC tap; the head unit wallet presents the vehicle registration credential and the driver's mDL via ISO 18013-5 / OpenID4VP. Selective disclosure limits the presentation to legally required fields.
 
 *Standards:* ISO 18013-5, OpenID4VP 1.0, COVESA VCV (registration), W3C VC selective disclosure.  
-*Wallet layer:* Proximity presentment (BLE/NFC from head unit); Multipaz `identity-android` proximity APIs.
+*Wallet layer:* Proximity presentment (BLE/NFC from head unit); Multipaz proximity presentment APIs.
 
 *Exchange model:* **Direct A1 (stationary), Direct A2 (C-V2X V2V moving), and Cloud-to-Client MDT (B).**
 
@@ -771,8 +777,8 @@ The fleet management system delivers the assignment credential to the head unit 
 
 The insurer issues a POI VC to the vehicle's head unit wallet containing: policy number, coverage type, validity period, insurer DID, and a `fnolEndpoint` URI. The driver presents the POI VC on demand via selective disclosure.
 
-*Standards:* W3C VC v2.0, COVESA VCV (proof of insurance), OpenID4VP 1.0, W3C DIDs.  
-*Gap:* `fnolEndpoint` URI scheme to be standardized in VCV.
+*Standards:* W3C VC v2.0, COVESA VCV (`ProofOfInsuranceCredential`, released), OpenID4VP 1.0, W3C DIDs.  
+*Gap:* `fnolEndpoint` property proposed in the FNOL report; not yet in VCV.
 
 *Exchange model:* **Cloud-to-Client (issuance) and Cloud-to-Cloud (DMV verification at registration renewal).**
 
@@ -784,9 +790,9 @@ The insurer pushes the POI VC to the head unit at policy inception and renewal v
 
 On a triggering event (collision detection via airbag deployment, G-force threshold, or geofence breach), the head unit wallet generates and signs an incident VC (GPS coordinates, speed/heading, VSS-encoded sensor readings, timestamp, vehicle DID) and delivers it to the `fnolEndpoint` in the POI credential. A co-signature from an attached telematics device attests sensor calibration and data integrity. FNOL lag reduced from days to minutes.
 
-*Standards:* W3C VC v2.0, COVESA VSS, COVESA VCV (incident), W3C DIDs, OpenID4VP 1.0.  
+*Standards:* W3C VC v2.0, COVESA VSS, proposed COVESA VCV incident/FNOL credential (see FNOL report), W3C DIDs, OpenID4VP 1.0.  
 *Reference:* [COVESA FNOL VC Standards Report](https://github.com/COVESA/commercial-vehicles/blob/main/reports/connected-vehicle-fnol-vc-standards.md)  
-*VSS:* **Embedded (Pattern 1).** `Vehicle.Speed`, `Vehicle.Acceleration.Longitudinal`, `Vehicle.CurrentLocation.*`, `Vehicle.Chassis.Axle.Row1.Airbag.IsDeployed`, `Vehicle.OBD.RelativeThrottlePosition` — signed as VC claims at the moment of impact.
+*VSS:* **Embedded (Pattern 1).** `Vehicle.Speed`, `Vehicle.Acceleration.Longitudinal`, `Vehicle.CurrentLocation.*`, `Vehicle.Cabin.Seat.Row1.DriverSide.Airbag.IsDeployed`, `Vehicle.Safety.Rollover`, `Vehicle.Chassis.Accelerator.PedalPosition` — signed as VC claims at the moment of impact.
 
 *Exchange model:* **Cloud-to-Cloud (primary).**
 
@@ -798,7 +804,7 @@ The head unit autonomously submits the signed incident VC to the insurer's `fnol
 
 On detection of unauthorized vehicle movement, the head unit wallet generates a signed theft VC with location trajectory. The wallet routes a verifiable presentation to the insurer endpoint and optionally to a law enforcement endpoint. Vehicle DID provides a cryptographic chain of custody persistent even if the head unit is later tampered with (key material in TEE/StrongBox).
 
-*Standards:* W3C VC v2.0, OpenID4VP 1.0, W3C DIDs, COVESA VCV (theft incident).  
+*Standards:* W3C VC v2.0, OpenID4VP 1.0, W3C DIDs, proposed COVESA VCV theft incident credential (S2DM `VehicleTheftIncident` model exists in the Commercial Vehicles WG).  
 *VSS:* **Embedded (Pattern 1).** Time-series array of `Vehicle.CurrentLocation.*` and `Vehicle.Speed` samples from detection event onward; small enough to embed directly as a VC claim array.
 
 *Exchange model:* **Cloud-to-Cloud (primary).**
@@ -811,7 +817,7 @@ The vehicle submits the theft VC to the insurer and law enforcement endpoints au
 
 EU eCall notifies emergency services; a parallel VC-signed channel notifies the insurer simultaneously. The head unit wallet holds both the emergency contact credential and the POI VC and fires both channels on the same trigger event.
 
-*Standards:* EU eCall (112), W3C VC v2.0, COVESA VCV (POI + incident).  
+*Standards:* EU eCall (112; EN 15722 MSD), W3C VC v2.0, COVESA VCV (POI; incident credential proposed).  
 *VSS:* **Embedded (Pattern 1).** Same snapshot as UC-6 — the parallel insurer VC carries the same VSS signal claims as the FNOL credential, signed by the vehicle DID at the moment the eCall trigger fires.
 
 *Exchange model:* **Cloud-to-Cloud (primary).**
@@ -839,8 +845,8 @@ Issuance is cloud-to-client: the insurer delivers the UBI credential to the head
 
 The head unit wallet holds an EV contract credential. The vehicle authenticates to the charging station via ISO 15118-20, with the contract credential linking payment authorization to a verifiable vehicle identity (DMV-issued). Fleet billing splits charging costs to the correct cost center automatically. ISO 15118 is a vehicle-to-charger protocol — head unit is the only viable holder.
 
-*Standards:* ISO 15118-20 (EU AFIR mandate Jan 2027), W3C VC v2.0, COVESA VCV (vehicle identity, EV contract).  
-*Alignment:* COVESA In-Car Wallet project (Plug & Charge demonstrations underway).  
+*Standards:* ISO 15118-20 (required for new/renovated EU charging points from 1 Jan 2027 under Delegated Regulation (EU) 2025/656), W3C VC v2.0, COVESA VCV (vehicle registration; an EV contract credential would be a new type).  
+*Alignment:* COVESA In-Car Wallet project.  
 *VSS:* **Embedded (Pattern 1) for fleet billing.** `Vehicle.Powertrain.TractionBattery.StateOfCharge.Current` (start and end), energy delivered, and session timestamps embedded in the charging session VC — creating a verifiable receipt bound to the vehicle DID for fleet cost allocation and tax credit documentation.
 
 *Exchange model:* **Direct A1 (at the charger, primary) and Cloud-to-Client (contract provisioning).**
@@ -854,7 +860,7 @@ The ISO 15118-20 protocol is inherently proximity-based: the vehicle connects to
 The head unit wallet presents a payment credential bound to a vehicle identity credential for toll processing. Identity binding enables fleet accounts, dispute resolution, and tax documentation. Verification at highway speed.
 
 *Standards:* W3C VC v2.0, ISO 18013-5, OpenID4VP 1.0, COVESA VCV (vehicle identity).  
-*Industry precedent:* Mastercard/Volvo/NC Turnpike pilot (2025).
+*Industry precedent:* North Carolina Turnpike Authority / Volvo Car USA / Mastercard in-car toll payment pilot (announced Sept 2025).
 
 *Exchange model:* **Direct A1 (DSRC), Direct A2 (C-V2X gantry), Cloud-to-Client (B, cellular-assisted), and Cloud-to-Cloud (C, fleet reconciliation).**
 
@@ -890,9 +896,9 @@ The fuel station's point-of-sale system can act as either a proximity reader (NF
 
 **UC-14: mDL-Based Driver Authentication**
 
-Driver's mDL (stored in head unit wallet, or relayed from phone via BLE/NFC per CCC Digital Key 3.0) authenticates at ignition. Cryptographic verification replaces PIN entry; the head unit logs a verifiable driver identity record.
+Driver's mDL (stored in head unit wallet, or relayed from phone via BLE/NFC alongside a CCC Digital Key session) authenticates at ignition. Cryptographic verification replaces PIN entry; the head unit logs a verifiable driver identity record.
 
-*Standards:* ISO 18013-5, CCC Digital Key 3.0, W3C DIDs, OpenID4VP 1.0.
+*Standards:* ISO 18013-5, CCC Digital Key (Release 4.x), W3C DIDs, OpenID4VP 1.0.
 
 *Exchange model:* **Direct A1 (primary), with Cloud-to-Client for revocation.**
 
@@ -905,7 +911,7 @@ Driver authentication at ignition is a local proximity exchange: the mDL credent
 FMCSA ELD mandate requires verified driver identity for Hours of Service logs. A VC-based driver credential presented to the head unit replaces manual driver ID entry, binds the HOS log to a cryptographically verified identity.
 
 *Standards:* ISO 18013-5, W3C VC v2.0, FMCSA ELD mandate (49 CFR Part 395).  
-*VSS:* **Dual-channel (Pattern 2).** The driver identity VC carries the cryptographic identity binding; the HOS log itself — trip segments, duty-status state transitions keyed to `Vehicle.Driver.*` signals, odometer readings from `Vehicle.TraveledDistance` — is submitted as a structured VSS-formatted file with the VC providing a hash commitment and identity attestation.
+*VSS:* **Dual-channel (Pattern 2).** The driver identity VC carries the cryptographic identity binding; the HOS log itself — trip segments, duty-status state transitions (an ELD extension to VSS would be needed; the `Vehicle.Driver` branch covers attention and fatigue, not duty status), odometer readings from `Vehicle.TraveledDistance` — is submitted as a structured VSS-formatted file with the VC providing a hash commitment and identity attestation.
 
 *Exchange model:* **Cloud-to-Cloud (HOS submission to FMCSA).**
 
@@ -941,7 +947,7 @@ At a physical terminal gate, proximity exchange via QR or NFC is the primary mod
 
 **UC-18: eIDAS 2.0 / EUDIW In-Vehicle Compliance**
 
-EU member states must offer EUDIW by late 2026; regulated sectors must accept them. An AOSP head unit wallet implementing the EUDIW attestation interface satisfies the in-vehicle presentation requirement for insurance cards, vehicle registration, and driver identity across EU jurisdictions.
+EU member states must offer at least one EUDI Wallet by 24 December 2026; regulated sectors must accept them. An AOSP head unit wallet implementing the EUDIW attestation interface satisfies the in-vehicle presentation requirement for insurance cards, vehicle registration, and driver identity across EU jurisdictions.
 
 *Standards:* eIDAS 2.0, EUDIW attestation format, W3C VC v2.0, ISO 18013-5.  
 *Wallet layer:* EUDI Android library set.
@@ -957,7 +963,7 @@ EUDIW credential issuance from member state providers is cloud-to-client (OpenID
 A single verifiable presentation from the head unit containing: USDOT number VC, vehicle inspection VC, emissions compliance VC, IFTA tax credential, driver qualification file VC. Revocation status checked at presentation time. Presented to shipper at dispatch or enforcement at roadside.
 
 *Standards:* W3C VC v2.0, Bitstring Status List, OpenID4VP 1.0, COVESA VCV (compliance bundle), FMCSA/DOT data schemas.  
-*VSS:* **Dual-channel (Pattern 2) for emissions and diagnostics.** The compliance bundle VC asserts vehicle identity, inspection status, and regulatory credentials. A separate VSS batch file of `Vehicle.OBD.*` and `Vehicle.Powertrain.*` readings over the reporting period is submitted alongside the VC for emissions compliance verification, with the VC carrying a hash commitment to the data file.
+*VSS:* **Dual-channel (Pattern 2) for emissions and diagnostics.** The compliance bundle VC asserts vehicle identity, inspection status, and regulatory credentials. A separate VSS batch file of `Vehicle.Diagnostics.*`, `Vehicle.Powertrain.*` and OBD-overlay readings over the reporting period is submitted alongside the VC for emissions compliance verification, with the VC carrying a hash commitment to the data file.
 
 *Exchange model:* **Direct A1 (roadside weigh station, stationary), Cloud-to-Cloud (C, pre-dispatch shipper), and Direct A2 (C-V2X, weigh station approach).**
 
@@ -1030,7 +1036,7 @@ Once the verifier layer is proven, add a holder library for the narrow set of us
 | GAS-free AOSP wallet architecture guidance | Document design constraints and tested configuration | COVESA AOSP group |
 | COVESA VCV credential types in Multipaz | Contribute VCV credential type definitions to OWF Multipaz | COVESA VCV + OWF |
 | In-Car Wallet integration spec | Define the interface between VC wallet layer and payment orchestration | COVESA In-Car Wallet project |
-| EUDIW attestation mapping | Map VCV types to EUDIW attestation rules (late 2026 deadline) | COVESA / eIDAS alignment |
+| EUDIW attestation mapping | Map VCV types to EUDIW attestation rules (Dec 2026 wallet deadline) | COVESA / eIDAS alignment |
 | Telematics device attestation VC | Define co-signer credential type in VCV for attached telematics hardware | COVESA VCV |
 | Vehicle network endpoint spec | Define a standardized DID service endpoint for cloud-to-client VP requests | COVESA VCV + IETF |
 | V2X VC application-layer profile | Define VC URI and compact VC payload types for NR-V2X application messages; profile OpenID4VP for PC5 unicast transport | COVESA + 5GAA + 3GPP SA6 |
@@ -1048,9 +1054,9 @@ Once the verifier layer is proven, add a holder library for the narrow set of us
 | **COVESA FNOL Report** | Technical architecture for insurance/FNOL use cases (UC-5 through UC-9); a wallet workstream would produce the implementation layer for that work. |
 | **OWF (OpenWallet Foundation)** | Home of Multipaz (recommended wallet library foundation). A formal COVESA–OWF collaboration would allow COVESA VCV credential types to be contributed upstream to Multipaz rather than maintained as a private fork. |
 | **W3C VC WG** | VCDM v2.0 and associated recommendations are the normative foundation. These use cases may inform the next W3C VC charter cycle's automotive/IoT work items. |
-| **W3C CCG / VC API** | The W3C VC API (CCG Community Report) is an HTTP-based wallet-to-issuer and wallet-to-verifier interface used in production by CA DMV. An AOSP wallet workstream should evaluate VC API alongside OpenID4VCI/4VP for COVESA VCV integration, given CA DMV's active deployment. |
-| **OpenID Foundation** | OpenID4VP 1.0 is the presentation protocol; ISO 18013-7:2025 binds it to the Digital Credentials API. Wallet workstream should track OpenID4VP profile work for automotive. |
-| **eIDAS 2.0 / EC** | EU member state rollout deadline is late 2026. COVESA AOSP wallet must support EUDIW attestation formats for EU-market vehicles; EUDI library set is the recommended dependency for this slice. |
+| **W3C CCG / VC API** | The W3C VC API (CCG Community Report) is an HTTP-based issuer and verifier interface; CA DMV's OpenCred verifier (Digital Bazaar) supports it alongside OpenID4VP. An AOSP wallet workstream should evaluate VC API alongside OpenID4VCI/4VP for COVESA VCV integration, given CA DMV's active deployment. |
+| **OpenID Foundation** | OpenID4VP 1.0 is the presentation protocol; ISO/IEC TS 18013-7:2025 binds it to the Digital Credentials API. Wallet workstream should track OpenID4VP profile work for automotive. |
+| **eIDAS 2.0 / EC** | EU member states must provide a wallet by 24 December 2026. COVESA AOSP wallet must support EUDIW attestation formats for EU-market vehicles; EUDI library set is the recommended dependency for this slice. |
 | **5GAA / C-V2X ecosystem** | C-V2X sidelink (Model A2) extends the Direct exchange model to highway-speed and extended-range scenarios: law enforcement V2V stops, border/port approach lanes, weigh station bypass, and toll gantries. A COVESA AOSP wallet workstream should coordinate with 5GAA on: (a) a VC URI or compact VC payload definition for V2X application messages; (b) a profile of OpenID4VP for PC5 unicast transport; (c) SCMS–to–VC-issuer trust federation. The V2X credential exchange gap is currently unaddressed by any active standards body. |
 | **3GPP SA6 / SA3** | 3GPP SA6 (application layer) and SA3 (security) cover NR-V2X application-layer security and ProSe (proximity services). A VC payload extension to the NR-V2X application layer would require SA6 engagement. |
 | **ETSI TC ITS** | European ITS standardization body (EN 302 636 series, ETSI C-ITS security). EU-deployed RSUs follow ETSI security norms; any European V2X VC exchange profile must align with ETSI C-ITS certificate policy, not only IEEE 1609.2. |
@@ -1063,13 +1069,17 @@ Once the verifier layer is proven, add a holder library for the narrow set of us
 - [COVESA AOSP App Framework Standardization Group](https://covesa.global/project/aosp-app-framework-standardization-group/)
 - [COVESA IVP as a Wallet proposed project](https://covesa.atlassian.net/wiki/spaces/WIK4/pages/39067223/IVP+as+a+Wallet+Proposed+Project)
 - [W3C VC API (CCG Community Report)](https://w3c-ccg.github.io/vc-api/)
-- [OWF Multipaz (identity-credential)](https://github.com/openwallet-foundation-labs/identity-credential)
+- [OWF Multipaz](https://github.com/openwallet-foundation/multipaz)
+- [Google Security Blog: Android StrongBox and open standards for digital credentials (Sept 2026)](https://blog.google/security/android-strongbox-and-open-standards-digital-credentials/)
+- [COVESA Vehicle Credentials Vocabulary](https://github.com/COVESA/vehicle-credentials-vocabulary)
+- [COVESA VSS 6.1 (CHANGELOG: OBD branch removal, Safety branch)](https://github.com/COVESA/vehicle_signal_specification)
 - [OWF Bifold Wallet](https://github.com/openwallet-foundation/bifold-wallet)
 - [EUDI Android Wallet UI](https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui)
 - [EUDI Android Wallet Core library](https://github.com/eu-digital-identity-wallet/eudi-lib-android-wallet-core)
-- [Procivis One Wallet](https://github.com/procivis/one-wallet)
-- [SpruceID Wallet (Credible)](https://github.com/spruceid/wallet)
-- [SpruceID CA DMV highlight](https://spruceid.com/customer-highlight/california-highlight)
+- [Procivis One Core](https://github.com/procivis/one-core) and [One Wallet](https://github.com/procivis/one-wallet)
+- [SpruceKit Mobile](https://github.com/spruceid/sprucekit-mobile)
+- [SpruceID: California DMV mobile driver's license](https://spruceid.com/success-stories/california-dmv-mobile-driver-license)
+- [CA DMV OpenCred verifier](https://github.com/stateofca/opencred)
 - [CA DMV Wallet](https://www.dmv.ca.gov/portal/ca-dmv-wallet/)
 - [CA DMV Vehicle Credentials](https://www.dmv.ca.gov/portal/ca-dmv-wallet/vehicles/)
 - [NIST: From DMV to Wallet](https://www.nist.gov/blogs/cybersecurity-insights/dmv-wallet-understanding-verifiable-digital-credential-issuance)
@@ -1081,7 +1091,13 @@ Once the verifier layer is proven, add a holder library for the narrow set of us
 - [OpenID4VP 1.0](https://openid.net/specs/openid-4-verifiable-presentations-1_0.html)
 - [ISO 15118 – Plug & Charge](https://en.wikipedia.org/wiki/ISO_15118)
 - [Self-Sovereign Identity for EV Charging (arXiv)](https://arxiv.org/html/2403.06632v1)
+- [NCDOT: NC Turnpike Authority, Volvo Car USA and Mastercard launch in-car toll payment pilot (Sept 2025)](https://www.ncdot.gov/news/press-releases/Pages/2025/2025-09-04-ncta-volvo-mastercard-launch-pilot.aspx)
 - [Mastercard in-car toll payment pilot (2025)](https://www.mastercard.com/us/en/news-and-trends/stories/2025/in-car-payments-toll-roads.html)
+- [IETF RFC 9901: Selective Disclosure for JWTs (SD-JWT)](https://www.rfc-editor.org/info/rfc9901) and [SD-JWT VC draft](https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/)
+- [Commission Delegated Regulation (EU) 2025/656 amending AFIR Annex II (ISO 15118-20)](https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=OJ:L_202500656)
+- [Regulation (EU) 2024/1183 (eIDAS 2.0)](https://eur-lex.europa.eu/eli/reg/2024/1183/oj/eng)
+- [IEEE 1609.2.1-2026](https://standards.ieee.org/ieee/1609.2.1/11855/)
+- [TSA Digital ID participating states](https://www.tsa.gov/digital-id/participating-states)
 - [OpenWallet Foundation](https://openwallet.foundation/)
 - [5GAA: C-V2X Explained](https://5gaa.org/c-v2x-explained/)
 - [5GAA: Credential Management Supporting V2X Commercial Deployments](https://5gaa.org/credential-management-supporting-v2x-commercial-deployments/)
@@ -1093,3 +1109,16 @@ Once the verifier layer is proven, add a holder library for the narrow set of us
 - [US DOT / ITS: Vehicle-to-Everything (V2X) Technology Executive Briefing (2025)](https://www.itskrs.its.dot.gov/briefings/executive-briefing/vehicle-everything-v2x-technology)
 - [IEEE 1609.2 / SCMS for V2X Security (overview)](https://www.emergentmind.com/topics/security-credential-management-system-scms)
 - [NIST: Public Safety Applications in 5G NR Systems with Sidelink](https://www.nist.gov/publications/towards-system-level-simulations-public-safety-applications-5g-nr-systems-sidelink)
+
+---
+
+## Revision Notes (2026-09-21)
+
+The August 2026 draft was re-verified against the COVESA project pages and wiki, the COVESA vehicle-credentials-vocabulary repository, VSS 6.1, the relevant W3C/IETF/ISO/OpenID/EU texts, and each wallet project's repository. Corrections:
+
+1. **COVESA VCV scope**: the vocabulary defines `VehicleRegistrationCredential`, `VehicleTitleCredential`, `VehicleInsuranceCredential` and `ProofOfInsuranceCredential` only. `fnolEndpoint`, incident/theft/FNOL credentials, EV contract, cargo manifest, driver endorsement and compliance-bundle types are proposals (mostly from the FNOL report), not released VCV terms; the text previously described `fnolEndpoint` as "active" and "existing".
+2. **VSS signal paths**: `Vehicle.Chassis.Axle.Row1.Airbag.IsDeployed` does not exist (correct: `Vehicle.Cabin.Seat.Row1.DriverSide.Airbag.IsDeployed`); `Vehicle.ADAS.ABS.IsActive` → `IsEngaged`; the `Vehicle.OBD` branch was removed in VSS 6.0 (overlay only), so `Vehicle.OBD.*` references were replaced with `Vehicle.Diagnostics.*` / `Vehicle.Powertrain.*` / OBD overlay; the new VSS 6.1 `Vehicle.Safety` branch (`Rollover`, `IsFire`, `IsSubmersed`) was added to the eFNOL evidence set; `Vehicle.Driver.*` has no duty-status signals, so the ELD/HOS mapping now notes an extension is needed. The JSON example uses VC 2.0 `validFrom` instead of the VC 1.1 `issuanceDate`.
+3. **Standards table**: SD-JWT is RFC 9901 (Nov 2025) but SD-JWT VC is still an Internet-Draft; ISO 18013-7 is a Technical Specification (ISO/IEC TS 18013-7:2025); OpenID4VP 1.0 final July 2025 and OpenID4VCI 1.0 final Sept 2025; eIDAS wallet deadline is 24 Dec 2026; the ISO 15118-20 requirement comes from Delegated Regulation (EU) 2025/656 (new or renovated public and private points from 1 Jan 2027) and mandates the communication standard rather than Plug & Charge as a service; IEEE 1609.2.1-2026 supersedes the 2022 edition; CCC Digital Key is at release 4.x, not 3.0; TSA acceptance is 21 states plus Puerto Rico.
+4. **COVESA groups**: AOSP App Framework workstreams now include the COVESA SDK; In-Car Wallet leads (Mavi, Starfish) and core participants (Worldpay, Appsfactory, Endava) added, pending participants labelled, and the Plug & Charge demo described as planned rather than completed.
+5. **Wallet projects**: Multipaz repository is `openwallet-foundation/multipaz` (OWF Growth since June 2026), supports mdoc and SD-JWT VC but not the W3C VC Data Model, and the `identity-android` module no longer exists; the EUDI reference wallet UI is EUPL-1.2, has no W3C VC support, builds on Multipaz, and is a reference rather than production software; Procivis One does not support AnonCreds and does include hardware key storage in its open-source core; SpruceID's Credible, mobile-sdk and didkit repositories are archived and the current stack is the pre-1.0 `sprucekit-mobile`; Bifold now supports mdoc and OID4VP 1.0 via Credo, uses hardware-backed keys for OID4VC binding, and was removed from the OWF active roster in June 2026. Added a note that none of the recommended primary libraries covers W3C VC 2.0 JSON-LD credentials on its own.
+6. **Other**: W3C VC API is used by CA DMV's OpenCred verifier (the CA DMV Wallet app was built by SpruceID); the toll pilot parties are NC Turnpike Authority, Volvo Car USA and Mastercard (Sept 2025); NR-V2X range/latency figures are now attributed as typical values from 3GPP TS 22.186 and 5GAA evaluations rather than stated as fixed numbers; source URLs updated (Multipaz repo, SpruceID success story, added VCV, VSS, RFC 9901, EU regulations, IEEE 1609.2.1-2026, TSA).
