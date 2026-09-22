@@ -2,7 +2,7 @@
 
 **Jurisdictions covered:** United States, Canada, European Union, Japan, South Korea, China, India  
 **Last updated:** 2026-09-21 (fact-checked revision of the 2026-07-23 draft — see Revision Notes at end)  
-**Related work:** [Connected Vehicle FNOL via Verifiable Credentials](connected-vehicle-fnol-vc-standards.md) and the POI/FNOL credential sketches in `tmp/poi-credential/` — W3C VC Data Model 2.0 and the COVESA Vehicle Credentials Vocabulary (`https://w3id.org/vvc`); [Digital Wallet for the COVESA AOSP Platform](aosp-vc-wallet-use-cases-standards.md)
+**Related work:** [Connected Vehicle FNOL via Verifiable Credentials](connected-vehicle-fnol-vc-standards.md) and the POI/FNOL credential sketches in `tmp/poi-credential/` — W3C VC Data Model 2.0 and the [COVESA Vehicle Credentials Vocabulary](`https://w3id.org/vvc`); [Digital Wallet for the COVESA AOSP Platform](aosp-vc-wallet-use-cases-standards.md)
 
 ---
 
