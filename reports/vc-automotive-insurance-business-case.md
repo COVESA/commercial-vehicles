@@ -19,6 +19,8 @@ COVESA's [Verifiable Vehicle Credentials (VVC) vocabulary](https://covesa.github
 
 Fraud reduction matters, but it is not the main point. The larger gain is **streamlining the business**. Every credential is structured, signed data with defined meaning. VCs are built on the W3C RDF / JSON-LD linked-data model, so the same data works for people, conventional software and AI.
 
+This report found no public production use of W3C VCs in auto insurance yet. The same pattern is live or piloted next door: EU health insurance cards in the EU Digital Identity Wallet, US health-plan cards, and insurer-issued motor policies in India's DigiLocker. US insurers have also run blockchain proof-of-insurance trials. §5 has the examples.
+
 ## 1. The Credential Family
 
 Each credential comes from the party that is authoritative for it. Credentials refer to each other rather than restating data, so the VIN lives only in the registration credential and the insurer never has to re-key it.
@@ -184,7 +186,27 @@ The phone wallet covers person-bound credentials (driver's licence) today. Vehic
 - [Digital Wallet for the COVESA AOSP Platform: Use Cases and Open-Source Foundations](https://github.com/COVESA/commercial-vehicles/blob/main/reports/aosp-vc-wallet-use-cases-standards.md). Insurance use cases UC-5 to UC-9 (POI, eFNOL, theft, eCall bridge, UBI).
 - [Open Source Wallet Solutions for AOSP: Comparison](https://github.com/COVESA/commercial-vehicles/blob/main/reports/aosp-open-source-wallets-comparison.md). Multipaz, Bifold, walt.id and others.
 
-## 5. Status and What Is Still Needed
+## 5. Current Use in the Insurance Industry
+
+**Short answer:** this report found no public, production deployment of W3C Verifiable Credentials in personal or commercial auto insurance, whether for proof of insurance, FNOL, claims or UBI (searched September 2026). The pattern is already in production or pilot in neighbouring insurance lines, and in auto insurance using earlier technology. That is the precedent for the business cases above.
+
+| Example | Line / region | What it does | Technology | Status |
+|---|---|---|---|---|
+| [DC4EU European Health Insurance Card (EHIC)](https://ec.europa.eu/digital-building-blocks/sites/spaces/EUDIGITALIDENTITYWALLET/pages/930453001/EHIC) | Public health insurance, EU | The citizen holds the EHIC as an attestation in an EU Digital Identity Wallet; a provider abroad verifies it on the spot | IETF SD-JWT VC, OpenID4VCI, data model based on W3C VC | Large-scale pilot (101 partners, 25 countries). Verification of healthcare rights fell [from about 30 minutes to 13 seconds](https://www.3cl.org/beyond-dc4eu/). Proposed follow-on: European Social Security Pass (ESSPASS) |
+| [CARIN Digital Insurance Card](https://hl7.org/fhir/us/insurance-card/Use_Case.html) / [SMART Health Insurance Card](https://www.thecommonsproject.org/digital-insurance-card-project) | Private health insurance, US | The health plan issues a signed insurance card that the member keeps in a wallet and shows by QR code at check-in; the provider verifies it cryptographically | HL7 FHIR plus SMART Health Cards (a FHIR-based verifiable-credential framework) | Published HL7 standard for trial use (STU 1.1); payer and provider pilots |
+| [India DigiLocker motor insurance](https://www.universalsompo.com/blogs/general-insurance/digilocker-insurance/) | Motor insurance, India | Insurers registered as DigiLocker issuers push motor, health and travel policies into the citizen's government wallet. Under a MoRTH advisory, police and RTOs accept these documents in place of originals | Government-signed digital documents (PKI), not W3C VC | **In production at national scale.** The closest live analogue to a proof-of-insurance credential |
+| [RiskStream contactless proof of insurance](https://www.ledgerinsights.com/riskstream-tests-blockchain-proof-of-insurance/) | Personal auto, US | A driver shares proof of insurance by QR code or access key; carriers verify it with each other | Permissioned blockchain (Corda, the "Canopy" network) | Member-to-member test completed with COUNTRY Financial (2020). A related [certificate-of-insurance verification POC](https://www.trustlayer.io/resources/trustlayer-riskstream-collaborative-liberty-mutual-nationwide-realtime-proof-certificate-of-insurance-solution) involved Liberty Mutual, Nationwide and TrustLayer. No public production roll-out |
+| [RiskStream / LIMRA licensing and appointments](https://www.limra.com/en/newsroom/news-releases/2019/limra-and-the-institutes-riskstream-collaborative-announce-plans-to-develop-blockchain-solution-for-life-insurance-licensing-and-appointments/) | Life and annuity distribution, US | Carriers validate agents' licences to sell specific products in each state automatically, instead of through repeated paperwork | Permissioned blockchain | Announced 2019 |
+| US mobile driver's licences (ISO 18013-5 mDL) | Identity, US | 21 states plus Puerto Rico issue mDLs ([status report](https://github.com/COVESA/commercial-vehicles/blob/main/reports/vc-driver-license-global-status-2025.md)). In September 2026, FinCEN and the federal bank regulators [confirmed](https://www.fincen.gov/system/files/2026-09/MDL-VDC-FAQs.pdf) that banks and credit unions, including auto lenders, may accept mDLs and other government-issued verifiable digital credentials for customer identification | ISO mdoc | In production. No public announcement found of an auto insurer accepting mDLs at quote or claim |
+
+**What this shows:**
+
+- **Insurers already issue signed, wallet-held coverage documents.** They do so in health insurance (EHIC, CARIN) and in Indian motor insurance (DigiLocker). Proof of auto insurance is the same pattern, applied to a line that is compulsory in almost every jurisdiction.
+- **The verification savings are measurable.** DC4EU's 30-minutes-to-13-seconds figure for EHIC is the kind of result §2.5 expects for proof of insurance, FNOL and inter-carrier exchange.
+- **The US auto industry has already tried the idea on shared ledgers.** Moving to open W3C and ISO credential formats removes the need for every party to join one consortium network. A DMV, a police officer or a repair shop can verify a credential without being a ledger member.
+- **The regulatory pull is growing.** Examples are the US bank-regulator FAQ on mDLs and the EU requirement for many regulated private services to accept EUDI Wallets from late 2027. Auto insurance is next to both, through lenders and through identity checks at quote and claim.
+
+## 6. Status and What Is Still Needed
 
 | Item | Status |
 |---|---|
