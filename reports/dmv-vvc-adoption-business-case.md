@@ -21,7 +21,7 @@ Adopting VVC lets an agency:
 1. **Cut fraud** in title, lien, odometer and registration records. A signed credential cannot be altered, and a revoked one fails verification instantly.
 2. **Lower its operating cost.** Third parties verify credentials themselves instead of calling the agency, querying its systems or visiting a counter. Paper, printing, mailing and manual lookups fall.
 3. **Close the uninsured-vehicle gap** by linking a Proof of Insurance credential to registration, so coverage can be checked continuously rather than once a year.
-4. **Make roadside stops safer and faster** with consented, instantly verifiable exchange of licence, registration and insurance, including between the vehicle and a patrol car.
+4. **Make roadside stops safer and faster.** From the licence plate alone, the officer's in-car Mobile Data Computer can retrieve and verify the registration credential and the insurance and other credentials linked to it, before anyone approaches the vehicle.
 5. **Protect residents' privacy and reduce breach risk.** Verifiers receive a proof, not a scan, so there is no database of copied documents to steal.
 6. **Interoperate with neighbours and industry** through one open vocabulary shared with other jurisdictions, insurers, OEMs and fleets, instead of a proprietary format per vendor.
 
@@ -71,7 +71,7 @@ This report is one of a set of COVESA vehicle credentials reports that remain cu
 - A `VehicleRegistrationCredential` is always current: renewal updates it, and suspension or expiry is reflected immediately through revocation status.
 - **Law enforcement, parking and toll operators, insurers and rental companies** verify it without a bespoke interface to the agency.
 - **Fleets** receive registration credentials in machine-readable form for automated compliance tracking. For commercial carriers, apportioned (IRP) cab cards and permits follow the same pattern.
-- **The vehicle holds its own registration**, and can present it at a roadside stop, a border, a parking facility or a service centre.
+- **The vehicle can hold its own registration**, and present it at a border, a parking facility or a service centre.
 
 ### 2.3 Proof of Insurance and the Uninsured-Vehicle Gap
 
@@ -114,8 +114,9 @@ See the [Vehicle Inspection Credential report](https://github.com/COVESA/commerc
 
 **With VVC:**
 
-- **Vehicle-to-officer exchange:** with the driver's consent, the vehicle or phone presents licence, registration and proof of insurance to the patrol vehicle before anyone approaches. An officer credential can prove the officer's identity to the driver. See the [AOSP vehicle wallet report](https://github.com/COVESA/commercial-vehicles/blob/main/reports/aosp-vc-wallet-use-cases-standards.md) for the in-vehicle presentation flows.
-- **Commercial compliance bundle:** registration, apportioned credentials, insurance, CDL and the latest inspection are verified in one exchange, at the roadside or at a weigh station.
+- **Plate-based lookup from the patrol vehicle:** the officer's Mobile Data Computer (MDC) looks up the registration credential from the licence plate, as registration is looked up today, and verifies its signature and current status. It then follows the credential's links to the Proof of Insurance and other linked credentials (title status, latest inspection) and verifies each one. The officer knows whether the vehicle is registered and insured, and whether it has been reported stolen, before approaching. No new vehicle-to-vehicle communication or driver interaction is needed.
+- **Driver's licence with the driver's consent (later):** direct exchange between the stopped vehicle or phone and the patrol vehicle is not needed for vehicle credentials. It may be useful later for presenting a digital driver's licence. That would happen only with the driver's consent, and it must respect Fourth Amendment protections and US Supreme Court case law on searches of digital devices (e.g. *Riley v. California*, 2014). The driver presents the licence without handing over a phone. See the [AOSP vehicle wallet report](https://github.com/COVESA/commercial-vehicles/blob/main/reports/aosp-vc-wallet-use-cases-standards.md) for presentation flows.
+- **Commercial compliance bundle:** registration, apportioned credentials, insurance and the latest inspection are verified together from the plate, at the roadside or at a weigh station, and CDL status is checked through the licensing agency's existing channels.
 - **Fewer disputes:** every credential is signed and time-stamped, so there is less argument about what was shown and when.
 
 ### 2.7 Crash Reports and Incident Credentials
