@@ -3,7 +3,7 @@
 # Status: Draft #
 **A COVESA Commercial and Fleet Vehicles Expert Group Position Paper**
 
-**April 2026**
+**April 2026, updated September 2026**
 
 **Produced by:** COVESA Commercial and Fleet Vehicles Expert Group
 
@@ -11,11 +11,11 @@
 
 ## Executive Summary
 
-The deployment of Automated Driving Systems (ADS) holds the promise of fundamentally improving road safety — reducing the human errors that account for the vast majority of traffic fatalities and serious injuries worldwide. According to the National Highway Traffic Safety Administration (NHTSA), [94% of serious crashes are attributable to human error](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/812115), far exceeding road conditions or mechanical failure as a cause. Globally, the World Health Organization (WHO) estimates that [1.19 million people die each year in road traffic crashes](https://www.who.int/teams/social-determinants-of-health/safety-and-mobility/global-status-report-on-road-safety-2023), making it a leading cause of death for people aged 5–29. Realizing the promise of ADS, however, depends on more than the technology itself. It requires a robust ecosystem of accountability, transparency, and verifiable safety performance built on standardized, interoperable vehicle data.
+The deployment of Automated Driving Systems (ADS) holds the promise of fundamentally improving road safety — reducing the human errors that account for the vast majority of traffic fatalities and serious injuries worldwide. In the National Highway Traffic Safety Administration's (NHTSA) national crash causation survey, the [critical pre-crash event was assigned to the driver in 94% of crashes](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/812115), far more often than to the vehicle or the environment. NHTSA cautions that this is not a finding of cause or fault, but it shows where the largest opportunity lies. Globally, the World Health Organization (WHO) estimates that [1.19 million people die each year in road traffic crashes](https://www.who.int/teams/social-determinants-of-health/safety-and-mobility/global-status-report-on-road-safety-2023), making it a leading cause of death for people aged 5–29. Realizing the promise of ADS, however, depends on more than the technology itself. It requires a robust ecosystem of accountability, transparency, and verifiable safety performance built on standardized, interoperable vehicle data.
 
 Public safety demands that the behavior of autonomous vehicles be observable, measurable, and independently verifiable. Governments need data to enforce safety standards. Emergency responders need data to understand incidents. Researchers need data to identify systemic risks. And independent third parties — particularly the insurance industry — play an essential role in this ecosystem, providing an ongoing, market-driven mechanism for evaluating vehicle safety performance, pricing risk accurately, and ensuring that victims of incidents involving ADS-equipped vehicles receive fair and timely compensation.
 
-The proposed United Nations Global Technical Regulation (GTR) on Automated Driving Systems ([ECE/TRANS/WP.29/GRVA/2026/2](https://unece.org/sites/default/files/2026-01/ECE-TRANS-WP.29-GRVA-2026-02e.pdf)) recognizes the need for data recording through its Data Storage System for Automated Driving (DSSAD) requirements. However, the current regulatory text focuses primarily on post-incident investigation of severe accidents and type-approval compliance. It does not fully address the needs of the mobility ecosystem — the independent third parties such as insurers' need to be able to scale claims processes efficiently, fleet safety managers, academic researchers, and road safety organizations — who require ongoing, standardized, and remotely accessible data to fulfill their societal functions.
+The United Nations Global Technical Regulation (GTR) on Automated Driving Systems, adopted by WP.29 on 24 June 2026 as [UN GTR No. 26 and UN Regulation No. 185](https://news.un.org/en/story/2026/06/1167797) with the support of Canada, China, the EU, Japan, the UK and the US, recognizes the need for data recording through its Data Storage System for Automated Driving (DSSAD) requirements and adds in-service monitoring and reporting obligations. However, the regulatory text focuses primarily on post-incident investigation of severe accidents and type-approval compliance. It does not fully address the needs of the mobility ecosystem — the independent third parties such as insurers' need to be able to scale claims processes efficiently, fleet safety managers, academic researchers, and road safety organizations — who require ongoing, standardized, and remotely accessible data to fulfill their societal functions.
 
 COVESA (Connected Vehicle Systems Alliance) and its member organizations are actively defining the open data standards needed to support this broader ecosystem. Through the Vehicle Signal Specification (VSS) and the work of the Commercial and Fleet Vehicles Expert Group, COVESA is building the data vocabulary that can serve regulatory compliance, public safety evaluation, and independent third-party needs — while preserving automotive manufacturers' intellectual property in their ADS implementations. The Commercial and Fleet Vehicles Expert Group also intends to follow UNECE and other regulatory groups in the Autonomous Vehicle space to ensure alignment as global regulations evolve.
 
@@ -29,9 +29,9 @@ This paper presents the public safety case for why standardized, open vehicle da
 
 Road traffic injuries remain one of the leading causes of death and disability worldwide. The United Nations has recognized road safety as a critical public health challenge, and the [UN General Assembly's Global Plan for the Decade of Action for Road Safety 2021–2030](https://www.who.int/publications/m/item/global-plan-for-the-decade-of-action-for-road-safety-2021-2030) calls for a reduction in road traffic deaths and injuries of at least 50% by 2030.
 
-The scale of the problem is stark. NHTSA data shows that [94% of serious crashes involve human error](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/812115) as the critical pre-crash factor — recognition errors such as inattention and distraction (41%), decision errors such as speeding and false assumptions (33%), and performance errors accounting for the remainder. In the United States alone, an estimated [39,345 people died in motor vehicle crashes in 2024](https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024).
+The scale of the problem is stark. NHTSA's crash causation survey assigned the [critical pre-crash reason to the driver in 94% of crashes](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/812115) — recognition errors such as inattention and distraction (41%), decision errors such as speeding and false assumptions (33%), performance errors (11%), non-performance such as falling asleep (7%) and other driver-related reasons (8%). NHTSA notes that the critical reason is not a determination of cause or fault. In the United States alone, [39,254 people died in motor vehicle crashes in 2024](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813829), and NHTSA's early estimate for 2025 is 36,640, a 6.7% decrease and the second-lowest fatality rate on record.
 
-Automated Driving Systems have the potential to contribute significantly to reducing these numbers by eliminating the human errors — distraction, impairment, fatigue, poor judgment — that underlie the majority of crashes. Early real-world data supports this potential: a peer-reviewed study published in *Traffic Injury Prevention* found that [Waymo's autonomous vehicles experienced an 80% reduction in injury-causing crashes](https://www.tandfonline.com/doi/full/10.1080/15389588.2024.2380786) compared to human-driven vehicles over 7.14 million miles. A separate study published in [*Nature Communications*](https://www.nature.com/articles/s41467-024-48526-4) analyzing over 2,100 ADS crashes found that autonomous vehicles were 50% less likely to be involved in rear-end collisions and 80% less likely to be involved in broadside collisions.
+Automated Driving Systems have the potential to contribute significantly to reducing these numbers by eliminating the human errors — distraction, impairment, fatigue, poor judgment — that underlie the majority of crashes. Real-world data supports this potential. Peer-reviewed studies in *Traffic Injury Prevention* found that Waymo's rider-only vehicles had [80% fewer injury-reported crashes over 7.14 million miles](https://www.tandfonline.com/doi/full/10.1080/15389588.2024.2380786) than human benchmarks, and the follow-up study over [56.7 million miles](https://doi.org/10.1080/15389588.2025.2499887) found statistically significant reductions in any-injury, airbag-deployment and serious-injury crashes with no significant disbenefit in any of eleven crash types. Waymo's public [Safety Impact data](https://waymo.com/safety/impact/), covering 271 million rider-only miles through June 2026, reports 82% fewer injury crashes and 95% fewer serious-injury crashes than human drivers on the same roads. Insurance claims data point the same way: a [Swiss Re analysis](https://waymo.com/blog/2024/12/new-swiss-re-study-waymo/) of 25.3 million rider-only miles against a baseline of more than 500,000 claims found 88% fewer property-damage claims and 92% fewer bodily-injury claims than human-driven vehicles. A separate study in [*Nature Communications*](https://www.nature.com/articles/s41467-024-48526-4), analyzing about 2,100 crashes involving ADS and ADAS vehicles against 35,000 human-driven crashes, found the automated vehicles roughly half as likely to be in rear-end collisions and one-sixth as likely to be in broadside collisions, but more likely to crash at dawn and dusk and when turning. That mixed picture is exactly why independent, standardized data is needed.
 
 However, this potential can only be realized if ADS-equipped vehicles are held to rigorous, transparent, and independently verifiable safety standards throughout their operational life — not merely at the point of type approval.
 
@@ -51,7 +51,7 @@ Independent third parties — particularly the insurance industry — serve a vi
 - **Safety incentivization** — through risk-based pricing, insurers create direct financial incentives for manufacturers and fleet operators to maintain and improve ADS safety performance
 - **Data-driven transparency** — actuarial analysis of ADS operational data produces independent, objective safety assessments that complement manufacturer self-reporting and regulatory audits
 
-The insurance industry already demonstrates the value of telematics-based data access: [88% of commercial fleets now use telematics systems](https://sambasafety.com/blog/new-2024-telematics-statistics), and fleets with telematics have seen [30% reductions in claims frequency and severity](https://cabadvantage.com/how-telematics-boosts-safety-and-savings-for-motor-carriers-and-insurers/). The global usage-based insurance market reached [$62.35 billion in 2024](https://www.imarcgroup.com/usage-based-insurance-market) and is projected to grow to $355.45 billion by 2033. These figures underscore the demand for standardized, continuous vehicle data access.
+The insurance industry already demonstrates the value of telematics-based data access. In SambaSafety's [2025 Telematics Report](https://finance.yahoo.com/news/88-fleets-now-telematics-safety-140000808.html), 88% of fleets said they use telematics primarily for safety, yet only 30% share that data with their insurers. Commercial insurers report meaningful loss improvements where data is shared; one carrier [describes typically seeing about a 30% reduction](https://riskandinsurance.com/predict-prevent-what-commercial-fleet-ought-to-know-about-telematics-and-other-tech-tools-that-target-losses/) in claims frequency and severity in telematics-enabled fleets. The global usage-based insurance market reached [$75 billion in 2025](https://www.imarcgroup.com/usage-based-insurance-market) and is projected to grow to $389 billion by 2034. These figures underscore both the demand for standardized, continuous vehicle data access and the gap that proprietary, bilateral data sharing leaves.
 
 For insurers to fulfill this public safety function in the context of ADS, they require access to harmonized vehicle data that can be continuously and remotely accessed to reliably answer fundamental questions: Was the ADS operating? Did a human take over? Was remote guidance provided? What triggered a transition or emergency maneuver? Without this data, the insurance industry cannot accurately price ADS risk, and the market-driven safety incentive mechanism breaks down.
 
@@ -59,9 +59,11 @@ Beyond insurers, academic and research institutions also require access to stand
 
 ### 1.3 The Regulatory Landscape
 
-The proposed UN GTR on ADS ([ECE/TRANS/WP.29/GRVA/2026/2](https://unece.org/sites/default/files/2026-01/ECE-TRANS-WP.29-GRVA-2026-02e.pdf)) establishes a comprehensive framework for ADS safety requirements. Its provisions are performance-based and technology-neutral, recognizing that ADS technology is evolving rapidly and that regulations must not restrict future innovation.
+The UN GTR on ADS establishes a comprehensive framework for ADS safety requirements. GRVA agreed the draft ([ECE/TRANS/WP.29/GRVA/2026/2](https://unece.org/sites/default/files/2026-01/ECE-TRANS-WP.29-GRVA-2026-02e.pdf)) in January 2026, and on 24 June 2026 WP.29 adopted it as [UN GTR No. 26](https://unece.org/sites/default/files/2026-06/ECE-TRANS-WP.29_2026-137e.pdf) under the 1998 Agreement and, in parallel, as UN Regulation No. 185 under the 1958 Agreement, amending some 90 existing UN Regulations to apply to ADS vehicles. The framework enters into force in the second half of 2026. Its provisions are performance-based and technology-neutral, recognizing that ADS technology is evolving rapidly and that regulations must not restrict future innovation. Beyond type approval it requires audited safety management systems, in-service monitoring, prompt reporting of critical occurrences with follow-up within 30 days, and annual safety-performance reporting.
 
-Of particular relevance is Annex 6 of the proposed GTR, which defines the DSSAD. The DSSAD requirements mandate the recording of time-stamped events including:
+Other jurisdictions are moving in step. In the UK, the [Automated Passenger Services permit regulations](https://www.legislation.gov.uk/uksi/2026/439/contents/made) came into force in May 2026 ahead of full implementation of the Automated Vehicles Act 2024 in 2027, and supervised autonomous ride services began in London in September 2026; the Department for Transport is consulting on whether operator licences should require data sharing with insurers. In the US, NHTSA's amended Standing General Order on crash reporting took effect in June 2025, and in 2026 the agency opened rulemaking toward ADS performance standards and published an [AV Framework update](https://www.federalregister.gov/documents/2026/07/31/2026-15483/av-framework-updates-and-request-for-comments-on-interim-guidance). In the EU, [Implementing Regulation (EU) 2026/481](https://eur-lex.europa.eu/eli/reg_impl/2026/481/oj/eng) extended the ADS type-approval regulation, and the revised [Product Liability Directive](https://eur-lex.europa.eu/eli/dir/2024/2853/oj/eng), which explicitly covers software and AI systems, applies to products placed on the market from 9 December 2026, sharpening insurers' need for reliable ADS operational data.
+
+Of particular relevance is Annex 6 of the GTR, which defines the DSSAD. (Paragraph references in this paper follow the January 2026 GRVA text; the numbering has been checked against that draft and should be re-confirmed against the adopted WP.29/2026/137 text.) The DSSAD requirements mandate the recording of time-stamped events including:
 
 - Activation and deactivation of ADS features (by system or user)
 - Operational Design Domain (ODD) exit events
@@ -96,7 +98,7 @@ COVESA's work directly addresses each of these needs.
 
 The COVESA Vehicle Signal Specification is an open, community-developed taxonomy for vehicle data. VSS defines a tree-structured hierarchy of vehicle signals — from basic vehicle attributes to Advanced Driver Assistance Systems (ADAS) and increasingly autonomous driving functions. It provides standardized names, data types, units, and descriptions for each signal, enabling interoperability across the automotive ecosystem.
 
-VSS is already referenced and adopted by major automotive platforms, including the Android Automotive Vehicle Hardware Abstraction Layer (VHAL), which maps platform-level vehicle properties to corresponding VSS paths. This alignment between platform-level APIs and open standards creates a practical pathway for data access.
+VSS is already adopted across the automotive ecosystem, and COVESA maintains a [mapping from VSS to Android Automotive Vehicle Hardware Abstraction Layer (VHAL) properties](https://github.com/COVESA/vss-tools/blob/master/docs/vhal.md), so platform-level vehicle properties can be expressed as VSS paths. This alignment between platform-level APIs and open standards creates a practical pathway for data access.
 
 ### 2.2 The Commercial and Fleet Vehicles Expert Group
 
@@ -116,7 +118,7 @@ The Expert Group also intends to actively follow UNECE and other regulatory bodi
 
 COVESA's work on ADS-related data standards involves active collaboration across the automotive, insurance, telematics, and fleet management industries. Major insurers participate in COVESA's Commercial and Fleet Vehicles Expert Group, contributing insurance domain expertise to the data standardization process. Discussions are also underway with national insurance industry associations regarding the harmonization of digital proof of insurance — a domain where standardized vehicle identity and status data is fundamental.
 
-The COVESA All Members Meeting (AMM) program includes dedicated sessions on fleet safety and insurance data topics, bringing together contributors from the Commercial and Fleet Vehicles Expert Group, automotive Original Equipment Manufacturers (OEMs), telematics providers, fleet operators, and insurers to advance standardized vehicle data for public safety and commercial applications.
+The COVESA All Member Meeting (AMM) program includes dedicated sessions on fleet safety and insurance data topics, bringing together contributors from the Commercial and Fleet Vehicles Expert Group, automotive Original Equipment Manufacturers (OEMs), telematics providers, fleet operators, and insurers to advance standardized vehicle data for public safety and commercial applications.
 
 ---
 
@@ -131,7 +133,7 @@ The most fundamental question for both public safety and insurance is: **who or 
 | Data Point | Public Safety / Insurance Purpose | UNECE GTR Alignment |
 |---|---|---|
 | ADS activation/deactivation status | Determine whether the ADS was performing the Dynamic Driving Task (DDT) | DSSAD 5.2.1: Activation/Deactivation of the feature |
-| ADS operating mode (SAE level) | Establish applicable liability and regulatory framework | Implicit in ADS feature identification |
+| ADS operating mode (SAE level) | Establish applicable liability and regulatory framework. Already defined in VSS as `Vehicle.ADAS.ActiveAutonomyLevel` (SAE 0–5, with disengaging states) and `Vehicle.ADAS.SupportedAutonomyLevel` | Implicit in ADS feature identification |
 | ODD boundary status | Determine if ADS was operating within its designed parameters | DSSAD 5.2.1: ODD exit |
 | Autonomous driving status | Continuous confirmation that ADS is in control | Referenced in safety use cases |
 
@@ -192,14 +194,18 @@ In addition to ADS-specific data, public safety evaluation and insurance require
 | Vertical acceleration | Vehicle.Acceleration.Vertical | Defined in VSS |
 | Yaw rate | Vehicle.AngularVelocity.Yaw | Defined in VSS |
 | GPS position | Vehicle.CurrentLocation | Defined in VSS |
-| Lane departure detection status | Vehicle.ADAS.LaneDepartureDetection.IsEnabled | Defined in VSS |
+| Lane departure detection status | Vehicle.ADAS.LaneDepartureDetection.IsEnabled / IsWarning | Defined in VSS |
 | Electronic stability control | Vehicle.ADAS.ESC.IsEnabled / IsEngaged | Defined in VSS |
-| Blind spot detection | Vehicle.ADAS.BSD (proposed) | Under development |
-| Forward collision warning | Vehicle.ADAS.FCW (proposed) | Under development |
-| Brake pedal status | Vehicle.Chassis.Brake | Defined in VSS |
-| Headlight status | Vehicle.Body.Lights | Defined in VSS |
+| Blind spot detection | Vehicle.ADAS.ObstacleDetection.{Front,Rear}.{Left,Right}.IsWarning with WarningType = BLIND_SPOT | Defined in VSS |
+| Forward collision warning | Vehicle.ADAS.ObstacleDetection.Front.Center.IsWarning / Distance / TimeGap | Defined in VSS |
+| Emergency braking | Vehicle.ADAS.EBA.IsEngaged; Vehicle.Chassis.Brake.IsDriverEmergencyBrakingDetected | Defined in VSS |
+| Brake pedal status | Vehicle.Chassis.Brake.PedalPosition | Defined in VSS |
+| Headlight status | Vehicle.Body.Lights.Beam.Low.IsOn / Beam.High.IsOn | Defined in VSS |
 | Seatbelt status | Vehicle.Cabin.Seat.*.IsBelted | Defined in VSS |
-| Windshield wiper status | Vehicle.Body.Windshield.Front.Wiping | Defined in VSS |
+| Windshield wiper status | Vehicle.Body.Windshield.Front.Wiping.Mode | Defined in VSS |
+| Active automation level | Vehicle.ADAS.ActiveAutonomyLevel | Defined in VSS |
+
+Paths verified against VSS 6.1 (September 2026).
 
 ---
 
@@ -207,7 +213,7 @@ In addition to ADS-specific data, public safety evaluation and insurance require
 
 ### 4.1 What Is Already Defined in COVESA VSS
 
-A significant number of the data points required for public safety evaluation and the insurance of autonomous vehicles are already defined within the COVESA Vehicle Signal Specification. These include the foundational vehicle dynamics signals (acceleration, speed, position), ADAS feature status signals (lane departure, Electronic Stability Control (ESC), collision mitigation), driver state indicators (seatbelt status), and environmental context signals (headlights, wipers).
+A significant number of the data points required for public safety evaluation and the insurance of autonomous vehicles are already defined within the COVESA Vehicle Signal Specification. These include the foundational vehicle dynamics signals (acceleration, speed, position), ADAS feature status signals (lane departure, Electronic Stability Control (ESC), obstacle detection and emergency braking), the active and supported SAE automation level (`Vehicle.ADAS.ActiveAutonomyLevel`, `Vehicle.ADAS.SupportedAutonomyLevel`), driver state indicators (seatbelt status, driver monitoring warnings), and environmental context signals (headlights, wipers). VSS 6.0 (January 2026) and 6.1 (September 2026) are the current releases.
 
 For conventional driver-assistance systems (SAE Levels 0–2), the existing VSS tree provides substantial coverage of the data points identified by the Commercial and Fleet Vehicles Expert Group's safety use cases. Many of these signals also have corresponding VHAL properties in Android Automotive and PGN/SPN codes in the SAE J1939 standard for heavy-duty vehicles, providing multiple pathways for data access.
 
@@ -217,7 +223,7 @@ The data points most critical to public safety oversight of vehicles operating a
 
 **Signals under active development or planned:**
 
-- **ADS operational status** — a clear, standardized signal indicating whether an ADS feature is actively performing the DDT, and at what level of automation
+- **ADS operational status** — VSS already indicates the active SAE level and disengaging transitions through `Vehicle.ADAS.ActiveAutonomyLevel`; what remains is a standardized indication of which ADS feature is performing the DDT and whether the vehicle is inside its ODD
 - **Transition demand events** — structured data capturing when the ADS requests human intervention, including the reason for the request and the driver's response
 - **Emergency maneuver bracketing** — start and end timestamps for emergency maneuvers, enabling precise event reconstruction
 - **Minimal Risk Condition application** — standardized indication that the ADS has initiated a fallback to a safe state, including the type of MRC applied
@@ -227,7 +233,7 @@ The data points most critical to public safety oversight of vehicles operating a
 
 ### 4.3 Alignment with UNECE GTR DSSAD Requirements
 
-The Commercial and Fleet Vehicles Expert Group's data point definitions show strong alignment with the DSSAD requirements in Annex 6 of the proposed UN GTR. This alignment is not coincidental — COVESA members have been tracking the development of the GTR and ensuring that the industry's open data standards can support regulatory compliance.
+The Commercial and Fleet Vehicles Expert Group's data point definitions show strong alignment with the DSSAD requirements in Annex 6 of UN GTR No. 26. This alignment is not coincidental — COVESA members have been tracking the development of the GTR and ensuring that the industry's open data standards can support regulatory compliance.
 
 However, there are important areas where the COVESA work extends beyond the current DSSAD scope to serve the broader public safety ecosystem:
 
@@ -253,7 +259,7 @@ COVESA proposes an approach based on layered data abstraction. Rather than requi
 
 **Example: Emergency Maneuver**
 
-The UNECE GTR DSSAD requires recording of "Start of Emergency Maneuver" and "End of Emergency Maneuver." The Commercial and Fleet Vehicles Expert Group aligns with this by defining "start/end of emergency maneuver" as a data point under its safety use case family.
+The UN GTR DSSAD requires recording of "Start of Emergency Maneuver" and "End of Emergency Maneuver." The Commercial and Fleet Vehicles Expert Group aligns with this by defining "start/end of emergency maneuver" as a data point under its safety use case family.
 
 This is a higher-level abstraction. It tells the investigator or insurer that the ADS entered an emergency state, when it started, and when it ended — without requiring the manufacturer to disclose:
 
@@ -294,7 +300,7 @@ This layered abstraction provides multiple benefits:
 
 ### 5.4 Alignment with GTR Principles
 
-This approach directly aligns with the principles stated in the proposed UN GTR, which specifies that technical provisions should be "performance based, technology neutral, and based on state-of-the-art technology, while avoiding restricting future innovation." By standardizing outcomes rather than implementations, the data standard allows manufacturers to innovate freely in their ADS architectures while still providing the transparency that the public safety ecosystem requires.
+This approach directly aligns with the principles stated in the UN GTR, which specifies that technical provisions should be "performance based, technology neutral, and based on state-of-the-art technology, while avoiding restricting future innovation." By standardizing outcomes rather than implementations, the data standard allows manufacturers to innovate freely in their ADS architectures while still providing the transparency that the public safety ecosystem requires.
 
 The DSSAD provisions themselves reflect this philosophy. Section 3.2 of Annex 6 states that "information required to interpret the output to correlate it with respect to the data elements... shall be provided by the manufacturer to an authorized entity on request and subject to applicable national law(s)." This establishes the principle that the manufacturer retains control over interpretation guidance while providing standardized data elements — precisely the layered approach that COVESA advocates.
 
@@ -304,7 +310,7 @@ The DSSAD provisions themselves reflect this philosophy. Section 3.2 of Annex 6 
 
 ### 6.1 Current Approach: Manufacturer-Mediated Data Collection
 
-The data access model currently envisioned — both in the UNECE GTR DSSAD requirements and in much of COVESA's near-term work — prescribes data collection primarily by the automotive manufacturer, who then makes selected data available to regulators, insurers, and other third parties. This approach is practical given the current state of vehicle architectures and serves as an important first step toward standardized ADS data access.
+The data access model currently envisioned — both in the UN GTR DSSAD requirements and in much of COVESA's near-term work — prescribes data collection primarily by the automotive manufacturer, who then makes selected data available to regulators, insurers, and other third parties. This approach is practical given the current state of vehicle architectures and serves as an important first step toward standardized ADS data access.
 
 ### 6.2 Long-Term Vision: Direct Third-Party Data Access
 
@@ -328,9 +334,9 @@ A standardized on-board API and compute platform would:
 
 ### 7.1 For Regulatory Bodies
 
-1. **Reference open data standards in ADS regulations.** As the DSSAD requirements are finalized, we recommend that the regulation reference or encourage alignment with existing open vehicle data standards, particularly the COVESA Vehicle Signal Specification, for semantic interoperability. The DSSAD appropriately mandates open data formats (JSON, CSV, XML) — extending this to include standardized data semantics would significantly enhance the practical utility of the recorded data for the entire public safety ecosystem.
+1. **Reference open data standards in ADS regulations.** As UN GTR No. 26 and UN R185 are transposed into national law, and as their DSSAD and in-service monitoring provisions are amended through GRVA, we recommend that regulators reference or encourage alignment with existing open vehicle data standards, particularly the COVESA Vehicle Signal Specification, for semantic interoperability. The DSSAD appropriately mandates open data formats (JSON, CSV, XML) — extending this to include standardized data semantics would significantly enhance the practical utility of the recorded data for the entire public safety ecosystem.
 
-2. **Design data requirements to serve the full public safety ecosystem.** The current DSSAD is oriented toward safety evaluation and post-incident investigation. We recommend that regulatory bodies consider the needs of independent third parties — insurers, fleet safety managers, academic researchers, and road safety organizations — who require continuous, remotely accessible, harmonized ADS operational data to fulfill their complementary public safety functions.
+2. **Design data requirements to serve the full public safety ecosystem.** The DSSAD is oriented toward safety evaluation and post-incident investigation. We recommend that regulatory bodies consider the needs of independent third parties — insurers, fleet safety managers, academic researchers, and road safety organizations — who require continuous, remotely accessible, harmonized ADS operational data to fulfill their complementary public safety functions. The GTR's new in-service monitoring and annual safety-performance reporting obligations are the natural place to specify that data in a standard vocabulary.
 
 3. **Adopt the principle of layered data abstraction.** Regulations should explicitly support the concept of standardized, higher-level data elements that characterize ADS outcomes and events without requiring disclosure of proprietary implementation details. This approach balances the competing interests of public transparency and intellectual property protection.
 
@@ -364,7 +370,7 @@ The safe deployment of autonomous vehicles is not solely a technical challenge �
 
 For this ecosystem to function, all participants need access to harmonized, interoperable vehicle data that can be continuously and remotely accessed. Without it, regulators cannot consistently enforce safety requirements across manufacturers. Investigators cannot reliably reconstruct incidents. Insurers cannot accurately assess risk. Researchers cannot conduct independent safety studies. And the public cannot have confidence that autonomous vehicles are being held to rigorous, transparent safety standards.
 
-COVESA's open data standards — the Vehicle Signal Specification and the Commercial and Fleet Vehicles Expert Group's safety and insurance data point definitions — provide the common vocabulary that enables all stakeholders to function effectively. Many of the foundational data points are already defined. The ADS-specific data elements are under active development, informed by the requirements of the UNECE GTR DSSAD and the practical needs of the full public safety ecosystem.
+COVESA's open data standards — the Vehicle Signal Specification and the Commercial and Fleet Vehicles Expert Group's safety and insurance data point definitions — provide the common vocabulary that enables all stakeholders to function effectively. Many of the foundational data points are already defined. The ADS-specific data elements are under active development, informed by the requirements of the UN GTR No. 26 DSSAD and the practical needs of the full public safety ecosystem.
 
 We call upon the regulatory community to engage with these open standards efforts, to reference them where appropriate in ADS regulations, and to adopt the principle of layered data abstraction that balances transparency with intellectual property protection. The path to safe, accountable, commercially viable autonomous vehicles runs through standardized data — and the standards community is ready to build it.
 
@@ -372,7 +378,7 @@ We call upon the regulatory community to engage with these open standards effort
 
 ## References
 
-1. United Nations Economic Commission for Europe, "Proposal for a new United Nations Global Technical Regulation on Automated Driving Systems (ADS)," ECE/TRANS/WP.29/GRVA/2026/2, November 2025. [PDF](https://unece.org/sites/default/files/2026-01/ECE-TRANS-WP.29-GRVA-2026-02e.pdf)
+1. United Nations Economic Commission for Europe, "Proposal for a new United Nations Global Technical Regulation on Automated Driving Systems (ADS)," ECE/TRANS/WP.29/GRVA/2026/2, January 2026. [PDF](https://unece.org/sites/default/files/2026-01/ECE-TRANS-WP.29-GRVA-2026-02e.pdf). Adopted by WP.29 on 24 June 2026 as UN GTR No. 26 (ECE/TRANS/WP.29/2026/137, [PDF](https://unece.org/sites/default/files/2026-06/ECE-TRANS-WP.29_2026-137e.pdf)) and UN Regulation No. 185 (ECE/TRANS/WP.29/2026/139). See also [UN News, 24 June 2026](https://news.un.org/en/story/2026/06/1167797).
 
 2. COVESA, "Vehicle Signal Specification (VSS)." [https://covesa.global/vss](https://covesa.global/vss)
 
@@ -392,16 +398,28 @@ We call upon the regulatory community to engage with these open standards effort
 
 10. World Health Organization, "Global Status Report on Road Safety 2023." [https://www.who.int/teams/social-determinants-of-health/safety-and-mobility/global-status-report-on-road-safety-2023](https://www.who.int/teams/social-determinants-of-health/safety-and-mobility/global-status-report-on-road-safety-2023)
 
-11. NHTSA, "NHTSA Estimates 39,345 Traffic Fatalities in 2024," Report No. DOT HS 813 710. [https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024](https://www.nhtsa.gov/press-releases/nhtsa-estimates-39345-traffic-fatalities-2024)
+11. NHTSA, "Early Estimate of Motor Vehicle Traffic Fatalities in 2025," Report No. DOT HS 813 829 (39,254 fatalities in 2024; 36,640 estimated for 2025). [https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813829](https://crashstats.nhtsa.dot.gov/Api/Public/ViewPublication/813829)
 
-12. Kusano, K.D., et al. (2024), "Comparison of Waymo Rider-only crash data to human benchmarks at 7.1 million miles," *Traffic Injury Prevention*, 25(sup1), S66–S77. [https://www.tandfonline.com/doi/full/10.1080/15389588.2024.2380786](https://www.tandfonline.com/doi/full/10.1080/15389588.2024.2380786)
+12. Kusano, K.D., et al. (2024), "Comparison of Waymo Rider-only crash data to human benchmarks at 7.1 million miles," *Traffic Injury Prevention*, 25(sup1), S66–S77. [https://www.tandfonline.com/doi/full/10.1080/15389588.2024.2380786](https://www.tandfonline.com/doi/full/10.1080/15389588.2024.2380786). Follow-up: Kusano, K.D., et al. (2025), 56.7 million rider-only miles, *Traffic Injury Prevention*, 26(sup1), S8–S20. [https://doi.org/10.1080/15389588.2025.2499887](https://doi.org/10.1080/15389588.2025.2499887). Waymo Safety Impact data hub: [https://waymo.com/safety/impact/](https://waymo.com/safety/impact/)
+
+12a. Di Lillo, L., et al. / Swiss Re (2024), "Do Autonomous Vehicles Outperform Latest-Generation Human-Driven Vehicles? A Comparison to Waymo's Auto Liability Insurance Claims at 25 Million Miles." [https://waymo.com/research/do-autonomous-vehicles-outperform-latest-generation-human-driven-vehicles-25-million-miles/](https://waymo.com/research/do-autonomous-vehicles-outperform-latest-generation-human-driven-vehicles-25-million-miles/)
 
 13. Abdel-Aty, M. & Ding, S. (2024), "A matched case-control analysis of autonomous vs human-driven vehicle accidents," *Nature Communications*, 15, 4931. [https://www.nature.com/articles/s41467-024-48526-4](https://www.nature.com/articles/s41467-024-48526-4)
 
 14. PIVOT (Platform for Innovative use of Vehicle Open Telematics). [https://pivot-auto.org/](https://pivot-auto.org/)
 
+15. SambaSafety, "2025 Telematics Report," October 2025. [Summary](https://finance.yahoo.com/news/88-fleets-now-telematics-safety-140000808.html)
+
+16. IMARC Group, "Usage-Based Insurance Market Report," 2025 edition. [https://www.imarcgroup.com/usage-based-insurance-market](https://www.imarcgroup.com/usage-based-insurance-market)
+
+17. The Automated Vehicles (Permits for Automated Passenger Services) Regulations 2026, SI 2026/439. [https://www.legislation.gov.uk/uksi/2026/439/contents/made](https://www.legislation.gov.uk/uksi/2026/439/contents/made)
+
+18. NHTSA, "AV Framework Updates and Request for Comments on Interim Guidance," Federal Register, 31 July 2026. [https://www.federalregister.gov/documents/2026/07/31/2026-15483/av-framework-updates-and-request-for-comments-on-interim-guidance](https://www.federalregister.gov/documents/2026/07/31/2026-15483/av-framework-updates-and-request-for-comments-on-interim-guidance)
+
+19. Commission Implementing Regulation (EU) 2026/481 amending Regulation (EU) 2022/1426 (ADS type approval). [https://eur-lex.europa.eu/eli/reg_impl/2026/481/oj/eng](https://eur-lex.europa.eu/eli/reg_impl/2026/481/oj/eng); Directive (EU) 2024/2853 on liability for defective products. [https://eur-lex.europa.eu/eli/dir/2024/2853/oj/eng](https://eur-lex.europa.eu/eli/dir/2024/2853/oj/eng)
+
 ---
 
-*This paper is produced by the COVESA Commercial and Fleet Vehicles Expert Group as an input to the regulatory development process for Automated Driving Systems. COVESA is a global alliance of automotive manufacturers, technology companies, insurers, fleet operators, and other stakeholders committed to developing open standards for connected vehicle data. For more information, visit [www.covesa.global](https://www.covesa.global).*
+*This paper is produced by the COVESA Commercial and Fleet Vehicles Expert Group as an input to the implementation and continued development of regulations for Automated Driving Systems. COVESA is a global alliance of automotive manufacturers, technology companies, insurers, fleet operators, and other stakeholders committed to developing open standards for connected vehicle data. For more information, visit [www.covesa.global](https://www.covesa.global).*
 
 *COVESA's Commercial and Fleet Vehicles Expert Group meets regularly to advance these standards. Participation is open to all COVESA members. Contact information is available through the [COVESA website](https://www.covesa.global).*

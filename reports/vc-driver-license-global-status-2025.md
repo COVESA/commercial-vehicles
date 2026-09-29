@@ -1,6 +1,8 @@
 # W3C Verifiable Credentials for Individual Identity and Driver's Licenses — Global Status (2025–2026)
 
-> **Note on standards overlap:** Two credential formats dominate digital driver's license (mDL) deployments: **ISO/IEC 18013-5** (mdoc, proximity presentation) and **W3C Verifiable Credentials Data Model** (JSON-LD/JWT, online presentation). These converge in practice — ISO 18013-7 (online mdoc presentation, published October 2024) is being paired with W3C VC semantics in wallet architectures, and the EUDI Wallet mandate explicitly supports both formats. Where a deployment uses either or both, it is included here.
+*Updated September 2026. Facts verified against primary sources where available; see Unverified Claims at the end.*
+
+> **Note on standards overlap:** Two credential formats dominate digital driver's license (mDL) deployments: **ISO/IEC 18013-5** (mdoc, proximity presentation) and **W3C Verifiable Credentials Data Model** (JSON-LD/JWT, online presentation). These converge in practice — ISO/IEC TS 18013-7 (online mdoc presentation; first edition October 2024, second edition May 2025 adding the W3C Digital Credentials API as a normative transport) is being paired with W3C VC semantics in wallet architectures, and the EUDI Wallet mandate explicitly supports both formats. Where a deployment uses either or both, it is included here.
 
 ---
 
@@ -9,8 +11,12 @@
 | Spec | Status | Relevance |
 |---|---|---|
 | [W3C VC Data Model v2.0](https://www.w3.org/TR/vc-data-model-2.0/) | **W3C Recommendation**, May 2025 | Core VC format |
-| [ISO/IEC 18013-5:2021](https://www.iso.org/standard/69084.html) | Published 2021 | Proximity mDL (mdoc) |
-| [ISO/IEC TS 18013-7:2024](https://www.iso.org/standard/82772.html) | Published Oct 2024 | Online mDL presentation |
+| [ISO/IEC 18013-5:2021](https://www.iso.org/standard/69084.html) | Published 2021; [revision at DIS stage](https://www.iso.org/standard/91081.html) (2026) | Proximity mDL (mdoc) |
+| [ISO/IEC TS 18013-7:2025](https://www.iso.org/standard/91154.html) | Ed. 2 published May 2025 (supersedes 2024 Ed. 1); adds normative Annex C for W3C Digital Credentials API | Online mDL presentation |
+| [ISO/IEC TS 23220 series](https://www.iso.org/standard/86783.html) | Parts 2, 3 and 4 published 2026; Part 5 in development | Building blocks for mobile eID / mdoc-based credentials |
+| [IETF RFC 9901 (SD-JWT)](https://datatracker.ietf.org/doc/rfc9901/) | Proposed Standard, Nov 2025 | Selective disclosure for JWT-based VCs |
+| [IETF SD-JWT VC](https://datatracker.ietf.org/doc/draft-ietf-oauth-sd-jwt-vc/) | Draft -19 (Aug 2026), in IESG evaluation | VC profile of SD-JWT used by EUDI |
+| [IETF BBS Signatures](https://datatracker.ietf.org/doc/draft-irtf-cfrg-bbs-signatures/) | IRTF draft -12 (Sep 2026), not an RFC | Unlinkable selective disclosure |
 
 The [W3C press release](https://www.w3.org/press-releases/2025/verifiable-credentials-2-0/) calls VC 2.0's Recommendation status a "critical signal to governments to build digital trust upon interoperable, trustworthy, and privacy-aware open web standards." Seven related specifications were elevated simultaneously, including data integrity proofs and the bitstring status list.
 
@@ -28,7 +34,7 @@ These two standards emerged from different communities with different primary us
 | **Primary use case** | Online / remote credential exchange | In-person, proximity (police stop, airport, bar) |
 | **Standardization body** | W3C (with IETF for SD-JWT variant) | ISO/IEC JTC 1/SC 17 |
 | **First published** | VC DM 1.0: 2019; v2.0 W3C Rec: May 2025 | ISO 18013-5:2021 |
-| **Online extension** | Native (HTTP-based presentation) | ISO 18013-7:2024 (adds OID4VP) |
+| **Online extension** | Native (HTTP-based presentation) | ISO/IEC TS 18013-7:2025 (OID4VP and W3C Digital Credentials API) |
 
 ### Data Format and Encoding
 
@@ -47,11 +53,11 @@ Both standards support selective disclosure — the ability for a holder to reve
 **ISO mdoc (18013-5):**
 All data elements are encrypted and hidden by default at issuance. During a session the holder's device explicitly authorizes release of specific elements. The verifier receives only what was requested. This is tightly integrated with the device engagement and session encryption protocol.
 
-**W3C VC with SD-JWT (IETF RFC 9901 / draft SD-JWT VC):**
+**W3C VC with SD-JWT (IETF RFC 9901; SD-JWT VC profile at draft -19, in IESG evaluation as of September 2026):**
 At issuance, each claim is individually salted and hashed. The holder receives a JWT containing hashes plus individual per-claim disclosure tokens. At presentation, the holder selects which disclosure tokens to release. Cryptographic linkability between claims is prevented by the salt/hash structure.
 
 **W3C VC with BBS+ signatures:**
-Supports *unlinkable* selective disclosure — different presentations of the same credential are cryptographically indistinguishable from each other, preventing correlation across verifiers. This is stronger privacy than SD-JWT or mdoc for high-frequency use cases.
+Supports *unlinkable* selective disclosure — different presentations of the same credential are cryptographically indistinguishable from each other, preventing correlation across verifiers. This is stronger privacy than SD-JWT or mdoc for high-frequency use cases. BBS remains an IRTF draft (draft-irtf-cfrg-bbs-signatures-12, September 2026) with no RFC yet, so production deployments today rely on SD-JWT or mdoc selective disclosure.
 
 ### Privacy Properties
 
@@ -68,7 +74,7 @@ Supports *unlinkable* selective disclosure — different presentations of the sa
 
 Both standards now converge on **OpenID for Verifiable Presentations (OID4VP)** as the presentation protocol for online flows, enabling a single relying party integration to accept either format.
 
-- **ISO 18013-7** (published October 2024) defines how mdoc credentials are presented over the internet using OID4VP.
+- **ISO/IEC TS 18013-7** (Ed. 1 October 2024; Ed. 2 May 2025) defines how mdoc credentials are presented over the internet using OID4VP and, since Ed. 2, the W3C Digital Credentials API (Annex C).
 - **OpenID4VCI** is the issuance protocol for both SD-JWT VCs and mdocs.
 - **eIDAS 2.0 EUDI Wallet** mandates support for both mdoc and SD-JWT VC at the wallet level, with OID4VP as the presentation layer — the clearest signal that both formats will coexist long-term.
 
@@ -110,21 +116,23 @@ Yes — partial and growing. The two standards operate at different layers of th
 
 #### 1. OpenID4VC High Assurance Interoperability Profile (HAIP)
 
-The [OpenID4VC HAIP](https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0-04.html) defines a single profile of [OpenID for Verifiable Presentations (OID4VP)](https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html) and [OpenID for Verifiable Credential Issuance (OID4VCI)](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html) that spans **both IETF SD-JWT VC and ISO mdoc**. A relying party implementing HAIP can accept either format through a single integration. Both OID4VP v1.0 and OID4VCI v1.0 reached final OpenID Foundation specification status in 2025. July 2025 interoperability testing demonstrated cross-vendor interop across OID4VCI v16, OID4VP HAIP, ISO 18013-5, ISO 18013-7, and IETF SD-JWT draft 17.
+The [OpenID4VC HAIP 1.0](https://openid.net/specs/openid4vc-high-assurance-interoperability-profile-1_0.html) (Final, 24 December 2025) defines a single profile of [OpenID for Verifiable Presentations (OID4VP)](https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html) and [OpenID for Verifiable Credential Issuance (OID4VCI)](https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html) that spans **both IETF SD-JWT VC and ISO mdoc**. A relying party implementing HAIP can accept either format through a single integration. OID4VP 1.0 reached Final status on 9 July 2025 and OID4VCI 1.0 on 16 September 2025; the OpenID Foundation [completed its conformance programme](https://openid.net/oidf-completes-conformance-programme-for-widely-adopted-digital-identity-standards/) for both, with HAIP, in July 2026. July 2025 interoperability testing demonstrated cross-vendor interop across OID4VCI v16, OID4VP HAIP, ISO 18013-5, ISO 18013-7, and IETF SD-JWT draft 17.
 
 #### 2. W3C Digital Credentials API (Browser Layer)
 
 The [W3C Digital Credentials API](https://www.w3.org/blog/2025/w3c-digital-credentials-api-publication-the-next-step-to-privacy-preserving-identities-on-the-web/) is the browser-level abstraction that requests credentials from a wallet regardless of their underlying format (mdoc or W3C VC). Key milestones:
-- **Chrome 141** and **Safari 26** shipped stable Digital Credentials API support in September 2025
-- **Firefox 149** carries baseline implementation code (Q1 2026)
-- **iOS 26** supports W3C Digital Credentials API for requesting mdocs from Safari/WebKit, including TSA-approved digital passports
-- **ISO 18013-7 (2nd edition)** is being revised to incorporate the W3C Digital Credentials API as an Annex C transport — directly embedding the W3C browser API into the ISO standard
-- The W3C FedID Working Group hardcoded OpenID4VP, OID4VCI, and ISO 18013-7 Annex C directly into the spec at TPAC (November 2025), eliminating an open registry in favour of explicit format enumeration
+- **Chrome 141** (October 2025) and **Safari 26** shipped Digital Credentials API support; Chrome supports OpenID4VP and ISO 18013-7 Annex C, Safari supports mdoc (`org-iso-mdoc`) only. Chrome 143 added an issuance origin trial (`navigator.credentials.create()` over OpenID4VCI, Android only).
+- **Firefox**: Mozilla's [standards position](https://github.com/mozilla/standards-positions/issues/1003) remains negative and no shipping implementation has been confirmed.
+- **iOS 26.1** ships [Apple Digital ID](https://www.apple.com/newsroom/2025/11/apple-introduces-digital-id-a-new-way-to-create-and-present-an-id-in-apple-wallet/) (November 2025), a US-passport-derived ID accepted at 250+ TSA checkpoints, and supports the Digital Credentials API for requesting mdocs from Safari/WebKit.
+- **ISO/IEC TS 18013-7:2025 (Ed. 2)** incorporates the W3C Digital Credentials API as a normative Annex C transport, embedding the W3C browser API in the ISO standard.
+- The W3C specification enumerates OpenID4VP and ISO 18013-7 Annex C as its exchange protocols. In June 2026 the [W3C Council overruled a formal objection](https://www.w3.org/2026/06/council-digital-credentials-report.html) to the normative reference to the fee-gated ISO Annex C, treating it as a narrow exception. The spec is a Working Draft (latest September 2026).
 
 **Resources:**
 - [W3C Blog — Digital Credentials API: the next step to privacy-preserving identities on the web](https://www.w3.org/blog/2025/w3c-digital-credentials-api-publication-the-next-step-to-privacy-preserving-identities-on-the-web/)
 - [Biometric Update — Support for W3C Digital Credentials API, digital identity passports part of iOS 26](https://www.biometricupdate.com/202506/support-for-w3c-digital-credentials-api-digital-identity-passports-part-of-ios-26)
 - [Corbado — Digital Credentials API (2026): Chrome, Safari & Firefox](https://www.corbado.com/blog/digital-credentials-api)
+- [Chrome — Digital Credentials API shipped](https://developer.chrome.com/blog/digital-credentials-api-shipped) · [Chrome 143 issuance origin trial](https://developer.chrome.com/blog/digital-credentials-api-143-issuance-ot)
+- [W3C Council report on the Digital Credentials API formal objection (June 2026)](https://www.w3.org/2026/06/council-digital-credentials-report.html)
 
 #### 3. W3C CCG Verifiable Driver's License Vocabulary
 
@@ -164,9 +172,9 @@ The UN Economic Commission for Europe, through its UN Centre for Trade Facilitat
 
 The **Ecodesign for Sustainable Products Regulation (ESPR)**, in force since July 2024, creates the legal basis for DPP obligations across product categories being phased in 2026–2030 (batteries first, then textiles, electronics, construction). The DPP must use "secure, verifiable digital credentials in a standardized format" — in practice, W3C VCs.
 
-The **European Business Wallet (EBW)**, a business-facing counterpart to the EUDI citizen wallet, enables companies to issue and receive verifiable credentials including DPPs, licences, and power-of-attorney attestations. It connects the EUDI/eIDAS identity infrastructure directly to the DPP supply chain use case — the same wallet infrastructure that carries a driving licence as an mdoc or SD-JWT VC can carry a DPP as a W3C VC.
+The **European Business Wallet (EBW)**, a business-facing counterpart to the EUDI citizen wallet, is at present a legislative [proposal](https://digital-strategy.ec.europa.eu/en/library/proposal-regulation-establishment-european-business-wallets) (Commission, 19 November 2025; [Council negotiating position](https://www.consilium.europa.eu/en/press/press-releases/2026/06/09/european-business-wallets-council-adopts-negotiating-position/) adopted 9 June 2026; political agreement targeted for end-2026). Once adopted it would enable companies to issue and receive verifiable credentials including DPPs, licences, and power-of-attorney attestations. It connects the EUDI/eIDAS identity infrastructure directly to the DPP supply chain use case — the same wallet infrastructure that carries a driving licence as an mdoc or SD-JWT VC can carry a DPP as a W3C VC.
 
-This is a significant forcing function: the EU is mandating that **identity credentials** (driving licence → EUDI wallet) and **product credentials** (DPP → European Business Wallet) share the same trust infrastructure, credential formats, and presentation protocols — pushing the entire ecosystem toward format convergence.
+This is a significant forcing function: the EU intends that **identity credentials** (driving licence → EUDI wallet) and **product credentials** (DPP → European Business Wallet) share the same trust infrastructure, credential formats, and presentation protocols — pushing the entire ecosystem toward format convergence.
 
 **Resources:**
 - [Spherity — European Business Wallet (EIDA)](https://www.spherity.com/eida)
@@ -175,11 +183,11 @@ This is a significant forcing function: the EU is mandating that **identity cred
 - [Cyber3Lab — Why We're Excited About Digital Product Passports, EUDI and European Business Wallets](https://cyber3lab.howest.be/en/news/why-were-excited-about-digital-product-passports-eudi-and-european-business-wallets)
 - [ITICP — EU Digital Product Passports: What's New in 2025–2026](https://www.iticp.org/l/eu-digital-product-passports-what-s-new-in-2025-2026/)
 
-> **Note on "EU WEBUILD":** This specific name did not surface in current documentation. If you are referring to a particular EU Building Blocks programme (CEF Digital / European Digital Building Blocks), the Digital Europe Programme, or a specific consortium project, please clarify — the closest matching initiative found is the European Business Wallet and the EU Digital Building Blocks infrastructure.
+> **WE BUILD:** the EU's second-wave large-scale pilot on business and organisational wallets (launched 2025, alongside APTITUDE), which prepares the ground for the European Business Wallet. See the [EC list of Large Scale Pilot projects](https://ec.europa.eu/digital-building-blocks/sites/spaces/EUDIGITALIDENTITYWALLET/pages/694487808/What+are+the+Large+Scale+Pilot+Projects).
 
 #### W3C Digital Product Passport Vocabulary Work
 
-The W3C VC Working Group charter explicitly includes developing **vocabularies for product credentials** — expressing facts such as origin, materials, repairability, and recyclability as VCs, "in line with the upcoming European Business Wallet, contributing to the EU's and W3C's sustainability goals." This is an active standardization track that will canonicalize the vocabulary bridge between ESPR/UNTP and the W3C VC ecosystem, analogous to what the VDL vocabulary does for driving licences.
+The W3C VC Working Group's [2026 charter](https://w3c.github.io/vc-charter-2026/) (March 2026 to March 2028) lists **vocabularies for Digital Product Passports** as a tentative deliverable — expressing facts such as origin, materials, repairability, and recyclability as VCs, "in line with the upcoming European Business Wallet, contributing to the EU's and W3C's sustainability goals." If taken up, this track would canonicalize the vocabulary bridge between ESPR/UNTP and the W3C VC ecosystem, analogous to what the VDL vocabulary does for driving licences.
 
 ---
 
@@ -205,10 +213,10 @@ The protocol adheres to Self-Sovereign Identity (SSI) principles — decentraliz
 
 | Protocol | Status | Role | VC/mdoc Support |
 |---|---|---|---|
-| **OID4VP v1.0** | OpenID Final Spec (2025) | Presentation layer for both formats | Both W3C VC and mdoc |
-| **OID4VCI v1.0** | OpenID Final Spec (2025) | Issuance protocol | Both W3C VC and mdoc |
-| **OpenID4VC HAIP** | Draft 04 (active) | High-assurance profile unifying both | SD-JWT VC + mdoc |
-| **W3C Digital Credentials API** | W3C draft (browser impl 2025) | Browser-level wallet request | Both (format-agnostic) |
+| **OID4VP 1.0** | OpenID Final (9 Jul 2025) | Presentation layer for both formats | Both W3C VC and mdoc |
+| **OID4VCI 1.0** | OpenID Final (16 Sep 2025) | Issuance protocol | Both W3C VC and mdoc |
+| **OpenID4VC HAIP 1.0** | OpenID Final (24 Dec 2025) | High-assurance profile unifying both | SD-JWT VC + mdoc |
+| **W3C Digital Credentials API** | W3C Working Draft (Sep 2026); shipped in Chrome 141+, Safari 26 | Browser-level wallet request | Both (format-agnostic) |
 | **GNAP (RFC 9635)** | IETF RFC (Oct 2024) | Next-gen authorization; VC assertions supported | W3C VC assertions |
 | **GNAP4VP** | Research / preprint (May 2025) | GNAP + VP for Data Spaces, M2M | W3C VC + SSI |
 | **UNTP / JSON-LD** | UNECE Rec. 49 (active) | DPP supply chain data exchange | W3C VC VCDM 2.0 (mandatory) |
@@ -229,14 +237,22 @@ The protocol adheres to Self-Sovereign Identity (SSI) principles — decentraliz
 
 **Production deployments — TSA-accepted mDLs**
 
-As of early 2026, **21 US states plus Puerto Rico** have TSA-accepted mDL programs: Alaska, Arizona, Arkansas, California, Colorado, Delaware, Georgia, Hawaii, Illinois, Iowa, Kentucky, Louisiana, Maryland, Montana, New Mexico, New York, North Dakota, Ohio, Utah, Virginia, and West Virginia. The TSA published a final rule in October 2024 permitting mobile IDs at airport security checkpoints.
+As of September 2026, **21 US states plus Puerto Rico** have [TSA-accepted mDL programs](https://www.tsa.gov/digital-id/participating-states): Alaska, Arizona, Arkansas, California, Colorado, Georgia, Hawaii, Illinois, Iowa, Kentucky, Louisiana, Maryland, Montana, New Mexico, New York, North Dakota, Ohio, Oklahoma, Utah, Virginia, and West Virginia. Delaware's state app is not ISO 18013-5-based and is not TSA-accepted. The TSA published a final rule in October 2024 permitting mobile IDs at airport security checkpoints; since REAL ID enforcement began on 7 May 2025, TSA accepts only mDLs derived from REAL ID-compliant cards.
+
+Platform wallets: Apple Wallet holds state IDs for 16 states plus Puerto Rico (Virginia added August 2026, Oklahoma September 2026), Google Wallet for 11 states plus Puerto Rico, and Samsung Wallet for about nine states (California added April 2026). In June 2026 TSA and Google launched [TSA PreCheck Touchless ID via Google Wallet](https://www.tsa.gov/news/press/releases/2026/06/24/tsa-google-wallet-launch-new-tsa-precheck-touchless-id-opt) at 65 airports.
 
 Selected enrollment figures:
-- **Louisiana**: ~2 million mDLs issued (leading nationally)
-- **California**: 2,654,774 mDLs as of August 2025
-- **Arizona**: ~23% of licensed drivers hold an mDL
-- **New York**: >200,000 Mobile IDs as of March 2025
-- **National total**: ~8 million mDLs as of mid-2025
+- **California**: more than [3.5 million applications](https://www.gov.ca.gov/2026/07/13/governor-newsom-signs-dmv-modernization-law-expands-mobile-drivers-license-access-for-millions-of-californians/) by July 2026, now leading nationally. SB 169 (signed 13 July 2026) raised the pilot cap from 15% to 60% of licensed drivers.
+- **Louisiana**: ~1.8 million LA Wallet users (last public figure, May 2024)
+- **Arizona**: ~23% of licensed drivers (about 1.1 million) hold an mDL
+- **Georgia**: >800,000 downloads (GA DDS)
+- **New York**: ~260,000 Mobile IDs one year after launch (June 2025)
+
+No authoritative national total exists; AAMVA does not publish one.
+
+**Trust infrastructure:** AAMVA's Digital Trust Service is the US trust anchor for mDL verification, and its [mDL Implementation Guidelines v1.6](https://www.aamva.org/identity/mobile-driver-license-digital-trust-service/for-issuing-authorities) (July 2026) are now required for participating issuers.
+
+**Regulatory acceptance:** On 8 September 2026 FinCEN, together with the OCC, FDIC, Federal Reserve and NCUA, issued [FAQs](https://www.fincen.gov/news/news-releases/fincen-issues-frequently-asked-questions-regarding-treatment-verifiable-digital) confirming that an unexpired government-issued verifiable digital credential such as an mDL can satisfy the Customer Identification Program rule's "government-issued identification" requirement for in-person or remote account opening. The rule neither requires nor prohibits acceptance.
 
 **Online presentation (ISO 18013-7 / W3C VC):** Remote ID verification via 18013-7 is in early-adopter stage; full W3C VC interoperability across states is an ongoing fragmentation challenge.
 
@@ -245,17 +261,20 @@ Selected enrollment figures:
 - [Digital Government Hub — mDL Resource Guide](https://digitalgovernmenthub.org/publications/resource-guide-understanding-the-technology-risks-and-opportunities-for-mobile-drivers-licenses-mdls/)
 - [Regula — Mobile Driver's License Global Status 2026](https://regulaforensics.com/blog/mobile-drivers-license-verification/)
 - [Biometric Update — mDL fragmentation clouds US digital ID landscape](https://www.biometricupdate.com/202510/mdl-fragmentation-clouds-us-digital-id-landscape-as-adoption-ticks-steadily-up)
+- [TSA — Participating states and eligible digital IDs](https://www.tsa.gov/digital-id/participating-states) · [Credence ID — US mDL state tracker](https://credenceid.com/resources/blog/us-mobile-drivers-license-mdl-state-tracker/)
+- [FinCEN — FAQs on verifiable digital credentials under the CIP Rule (Sep 2026)](https://www.fincen.gov/news/news-releases/fincen-issues-frequently-asked-questions-regarding-treatment-verifiable-digital)
 
 ### Canada
 
-**Status: Active pilots, provincial rollouts announced for 2026**
+**Status: No provincial digital driver's licence in production; legislative and wallet groundwork under way**
 
-Digital Driver's Licences (DDLs) are launching as opt-in mobile apps in **Ontario, British Columbia, Alberta, and Saskatchewan**, using encrypted QR codes verified by RCMP scanners. Quebec has a Digital ID initiative planned for 2025 incorporating driver's licences into a provincial wallet alongside health insurance cards and birth certificates. A federal API is being developed for inter-provincial suspension/status interoperability ("Fit-to-Drive" protocol). Nationwide DDL alignment is targeted for 2026 via intergovernmental pact.
+No Canadian province has launched a digital driver's licence. **Alberta** launched the [Alberta Wallet](https://www.alberta.ca/alberta-wallet) in August 2025 with a mobile health card; a driver's licence is listed only as a potential future document. **British Columbia** offers the BC Services Card app (the former BC Wallet functions were folded into it), which is a login and identity credential rather than a driving licence. **Ontario** paused its digital ID programme in 2024 and **Saskatchewan** halted its digital ID plan in 2022. **Quebec** adopted [Bill 82, the Act respecting the national digital identity](https://www.assnat.qc.ca/fr/travaux-parlementaires/projets-loi/projet-loi-82-43-1.html), on 22 October 2025; rollout of the provincial wallet is phased with no published launch date for the driver's licence. Earlier reports of RCMP-verified QR licences, a federal "Fit-to-Drive" status API and a 2026 intergovernmental pact could not be confirmed against any government source and have been removed.
 
 **Resources:**
-- [IT World Canada — State of Digital ID in Canada](https://www.itworldcanada.com/article/the-state-of-digital-id-in-canada/484618)
+- [Alberta Wallet](https://www.alberta.ca/alberta-wallet)
+- [BC Services Card / BC Wallet](https://www2.gov.bc.ca/gov/content/governments/government-id/bc-wallet)
+- [Assemblée nationale du Québec — Bill 82](https://www.assnat.qc.ca/fr/travaux-parlementaires/projets-loi/projet-loi-82-43-1.html) · [ID Tech Wire — Quebec passes landmark digital ID law](https://idtechwire.com/quebec-passes-landmark-digital-id-law-emphasizing-privacy-and-user-control/)
 - [Canada.ca — Trusted access to digital services](https://www.canada.ca/en/government/system/digital-government/digital-government-innovations/digital-credentials.html)
-- [Biometric Update — Mobile driver's licenses, digital ID find support in US, Canada](https://www.biometricupdate.com/202509/mobile-drivers-licenses-digital-id-find-support-in-us-canada)
 
 ---
 
@@ -263,42 +282,51 @@ Digital Driver's Licences (DDLs) are launching as opt-in mobile apps in **Ontari
 
 ### European Union — EUDI Wallet / eIDAS 2.0
 
-**Status: Mandated, large-scale pilots concluded, member-state wallets due by end of 2026**
+**Status: Mandated; first-wave pilots concluded; first national wallets in production; all member-state wallets due by end of 2026**
 
-eIDAS 2.0 was formally adopted in **March 2024** and represents the most comprehensive government mandate for VC-based identity globally. All 27 EU member states must provide citizens with [European Digital Identity (EUDI) Wallets](https://digital-strategy.ec.europa.eu/en/policies/eudi-regulation) by **December 2026**. The wallet must carry electronic attestations including **driving licences, professional qualifications, and bank account access** as W3C VCs or mdoc credentials.
+eIDAS 2.0 (Regulation (EU) 2024/1183) was published on 30 April 2024 and entered into force on 20 May 2024. It is the most comprehensive government mandate for VC-based identity globally. Following the implementing acts adopted on 28 November 2024, all 27 EU member states must provide citizens with [European Digital Identity (EUDI) Wallets](https://digital-strategy.ec.europa.eu/en/policies/eudi-regulation) by **December 2026**, and regulated private relying parties (banks, telecoms, transport, health and others) must accept them from **24 December 2027**. The wallet must carry electronic attestations including **driving licences, professional qualifications, and bank account access** as SD-JWT VC or mdoc credentials.
 
-The **POTENTIAL large-scale pilot**, conducted across **19 EU Member States** and concluded September 2025, is the single largest government VC deployment globally. It demonstrated:
-- Cross-border issuance and verification (credential issued in one state, verified by service provider in another)
-- Use cases: banking account opening, SIM registration, e-government, age-restricted purchases
-- Participation from **350+ companies and government agencies**
+The **4th Driving Licence Directive** ([Directive (EU) 2025/2205](https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32025L2205), in force 25 November 2025) makes a mobile driving licence issued into the EUDI Wallet the main format across the EU. Member states must apply it by 26 November 2029, with the digital licence available EU-wide by 2030.
+
+**First national wallets are live.** Italy's IT-Wallet has operated inside the IO app since December 2024. Denmark launched [AltID](https://www.biometricupdate.com/202606/denmark-launches-altid-digital-wallet-for-proof-of-age-identity) on 3 June 2026, the first Nordic EUDI wallet in production, with zero-knowledge age verification. Denmark, France and Italy are in production pending EU notification; Germany targets 2 January 2027.
+
+The **POTENTIAL large-scale pilot**, conducted across **19 EU Member States plus Ukraine** and concluded in 2025, was the largest of the four first-wave pilots (POTENTIAL, EWC, DC4EU, NOBID), all of which have now concluded. Its [final report](https://www.digital-identity-wallet.eu/wp-content/uploads/2025/10/Potential-Final-Press-Release.docx.pdf) counts more than 140 organisations, 1,300+ tests and 1,000+ successful transactions, 249 of them cross-border, covering bank account opening, SIM registration, e-government, driving licence and age-restricted purchases. Second-wave pilots **APTITUDE** and **WE BUILD** (business wallets) launched in 2025 and are active.
 
 **Timeline:**
 
 | Date | Milestone |
 |---|---|
-| March 2024 | eIDAS 2.0 formally adopted |
-| Sept 2024 | First member-state wallet functionalities integrated |
-| Oct 2024 | ISO 18013-7 standard published (online mDL) |
-| Sept 2025 | POTENTIAL pilot concluded |
-| End 2025 | Core trust services in place |
+| 20 May 2024 | eIDAS 2.0 (Regulation 2024/1183) in force |
+| Oct 2024 / May 2025 | ISO/IEC TS 18013-7 Ed. 1 / Ed. 2 published (online mDL) |
+| 28 Nov 2024 | Implementing acts adopted; 24- and 36-month clocks start |
+| Dec 2024 | Italy IT-Wallet live in IO app |
+| 2025 | First-wave pilots (POTENTIAL, EWC, DC4EU, NOBID) conclude; APTITUDE and WE BUILD start |
+| 25 Nov 2025 | 4th Driving Licence Directive in force (mDL in EUDI Wallet as main format) |
+| 3 Jun 2026 | Denmark AltID launched |
 | End 2026 | All member states must offer EUDI wallets |
+| 24 Dec 2027 | Regulated private relying parties must accept EUDI wallets |
+| 26 Nov 2029 | Driving Licence Directive application deadline; EU-wide digital licence by 2030 |
 
 **Resources:**
 - [European Commission — EUDI Regulation](https://digital-strategy.ec.europa.eu/en/policies/eudi-regulation)
 - [EUDI Wallet Hub](https://www.eudi-wallet.eu/)
+- [EC — Large Scale Pilot projects](https://ec.europa.eu/digital-building-blocks/sites/spaces/EUDIGITALIDENTITYWALLET/pages/694487808/What+are+the+Large+Scale+Pilot+Projects) · [POTENTIAL final press release](https://www.digital-identity-wallet.eu/wp-content/uploads/2025/10/Potential-Final-Press-Release.docx.pdf)
+- [EC — Modernised EU rules on driving licences enter into force (Nov 2025)](https://transport.ec.europa.eu/news-events/news/modernised-eu-rules-driving-licences-and-driving-disqualifications-enter-force-2025-11-25_en)
+- [eIDAS Pro — EUDI wallet rollout by member state (Apr 2026)](https://www.eidas-pro.com/blog/eudi-wallet-rollout-member-states-april-2026)
 - [Entrust — What is eIDAS 2?](https://www.entrust.com/resources/learn/eidas-2)
 - [Everycred — 2025 State of Verifiable Credential Report](https://everycred.com/blog/2025-state-of-verifiable-credential-report/)
 
 ### United Kingdom
 
-**Status: GOV.UK Wallet live (2025), digital driving licence announced**
+**Status: GOV.UK Wallet live (2025); digital driving licence in private testing, public launch pending**
 
-Post-Brexit, the UK operates under its own [Digital Identity and Attributes Trust Framework (DIATF)](https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-04), now statutory under the **Data (Use and Access) Act 2025** (gamma v0.4, in force December 2025).
+Post-Brexit, the UK operates under its own [Digital Identity and Attributes Trust Framework (DIATF)](https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-04), now statutory under the **Data (Use and Access) Act 2025** (gamma v0.4 became the first statutory trust framework on 1 December 2025; OfDIA will announce during 2026 when [version 1.0](https://www.gov.uk/government/publications/uk-digital-verification-services-trust-framework-1-0/uk-digital-verification-services-trust-framework-1-0-pre-release) replaces it).
 
-The GOV.UK Wallet hosts government-issued W3C Verifiable Credentials. The DVLA (Driver and Vehicle Licensing Agency) will issue **digitally-signed mDLs** into the wallet. Rollout: HM Armed Forces Veteran Card from summer 2025; **full driving licence later in 2025**. UK digital ID sector actors have raised concerns about wallet interoperability and market access.
+The GOV.UK Wallet hosts government-issued W3C Verifiable Credentials. The DVLA (Driver and Vehicle Licensing Agency) will issue **digitally-signed mDLs** into the wallet. Rollout: HM Armed Forces Veteran Card went live in 2025. The driving licence entered private testing in December 2025 and GDS said in [January 2026](https://gds.blog.gov.uk/2026/01/21/making-the-governments-first-digital-wallet-a-reality/) it would launch "later this year"; as of September 2026 it is still listed as forthcoming. UK digital ID sector actors have raised concerns about wallet interoperability and market access.
 
 **Resources:**
 - [GOV.UK — UK Digital Identity and Attributes Trust Framework](https://www.gov.uk/government/publications/uk-digital-identity-and-attributes-trust-framework-04)
+- [GDS blog — Making the government's first digital wallet a reality (Jan 2026)](https://gds.blog.gov.uk/2026/01/21/making-the-governments-first-digital-wallet-a-reality/)
 - [CMS Law — Digital identity in the UK: DUA Bill](https://cms-lawnow.com/en/ealerts/2025/05/digital-identity-in-the-uk-a-new-legislative-framework-under-the-dua-bill)
 - [Biometric Update — UK digital ID sector warns of legal action if mDL limited to GOV.UK Wallet](https://www.biometricupdate.com/202602/uk-digital-id-sector-warns-of-legal-action-if-mdl-limited-to-gov-uk-wallet)
 
@@ -310,39 +338,42 @@ The GOV.UK Wallet hosts government-issued W3C Verifiable Credentials. The DVLA (
 
 **Status: Production deployments, ISO 18013-5 aligned, international interoperability work underway**
 
-Multiple states have operational mDL programs:
-- **Queensland**: First Australian mDL aligned with ISO 18013-5; >640,000 app downloads in first 7 months post-launch (late 2023), representing ~15% digital penetration among licence holders. Cited as a potential global model for mDL deployment architecture.
-- **Victoria**: Adopted mDLs as valid digital ID in **April 2024**.
+Digital driver licences are live in **New South Wales, Victoria, Queensland and South Australia**; the **Northern Territory** is launching before the end of 2026, **Western Australia** plans 2027, and Tasmania and the ACT are exploring. All jurisdictions agreed in June 2024 to align on ISO/IEC 18013 and 23220, and Austroads' [Digital Trust Service](https://austroads.gov.au/drivers-and-vehicles/digital-trust-service) is harmonising verification nationally.
+- **Queensland**: First Australian mDL aligned with ISO 18013-5 (November 2023); more than [1.4 million Digital Licence app customers](https://statements.qld.gov.au/statements/105727) by July 2026. Cited as a potential global model for mDL deployment architecture.
+- **Victoria**: statewide digital driver licence launched **May 2024**.
 
 Australia is working with **Japan and South Korea** on mutual recognition and interoperability of Verifiable Digital Credentials (VDCs).
 
 **Resources:**
 - [Biometric Update — Queensland mDL could be model for global mDL deployment](https://www.biometricupdate.com/202502/queensland-mobile-drivers-license-could-be-model-for-global-mdl-deployment)
 - [Biometric Update — More Australians can now use mDLs (April 2024)](https://www.biometricupdate.com/202404/more-australians-can-now-use-mdls)
+- [Biometric Update — Northern Territory brings Australia closer to nationwide mDL rollout (Sep 2026)](https://www.biometricupdate.com/202609/northern-territory-brings-australia-closer-to-nationwide-mdl-rollout)
+- [Austroads — Digital Trust Service](https://austroads.gov.au/drivers-and-vehicles/digital-trust-service)
 
 ### Japan
 
-**Status: Digital National ID issued on smartphones (2025), mDL/mdoc format**
+**Status: National ID on smartphones (Android since 2023, iPhone since 2025); driver's licence on the physical My Number Card since March 2025**
 
-Japan began issuing its **My Number Card digitally on iPhones** on **June 24, 2025**, in mdoc format, with Android support planned for 2026. Japan is coordinating with South Korea and Australia on VDC interoperability. A broader ecosystem of driving licence integration into smartphone wallets follows the My Number Card rollout.
+Japan's My Number Card electronic certificates have been available on [Android smartphones since May 2023](https://www.digital.go.jp/en/policies/mynumber/smartphone-certification) and on **iPhone since 24 June 2025**. Since [24 March 2025](https://www.digital.go.jp/en/policies/mynumber/drivers-license) holders can record their driving licence on the physical My Number Card's IC chip (the "Myna driver's licence"); the smartphone versions cannot yet be used as a driving licence. Japan is coordinating with South Korea and Australia on VDC interoperability: a Japan–Korea trust-framework proof of concept began in [July 2026](https://www.holdings.toppan.com/en/news/2026/07/newsrelease260709_1.html), targeting an interoperability method by 2027, and Japan and the EU [validated cross-border wallet interoperability](https://www.biometricupdate.com/202607/japan-eu-validate-cross-border-digital-wallet-interoperability) in July 2026.
 
 **Resources:**
-- [Everycred — 2025 State of Verifiable Credential Report](https://everycred.com/blog/2025-state-of-verifiable-credential-report/)
+- [Digital Agency — Smartphone electronic certificates](https://www.digital.go.jp/en/policies/mynumber/smartphone-certification)
+- [Digital Agency — My Number Card as driver's licence](https://www.digital.go.jp/en/policies/mynumber/drivers-license)
 - [Mobile driver's license — Wikipedia](https://en.wikipedia.org/wiki/Mobile_driver%27s_license)
 
 ### South Korea
 
 **Status: Active mDL expansion, interoperability cooperation**
 
-South Korea has an operational mDL programme and is participating in trilateral interoperability discussions with Japan and Australia on standardized Verifiable Digital Credentials, aligning with ISO 18013-5 and W3C VC frameworks.
+South Korea has had an operational mDL since July 2022 (Samsung Wallet support since March 2024) and launched the Mobile Resident Registration Card nationwide on 14 March 2025. It is participating in trilateral interoperability discussions with Japan and Australia on standardized Verifiable Digital Credentials, aligning with ISO 18013-5 and W3C VC frameworks.
 
 ### India
 
 **Status: World's largest government VC platform (DigiLocker) — driving licences legally accepted digitally**
 
 India's [DigiLocker](https://www.digilocker.gov.in/) platform, launched 2015 under Digital India / MeitY, has scaled to:
-- **513 million registered users** (~40% of population)
-- **5.6 billion+ documents issued**
+- **~717 million registered users** (71.66 crore, MeitY, July 2026)
+- **~9.4 billion documents issued** (936 crore)
 
 Driving licences stored in DigiLocker are **legally accepted at traffic checkpoints** and for vehicle registration, insurance, and transport services. The platform supports selective disclosure of attributes from credentials such as Aadhaar and driving licence. While DigiLocker uses cryptographically signed documents, interoperability with the W3C VC Data Model is a stated direction as India refines its national digital identity architecture.
 
@@ -367,7 +398,7 @@ Singapore is identified as a regional leader in digital identity systems alongsi
 
 **Status: Verifiable Credentials adopted for gov.br platform; digital CNH (driver's licence) live**
 
-Brazil's **"Identidade Digital Gov.br"** project unifies documents in a mobile app with QR codes and biometric verification. The **digital CNH (Carteira Nacional de Habilitação)** is live and accepted as valid identification. Brazil adopted a **Decentralized Credentials-as-a-Service (DaaS)** model for issuance in 2025.
+Brazil's **"Identidade Digital Gov.br"** project unifies documents in a mobile app with QR codes and biometric verification. The **digital CNH (Carteira Nacional de Habilitação)** has been live since 2017 and is accepted as valid identification. Separately, in 2025 Brazil adopted a "DPI as a Packaged Solution" (DaaS) approach to issue W3C-style verifiable credentials for social programmes, starting with a rural-property credential piloted with about 2,000 farmers in Rio Grande do Sul; this does not yet cover the CNH.
 
 Brazil and Uruguay operationalized the **first cross-border digital ID integration in Latin America** in production by October 2024 — 77 million Brazilians can use their Gov.br digital ID for services on Uruguayan government platforms. By end-2025, 39 services are covered.
 
@@ -380,7 +411,7 @@ Brazil and Uruguay operationalized the **first cross-border digital ID integrati
 
 **Status: Cross-border interoperability framework active**
 
-The **Mercosur Digital Citizen** programme enables citizens of Argentina, Brazil, Paraguay, and Uruguay to use national digital IDs for government services across borders. Argentina and Paraguay are expected to join the full interoperability framework in 2026.
+The **Mercosur Digital Citizen** programme enables citizens of Argentina, Brazil, Paraguay, and Uruguay to use national digital IDs for government services across borders. At the June 2026 Asunción summit the four members finalised an [agreement on mutual recognition of electronic identification](https://www.biometricupdate.com/202607/mercosur-advances-cross-border-digital-id-for-south-america), now subject to national ratification; Bolivia and Chile are seeking to join.
 
 **Verifiable Credentials pilot (mid-2025+):** First-wave participants include **Argentina, Brazil, Costa Rica, Dominican Republic, Paraguay, and Uruguay**. The Dominican Republic is separately piloting VCs for small businesses.
 
@@ -408,9 +439,9 @@ UAE Pass is a leading regional digital identity system (~60% adult digital ID co
 
 ### South Africa
 
-**Status: mDL announced, timeline 2027–2028**
+**Status: Digital ID and mDL committed for launch in 2026, phased rollout**
 
-South Africa's Department of Transport has announced a mobile driver's licence (mDL) as part of the **MyMzansi** functional ID component. The mDL will be one of multiple Verifiable Credentials accessible via a secure mobile wallet. Nationwide rollout is targeted for 2028; hosting infrastructure deadline is March 2027. The president announced the digital ID and mDL in early 2026.
+South Africa's Department of Transport has announced a mobile driver's licence (mDL) as part of the **MyMzansi** functional ID component. The mDL will be one of multiple Verifiable Credentials accessible via a secure mobile wallet. In the February 2026 State of the Nation Address the president committed to launching the digital ID, including the digital driving licence, during 2026, and the Department of Home Affairs targets a first release before year-end with a phased rollout thereafter ([MyMzansi roadmap](https://www.mymzansi.gov.za/roadmap/initiative-1)).
 
 **Resources:**
 - [Biometric Update — South Africa builds mDL as part of MyMzansi](https://www.biometricupdate.com/202512/south-africa-builds-mdl-as-part-of-mymzansi-functional-id-component)
@@ -423,19 +454,25 @@ South Africa's Department of Transport has announced a mobile driver's licence (
 
 | Region | Jurisdiction | Status | Format | Notes |
 |---|---|---|---|---|
-| **NA** | USA (21 states + PR) | Production | ISO 18013-5 / mdoc | TSA-accepted; ~8M issued |
-| **NA** | Canada (ON/BC/AB/SK) | Pilot / rollout | Encrypted QR / DDL | Federal interop API in progress |
-| **EU** | EU 27 member states | Mandated law (EUDI) | W3C VC + mdoc | Dec 2026 deadline; POTENTIAL pilot done |
-| **EU** | UK | Rolling out 2025 | W3C VC (mDL via DVLA) | GOV.UK Wallet; DUA Act 2025 |
-| **APAC** | Australia (QLD, VIC…) | Production | ISO 18013-5 | QLD model cited globally |
-| **APAC** | Japan | Production (2025) | mdoc (My Number) | iPhone first; Android 2026 |
+| **NA** | USA (21 states + PR) | Production | ISO 18013-5 / mdoc | TSA-accepted; CA >3.5M applications; FinCEN CIP acceptance Sep 2026 |
+| **NA** | Canada | No DDL in production | — | Alberta Wallet (health card) 2025; Quebec Bill 82 adopted Oct 2025 |
+| **EU** | EU 27 member states | Mandated law (EUDI) | SD-JWT VC + mdoc | Dec 2026 deadline; DK/IT/FR live; mDL directive in force Nov 2025 |
+| **EU** | UK | Wallet live; mDL pending | W3C VC (mDL via DVLA) | GOV.UK Wallet; DUA Act 2025; licence in private testing |
+| **APAC** | Australia (NSW, VIC, QLD, SA; NT 2026) | Production | ISO 18013-5 / 23220 | QLD >1.4M users; Austroads Digital Trust Service |
+| **APAC** | Japan | Production | My Number Card (Android 2023, iPhone 2025) | Licence on physical card chip since Mar 2025; not yet on phone |
 | **APAC** | South Korea | Production | ISO 18013-5 | Trilateral interop (JP, AU) |
-| **APAC** | India | Production (DigiLocker) | Signed docs → W3C VC direction | 513M users; DL legally accepted |
+| **APAC** | India | Production (DigiLocker) | Signed docs → W3C VC direction | ~717M users; DL legally accepted |
 | **LATAM** | Brazil | Production | Gov.br VC / DaaS | Digital CNH live; cross-border w/ UY |
-| **LATAM** | Uruguay / Mercosur | Production / pilot | W3C VC | Cross-border with Brazil live |
+| **LATAM** | Uruguay / Mercosur | Production / agreement | W3C VC | BR–UY live; mutual-recognition agreement Jun 2026 |
 | **LATAM** | Dominican Republic | Pilot | W3C VC | Small business credentials |
 | **MEA** | Oman | Production | National ID / DL digital | Legal parity granted 2025 |
-| **MEA** | South Africa | Announced | mDL (MyMzansi) | 2027–2028 rollout |
+| **MEA** | South Africa | Launch committed 2026 | mDL (MyMzansi) | Phased rollout from late 2026 |
+
+---
+
+## Unverified Claims
+
+The following statements are retained from earlier drafts but could not be confirmed against a primary source in the September 2026 review: Queensland's early "~15% digital penetration"; the Brazil–Uruguay "39 services by end-2025" figure; the Latin American VC pilot participant list (Argentina, Brazil, Costa Rica, Dominican Republic, Paraguay, Uruguay); the UAE "~60% adult digital ID coverage" figure; and the exact credential format used for My Number Card on iPhone.
 
 ---
 
