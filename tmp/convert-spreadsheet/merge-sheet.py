@@ -23,7 +23,8 @@ def clean_key_pattern(key: str) -> str:
     return key
 
 # Load the YAML file
-yaml_file_path = 'vss.yaml'
+import sys
+yaml_file_path = sys.argv[1] if len(sys.argv) > 1 else 'vss.yaml'
 with open(yaml_file_path, 'r') as yaml_file:
     yaml_data = yaml.safe_load(yaml_file)
 
@@ -43,14 +44,19 @@ for index, row in df.iterrows():
         print(f"Skipping row {index} due to missing or invalid VSS value: {vss_value}")
         continue
     
-    # Clean the VSS value by removing unwanted parts
-    vss_value_cleaned = clean_key_pattern(vss_value)
-    
-    # Convert the VSS pattern to regex
-    vss_regex = convert_pattern_to_regex(vss_value_cleaned)
-    
-    # Find matching keys in the YAML data using regex
-    matching_keys = [key for key in yaml_data if re.match(vss_regex, clean_key_pattern(key))]
+    # A cell may hold several patterns separated by newlines, spaces or commas
+    # (commas inside {a,b} braces are kept). Keep only tokens that look like VSS paths.
+    protected = re.sub(r'\{[^}]*\}', lambda m: m.group(0).replace(',', '\x00'), vss_value)
+    tokens = [t.replace('\x00', ',') for t in re.split(r'[\s,]+', protected) if t.startswith('Vehicle.')]
+    if not tokens:
+        print(f"Skipping row {index} due to missing or invalid VSS value: {vss_value}")
+        continue
+    vss_value_cleaned = ' '.join(tokens)
+
+    matching_keys = []
+    for token in tokens:
+        vss_regex = convert_pattern_to_regex(clean_key_pattern(token))
+        matching_keys += [key for key in yaml_data if re.match(vss_regex, clean_key_pattern(key))]
     
     if matching_keys:
         for key in matching_keys:
@@ -65,7 +71,7 @@ for index, row in df.iterrows():
             # Store the updated YAML entry
             yaml_entries_with_extra_fields[key] = yaml_entry
     else:
-        print(f"Warning: No match found for VSS value: {vss_value_cleaned} (row {index}) with {vss_regex}")
+        print(f"Warning: No match found for VSS value: {vss_value_cleaned} (row {index})")
 
 # Save the resulting YAML data
 with open('output.yaml', 'w') as output_yaml_file:

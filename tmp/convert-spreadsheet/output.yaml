@@ -1,82 +1,625 @@
+Vehicle.ADAS.ABS.IsEnabled:
+  category: Safety
+  datatype: boolean
+  description: Indicates if ABS is enabled. True = Enabled. False = Disabled.
+  importance: Must Have
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY13
+Vehicle.ADAS.ABS.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Indicates if ABS is currently regulating brake pressure. True = Engaged.
+    False = Not Engaged.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.CruiseControl.IsActive:
+  category: Safety
+  datatype: boolean
+  description: Indicates if cruise control system is active (i.e. actively controls
+    speed). True = Active. False = Inactive.
+  importance: Must Have
+  sampling: CHANGE
+  type: actuator
+  usecase: SAFETY04
+Vehicle.ADAS.CruiseControl.IsError:
+  category: Safety
+  datatype: boolean
+  description: Indicates if cruise control system incurred an error condition. True
+    = Error. False = No Error.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY04
+Vehicle.ADAS.CruiseControl.SpeedSet:
+  category: Safety
+  datatype: float
+  description: Set cruise control speed in kilometers per hour.
+  importance: Must Have
+  sampling: CHANGE
+  type: actuator
+  unit: km/h
+  usecase: SAFETY04
 Vehicle.ADAS.EBA.IsEngaged:
   category: Safety
   datatype: boolean
   description: Indicates if EBA is currently regulating brake pressure. True = Engaged.
     False = Not Engaged.
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
   usecase: SAFETY13
-  uuid: 86360c44ead354d18af7ff14176151f6
 Vehicle.ADAS.LaneDepartureDetection.IsWarning:
   category: Safety
   datatype: boolean
   description: Indicates if lane departure detection registered a lane departure.
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
   usecase: SAFETY13
-  uuid: c32fcd1d56035cb08acfd380be224c6a
-Vehicle.ADAS.ObstacleDetection.IsWarning:
+Vehicle.ADAS.ObstacleDetection.Front.Center.Distance:
+  category: Safety
+  datatype: float
+  description: Distance in meters to detected object
+  importance: Must Have
+  min: 0.0
+  sampling: 2 Hz
+  type: sensor
+  unit: m
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Center.IsWarning:
   category: Safety
   datatype: boolean
   description: Indicates if obstacle sensor system registered an obstacle.
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
   usecase: SAFETY13
-  uuid: b0b1eab51f135ffcb2a17a7603415fec
+Vehicle.ADAS.ObstacleDetection.Front.Left.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Front.Right.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Center.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Left.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
+Vehicle.ADAS.ObstacleDetection.Rear.Right.IsWarning:
+  category: Safety
+  datatype: boolean
+  description: Indicates if obstacle sensor system registered an obstacle.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY13
 Vehicle.ADAS.TCS.IsEngaged:
   category: Safety
   datatype: boolean
   description: Indicates if TCS is currently regulating traction. True = Engaged.
     False = Not Engaged.
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
   usecase: SAFETY13
-  uuid: b33d70009ad5589fbffe17fa7e827242
 Vehicle.Acceleration.Lateral:
   category: Safety
   datatype: float
   description: Vehicle acceleration in Y (lateral acceleration).
-  importance: MUST
+  importance: Must Have
   sampling: 1Hz
   type: sensor
   unit: m/s^2
   usecase: SAFETY05
-  uuid: 7522c5d6b7665b16a099643b2700e93c
+Vehicle.Acceleration.Longitudinal:
+  category: Safety
+  datatype: float
+  description: Vehicle acceleration in X (longitudinal acceleration).
+  importance: Must Have
+  sampling: 1Hz
+  type: sensor
+  unit: m/s^2
+  usecase: SAFETY02
+Vehicle.Body.Lights.Backup.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Beam.High.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Beam.Low.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Brake.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.DirectionIndicator.Left.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.DirectionIndicator.Right.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Fog.Front.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Fog.Rear.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Hazard.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.LicensePlate.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Parking.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Lights.Running.IsDefect:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if light is defect. True = Light is defect. False = Light
+    has no defect.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Windshield.Front.Wiping.System.IsBlocked:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if wiper movement is blocked. True = Movement blocked. False
+    = Movement not blocked.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Windshield.Front.Wiping.System.IsOverheated:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates if wiper system is overheated. True = Wiper system overheated.
+    False = Wiper system not overheated.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Body.Windshield.Front.Wiping.System.IsWiperError:
+  category: Efficiency / Optimization / Maintenance
+  datatype: boolean
+  description: Indicates system failure. True if wiping is disabled due to system
+    failure.
+  importance: Should Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  usecase: MAINTENANCE16
+Vehicle.Cabin.Door.Row1.DriverSide.IsLocked:
+  category: Productivity
+  datatype: boolean
+  description: Is item locked or unlocked. True = Locked. False = Unlocked.
+  importance: Must Have
+  sampling: CHANGE
+  type: actuator
+  usecase: PRODUCTIVITY04
+Vehicle.Cabin.Door.Row1.PassengerSide.IsLocked:
+  category: Productivity
+  datatype: boolean
+  description: Is item locked or unlocked. True = Locked. False = Unlocked.
+  importance: Must Have
+  sampling: CHANGE
+  type: actuator
+  usecase: PRODUCTIVITY04
+Vehicle.Cabin.Door.Row2.DriverSide.IsLocked:
+  category: Productivity
+  datatype: boolean
+  description: Is item locked or unlocked. True = Locked. False = Unlocked.
+  importance: Must Have
+  sampling: CHANGE
+  type: actuator
+  usecase: PRODUCTIVITY04
+Vehicle.Cabin.Door.Row2.PassengerSide.IsLocked:
+  category: Productivity
+  datatype: boolean
+  description: Is item locked or unlocked. True = Locked. False = Unlocked.
+  importance: Must Have
+  sampling: CHANGE
+  type: actuator
+  usecase: PRODUCTIVITY04
+Vehicle.Cabin.Seat.Row1.DriverSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
 Vehicle.Cabin.Seat.Row1.DriverSide.IsBelted:
   category: Safety
   datatype: boolean
   description: Is the belt engaged.
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
-  usecase: SAFETY01
-  uuid: db477d45def05e11a90689c9e655cad9
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.DriverSide.OccupancyStatus:
+  allowed:
+  - UNKNOWN
+  - OCCUPIED
+  - EMPTY
+  category: Safety
+  datatype: string
+  description: Occupancy status of the seat.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.Middle.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row1.Middle.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.Middle.OccupancyStatus:
+  allowed:
+  - UNKNOWN
+  - OCCUPIED
+  - EMPTY
+  category: Safety
+  datatype: string
+  description: Occupancy status of the seat.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.PassengerSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row1.PassengerSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row1.PassengerSide.OccupancyStatus:
+  allowed:
+  - UNKNOWN
+  - OCCUPIED
+  - EMPTY
+  category: Safety
+  datatype: string
+  description: Occupancy status of the seat.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.DriverSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row2.DriverSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.DriverSide.OccupancyStatus:
+  allowed:
+  - UNKNOWN
+  - OCCUPIED
+  - EMPTY
+  category: Safety
+  datatype: string
+  description: Occupancy status of the seat.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.Middle.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row2.Middle.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.Middle.OccupancyStatus:
+  allowed:
+  - UNKNOWN
+  - OCCUPIED
+  - EMPTY
+  category: Safety
+  datatype: string
+  description: Occupancy status of the seat.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.PassengerSide.Airbag.IsDeployed:
+  category: Safety
+  datatype: boolean
+  description: Airbag deployment status. True = Airbag deployed. False = Airbag not
+    deployed.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY03
+Vehicle.Cabin.Seat.Row2.PassengerSide.IsBelted:
+  category: Safety
+  datatype: boolean
+  description: Is the belt engaged.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Cabin.Seat.Row2.PassengerSide.OccupancyStatus:
+  allowed:
+  - UNKNOWN
+  - OCCUPIED
+  - EMPTY
+  category: Safety
+  datatype: string
+  description: Occupancy status of the seat.
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: SAFETY06
+Vehicle.Chassis.Axle.Row1.Wheel.Left.Tire.Pressure:
+  category: Efficiency / Optimization / Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: Must Have
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE06
+Vehicle.Chassis.Axle.Row1.Wheel.Right.Tire.Pressure:
+  category: Efficiency / Optimization / Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: Must Have
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE06
+Vehicle.Chassis.Axle.Row2.Wheel.Left.Tire.Pressure:
+  category: Efficiency / Optimization / Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: Must Have
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE06
+Vehicle.Chassis.Axle.Row2.Wheel.Right.Tire.Pressure:
+  category: Efficiency / Optimization / Maintenance
+  datatype: uint16
+  description: Tire pressure in kilo-Pascal.
+  importance: Must Have
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: kPa
+  usecase: MAINTENANCE06
 Vehicle.Chassis.Brake.PedalPosition:
   category: Safety
   datatype: uint8
   description: Brake pedal position as percent. 0 = Not depressed. 100 = Fully depressed.
-  importance: MUST
+  importance: Must Have
   max: 100
   min: 0
   sampling: CHANGE
   type: sensor
   unit: percent
   usecase: SAFETY04
-  uuid: 0477d3a4a831564ea473976cf34374f2
+Vehicle.Chassis.ParkingBrake.IsEngaged:
+  category: Safety
+  datatype: boolean
+  description: Parking brake status. True = Parking Brake is Engaged. False = Parking
+    Brake is not Engaged.
+  importance: Must Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: actuator
+  usecase: SAFETY12
+Vehicle.CurrentLocation.Altitude:
+  category: Sustainability (EV)
+  datatype: double
+  description: Current altitude relative to WGS 84 reference ellipsoid, as measured
+    at the position of GNSS receiver antenna.
+  importance: Should Have
+  sampling: 3m
+  type: sensor
+  unit: m
+  usecase: SUSTAINABILITY10
+Vehicle.CurrentLocation.Latitude:
+  category: Sustainability (EV)
+  datatype: double
+  description: Current latitude of vehicle in WGS 84 geodetic coordinates, as measured
+    at the position of GNSS receiver antenna.
+  importance: Must Have
+  max: 90
+  min: -90
+  sampling: 1Hz
+  type: sensor
+  unit: degrees
+  usecase: SUSTAINABILITY07
+Vehicle.CurrentLocation.Longitude:
+  category: Sustainability (EV)
+  datatype: double
+  description: Current longitude of vehicle in WGS 84 geodetic coordinates, as measured
+    at the position of GNSS receiver antenna.
+  importance: Must Have
+  max: 180
+  min: -180
+  sampling: 1Hz
+  type: sensor
+  unit: degrees
+  usecase: SUSTAINABILITY07
+Vehicle.CurrentLocation.Timestamp:
+  category: Sustainability (EV)
+  datatype: string
+  description: Timestamp from GNSS system for current location, formatted according
+    to ISO 8601 with UTC time zone.
+  importance: Must Have
+  sampling: 1Hz
+  type: sensor
+  unit: iso8601
+  usecase: SUSTAINABILITY07
+Vehicle.Diagnostics.DTCCount:
+  category: Efficiency / Optimization / Maintenance
+  datatype: uint8
+  description: Number of Diagnostic Trouble Codes (DTC)
+  importance: Must Have
+  sampling: Vehicle.OBD.Status.IsMILOn=true
+  type: sensor
+  usecase: MAINTENANCE05
+Vehicle.Diagnostics.DTCList:
+  category: Efficiency / Optimization / Maintenance
+  datatype: string[]
+  description: List of currently active DTCs formatted according OBD II (SAE-J2012DA_201812)
+    standard ([P|C|B|U]XXXXX )
+  importance: Must Have
+  sampling: CHANGE
+  type: sensor
+  usecase: MAINTENANCE05
+Vehicle.Exterior.AirTemperature:
+  category: Sustainability (EV)
+  datatype: float
+  description: Air temperature outside the vehicle.
+  importance: Should Have
+  sampling: 3m
+  type: sensor
+  unit: Celsius
+  usecase: SUSTAINABILITY10
 Vehicle.LowVoltageBattery.CurrentVoltage:
-  category: Optimization / Maintenance
+  category: Efficiency / Optimization / Maintenance
   datatype: float
   description: Current Voltage of the low voltage battery.
-  importance: MUST
-  sampling: 10Hz
+  importance: Must Have
+  sampling: 0.033333333333333Hz
   type: sensor
   unit: V
-  usecase: MAINTENANCE17
-  uuid: 1394234e8b975a279959ae82e03df786
+  usecase: MAINTENANCE15
 Vehicle.LowVoltageSystemState:
   allowed:
   - UNDEFINED
@@ -88,81 +631,137 @@ Vehicle.LowVoltageSystemState:
   category: Sustainability (ICE)
   datatype: string
   description: State of the supply voltage of the control units (usually 12V).
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
   usecase: SUSTAINABILITY04
-  uuid: d7391ceb132e5519b02d4c13d5513d99
-Vehicle.OBD.FuelType:
-  category: Sustainability (ICE)
-  datatype: uint8
-  description: PID 51 - Fuel type
-  importance: MUST
-  max: 23
-  min: 0
+Vehicle.Powertrain.AccumulatedBrakingEnergy:
+  category: Sustainability (EV)
+  datatype: float
+  description: The accumulated energy from regenerative braking over lifetime.
+  importance: Must Have
   sampling: Vehicle.LowVoltageSystemState='START'
-  type: attribute
-  usecase: SUSTAINABILITY01
-  uuid: aefb45bdd8035904b0c8f3ffcedc53a9
+  type: sensor
+  unit: kWh
+  usecase: SUSTAINABILITY10
 Vehicle.Powertrain.CombustionEngine.DieselExhaustFluid.Level:
   category: Sustainability (ICE)
   datatype: uint8
   description: Level of the Diesel Exhaust Fluid tank as percent of capacity. 0 =
     empty. 100 = full.
-  importance: SHOULD
+  importance: Should Have
   max: 100
   min: 0
-  sampling: 0.0033333333333333Hz
+  sampling: Vehicle.LowVoltageSystemState='START'
   type: sensor
   unit: percent
   usecase: SUSTAINABILITY02
-  uuid: f5b0269b58ff5a8e8399f6d96963a3b6
-Vehicle.Powertrain.CombustionEngine.ECT:
-  category: Optimization / Maintenance
-  datatype: int16
-  description: Engine coolant temperature.
-  importance: SHOULD
-  sampling: 0.0033333333333333Hz
+Vehicle.Powertrain.CombustionEngine.DieselParticulateFilter.DeltaPressure:
+  category: Sustainability (ICE)
+  datatype: float
+  description: Delta Pressure of Diesel Particulate Filter.
+  importance: Should Have
+  sampling: CHANGE
   type: sensor
-  unit: celsius
-  usecase: MAINTENANCE14
-  uuid: fff3cad23cac5b189a1a075c3ab562cd
+  unit: Pa
+  usecase: SUSTAINABILITY02
+Vehicle.Powertrain.CombustionEngine.DieselParticulateFilter.InletTemperature:
+  category: Sustainability (ICE)
+  datatype: float
+  description: Inlet temperature of Diesel Particulate Filter.
+  importance: Should Have
+  sampling: CHANGE
+  type: sensor
+  unit: Celsius
+  usecase: SUSTAINABILITY02
+Vehicle.Powertrain.CombustionEngine.DieselParticulateFilter.OutletTemperature:
+  category: Sustainability (ICE)
+  datatype: float
+  description: Outlet temperature of Diesel Particulate Filter.
+  importance: Should Have
+  sampling: CHANGE
+  type: sensor
+  unit: Celsius
+  usecase: SUSTAINABILITY02
 Vehicle.Powertrain.CombustionEngine.EOP:
-  category: Optimization / Maintenance
+  category: Safety
   datatype: uint16
   description: Engine oil pressure.
-  importance: MUST
+  importance: Must Have
   sampling: 0.0033333333333333Hz
   type: sensor
   unit: kPa
-  usecase: MAINTENANCE09
-  uuid: 76c7039dc7975ec3a003f0f4a04895ec
+  usecase: SAFETY15
+Vehicle.Powertrain.CombustionEngine.EngineCoolant.Level:
+  allowed:
+  - CRITICALLY_LOW
+  - LOW
+  - NORMAL
+  category: Efficiency / Optimization / Maintenance
+  datatype: string
+  description: Engine coolant level.
+  importance: Should Have
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  usecase: MAINTENANCE13
+Vehicle.Powertrain.CombustionEngine.EngineCoolant.Temperature:
+  category: Efficiency / Optimization / Maintenance
+  datatype: float
+  description: Engine coolant temperature.
+  importance: Should Have
+  sampling: 0.0033333333333333Hz
+  type: sensor
+  unit: Celsius
+  usecase: MAINTENANCE12
 Vehicle.Powertrain.CombustionEngine.EngineHours:
   category: Compliance
   datatype: float
   description: Accumulated time during engine lifetime with 'engine speed (rpm) >
     0'.
-  importance: MUST
-  sampling: 0..0016666666666667Hz
+  importance: Must Have
+  sampling: Vehicle.LowVoltageSystemState='START'
   type: sensor
   unit: h
   usecase: COMPLIANCE01
-  uuid: a23a62e24f58514d961890f53262e4e0
-Vehicle.Powertrain.CombustionEngine.EngineOilLevel:
+Vehicle.Powertrain.CombustionEngine.EngineOil.Level:
   allowed:
   - CRITICALLY_LOW
   - LOW
   - NORMAL
   - HIGH
   - CRITICALLY_HIGH
-  category: Optimization / Maintenance
+  category: Efficiency / Optimization / Maintenance
   datatype: string
   description: Engine oil level.
-  importance: MUST
+  importance: Must Have
   sampling: Vehicle.LowVoltageSystemState='START'
   type: sensor
-  usecase: MAINTENANCE11
-  uuid: e3813f59e94b509eb865fd97255a8a4f
+  usecase: MAINTENANCE09
+Vehicle.Powertrain.CombustionEngine.EngineOil.LifeRemaining:
+  category: Efficiency / Optimization / Maintenance
+  comment: In addition to this a signal a vehicle can report remaining time to service
+    (including e.g. oil change) by Vehicle.Service.TimeToService.
+  datatype: int32
+  description: Remaining engine oil life in seconds. Negative values can be used to
+    indicate that lifetime has been exceeded.
+  importance: Must Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  unit: s
+  usecase: MAINTENANCE09
+Vehicle.Powertrain.CombustionEngine.EngineOil.PressureStatus:
+  allowed:
+  - NORMAL
+  - WARNING
+  - ALERT
+  - ERROR
+  category: Efficiency / Optimization / Maintenance
+  datatype: string
+  description: Engine oil pressure status.
+  importance: Should Have
+  sampling: .nan
+  type: sensor
+  usecase: MAINTENANCE05
 Vehicle.Powertrain.CombustionEngine.IdleHours:
   category: Sustainability (ICE)
   comment: Vehicles may calculate accumulated idle time for an engine. It might be
@@ -170,12 +769,29 @@ Vehicle.Powertrain.CombustionEngine.IdleHours:
   datatype: float
   description: Accumulated idling time during engine lifetime. Definition of idling
     is not standardized.
-  importance: SHOULD
+  importance: Should Have
   sampling: Vehicle.LowVoltageSystemState='START'
   type: sensor
   unit: h
   usecase: SUSTAINABILITY02
-  uuid: 6caa3d7e669c5cc6aecd4a6be9a302d4
+Vehicle.Powertrain.CombustionEngine.Speed:
+  category: Safety
+  datatype: float
+  description: Engine speed measured as rotations per minute.
+  importance: Should Have
+  sampling: 0.033333333333333Hz
+  type: sensor
+  unit: rpm
+  usecase: SAFETY14
+Vehicle.Powertrain.FuelSystem.AbsoluteLevel:
+  category: Sustainability (ICE)
+  datatype: float
+  description: Current available fuel in the fuel tank expressed in liters.
+  importance: Should Have
+  sampling: 0.0083333333333333Hz
+  type: sensor
+  unit: l
+  usecase: SUSTAINABILITY01
 Vehicle.Powertrain.FuelSystem.ConsumptionSinceStart:
   category: Sustainability (EV)
   comment: A new trip is considered to start when engine gets enabled (e.g. LowVoltageSystemState
@@ -183,124 +799,225 @@ Vehicle.Powertrain.FuelSystem.ConsumptionSinceStart:
     The signal may however keep the value of the last trip until a new trip is started.
   datatype: float
   description: Fuel amount in liters consumed since start of current trip.
-  importance: MUST
+  importance: Must Have
   sampling: Vehicle.LowVoltageSystemState='START'
   type: sensor
   unit: l
   usecase: SUSTAINABILITY05
-  uuid: adf0a40964ff556f92b10275ad918883
+Vehicle.Powertrain.FuelSystem.RelativeLevel:
+  category: Sustainability (ICE)
+  datatype: uint8
+  description: Level in fuel tank as percent of capacity. 0 = empty. 100 = full.
+  importance: Must Have
+  max: 100
+  min: 0
+  sampling: 0.0083333333333333Hz
+  type: sensor
+  unit: percent
+  usecase: SUSTAINABILITY01
+Vehicle.Powertrain.FuelSystem.SupportedFuelTypes:
+  allowed:
+  - GASOLINE
+  - DIESEL
+  - E85
+  - LPG
+  - CNG
+  - LNG
+  - H2
+  - OTHER
+  category: Sustainability (ICE)
+  comment: If a vehicle also has an electric drivetrain (e.g. hybrid) that will be
+    obvious from the PowerTrain.Type signal.
+  datatype: string[]
+  description: High level information of fuel types supported
+  importance: Must Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: attribute
+  usecase: SUSTAINABILITY01
+Vehicle.Powertrain.FuelSystem.TankCapacity:
+  category: Sustainability (ICE)
+  datatype: float
+  description: Capacity of the fuel tank in liters.
+  importance: Should Have
+  sampling: .nan
+  type: attribute
+  unit: l
+  usecase: SUSTAINABILITY01
+Vehicle.Powertrain.Range:
+  category: Sustainability (ICE)
+  datatype: uint32
+  description: Remaining range in meters using all energy sources available in the
+    vehicle.
+  importance: Should Have
+  sampling: .nan
+  type: sensor
+  unit: m
+  usecase: SUSTAINABILITY01
+Vehicle.Powertrain.TractionBattery.AccumulatedConsumedEnergy:
+  category: Sustainability (EV)
+  datatype: float
+  description: The accumulated energy leaving HV battery for propulsion and auxiliary
+    loads over lifetime of the battery.
+  importance: Must Have
+  sampling: Vehicle.LowVoltageSystemState='START'
+  type: sensor
+  unit: kWh
+  usecase: SUSTAINABILITY10
+Vehicle.Powertrain.TractionBattery.Charging.ChargeRate:
+  category: Sustainability (EV)
+  datatype: float
+  description: Current charging rate, as in kilometers of range added per hour.
+  importance: Must Have
+  sampling: 0.0083333333333333Hz*
+  type: sensor
+  unit: km/h
+  usecase: SUSTAINABILITY09
+Vehicle.Powertrain.TractionBattery.Charging.ChargeVoltage.Phase1:
+  category: Sustainability (EV)
+  datatype: float
+  description: Current AC charging voltage (rms) at inlet for Phase 1.
+  importance: Must Have
+  sampling: 0.0083333333333333Hz*
+  type: sensor
+  unit: V
+  usecase: SUSTAINABILITY09
+Vehicle.Powertrain.TractionBattery.Charging.ChargeVoltage.Phase2:
+  category: Sustainability (EV)
+  datatype: float
+  description: Current AC charging voltage (rms) at inlet for Phase 2.
+  importance: Must Have
+  sampling: 0.0083333333333333Hz*
+  type: sensor
+  unit: V
+  usecase: SUSTAINABILITY09
+Vehicle.Powertrain.TractionBattery.Charging.ChargeVoltage.Phase3:
+  category: Sustainability (EV)
+  datatype: float
+  description: Current AC charging voltage (rms) at inlet for Phase 3.
+  importance: Must Have
+  sampling: 0.0083333333333333Hz*
+  type: sensor
+  unit: V
+  usecase: SUSTAINABILITY09
 Vehicle.Powertrain.TractionBattery.Charging.IsCharging:
   category: Sustainability (EV)
   datatype: boolean
   description: True if charging is ongoing. Charging is considered to be ongoing if
     energy is flowing from charger to vehicle.
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
   usecase: SUSTAINABILITY08
-  uuid: d28244c9e3365899954bd3e38ef46bb9
+Vehicle.Powertrain.TractionBattery.CurrentCurrent:
+  category: Sustainability (EV)
+  datatype: float
+  description: Current current flowing in/out of battery. Positive = Current flowing
+    in to battery, e.g. during charging. Negative = Current flowing out of battery,
+    e.g. during driving.
+  importance: Must Have
+  sampling: 0.0083333333333333Hz*
+  type: sensor
+  unit: A
+  usecase: SUSTAINABILITY09
+Vehicle.Powertrain.TractionBattery.GrossCapacity:
+  category: Sustainability (EV)
+  datatype: uint16
+  description: Gross capacity of the battery.
+  importance: Must Have
+  sampling: 0.0083333333333333Hz*
+  type: attribute
+  unit: kWh
+  usecase: SUSTAINABILITY09
 Vehicle.Powertrain.TractionBattery.NetCapacity:
   category: Sustainability (EV)
   datatype: uint16
   description: Total net capacity of the battery considering aging.
-  importance: SHOULD
+  importance: Should Have
   sampling: .nan
   type: sensor
   unit: kWh
   usecase: SUSTAINABILITY10
-  uuid: 9c68fe42cb81501eb6349f8c9b0b6899
 Vehicle.Powertrain.TractionBattery.Range:
   category: Sustainability (EV)
   datatype: uint32
   description: Remaining range in meters using only battery.
-  importance: MUST
+  importance: Must Have
   sampling: 0.016666666666667Hz
   type: sensor
   unit: m
   usecase: SUSTAINABILITY06
-  uuid: c0376a425e5d578d9d86ae0dc2ad9778
 Vehicle.Powertrain.TractionBattery.StateOfCharge.Current:
   category: Sustainability (EV)
   datatype: float
   description: Physical state of charge of the high voltage battery, relative to net
     capacity. This is not necessarily the state of charge being displayed to the customer.
-  importance: MUST
+  importance: Must Have
   max: 100.0
   min: 0
   sampling: CHANGE
   type: sensor
   unit: percent
   usecase: SUSTAINABILITY06
-  uuid: 2e647ca3a1ff5e52af137aab240642da
+Vehicle.Powertrain.TractionBattery.Temperature:
+  category: Efficiency / Optimization / Maintenance
+  description: Temperature Information for the battery pack.
+  importance: Should Have
+  sampling: 0.0033333333333333Hz
+  type: branch
+  usecase: MAINTENANCE12
 Vehicle.Powertrain.Transmission.CurrentGear:
   category: Safety
   datatype: int8
   description: The current gear. 0=Neutral, 1/2/..=Forward, -1/-2/..=Reverse.
-  importance: MUST
+  importance: Must Have
   sampling: CHANGE
   type: sensor
   usecase: SAFETY07
-  uuid: cd0ba1d772565e16bff46cbd5c9361da
 Vehicle.Service.DistanceToService:
-  category: Optimization / Maintenance
+  category: Efficiency / Optimization / Maintenance
   datatype: float
   description: Remaining distance to service (of any kind). Negative values indicate
     service overdue.
-  importance: SHOULD
+  importance: Should Have
   sampling: Vehicle.LowVoltageSystemState='START'
   type: sensor
   unit: km
-  usecase: MAINTENANCE04
-  uuid: 6f4347ce149759819572c8c3a17e8d93
+  usecase: MAINTENANCE03
 Vehicle.Service.IsServiceDue:
-  category: Optimization / Maintenance
+  category: Efficiency / Optimization / Maintenance
   datatype: boolean
   description: Indicates if vehicle needs service (of any kind). True = Service needed
     now or in the near future. False = No known need for service.
-  importance: SHOULD
-  sampling: CHANGE
+  importance: Should Have
+  sampling: Vehicle.Service.IsServiceDue=true
   type: sensor
-  usecase: MAINTENANCE06
-  uuid: 3e28f85ccccd5702b9adbe9a761ea1b4
-Vehicle.Service.TimeToService:
-  category: Optimization / Maintenance
-  datatype: int32
-  description: Remaining time to service (of any kind). Negative values indicate service
-    overdue.
-  importance: SHOULD
-  sampling: Vehicle.LowVoltageSystemState='START'
-  type: sensor
-  unit: s
-  usecase: MAINTENANCE12
-  uuid: c968be91a5685fa9ae30b84a0f91934e
+  usecase: MAINTENANCE10
 Vehicle.Speed:
   category: Sustainability (ICE)
   datatype: float
   description: Vehicle speed.
-  importance: MUST
+  importance: Must Have
   sampling: 1Hz
   type: sensor
   unit: km/h
   usecase: SUSTAINABILITY04
-  uuid: efe50798638d55fab18ab7d43cc490e9
 Vehicle.TraveledDistance:
   category: Compliance
-  datatype: float
+  datatype: uint32
   description: Odometer reading, total distance traveled during the lifetime of the
     vehicle.
-  importance: MUST
-  sampling: 5Km
+  importance: Must Have
+  sampling: Vehicle.LowVoltageSystemState='START'
   type: sensor
-  unit: km
+  unit: m
   usecase: COMPLIANCE02
-  uuid: 32c3c3585f105d8aa5566ef5a038a741
 Vehicle.VehicleIdentification.VIN:
-  category: Optimization / Maintenance
+  category: Efficiency / Optimization / Maintenance
   datatype: string
   description: 17-character Vehicle Identification Number (VIN) as defined by ISO
     3779.
-  importance: MUST
+  importance: Must Have
+  pattern: ^([0-9A-HJ-NPR-Z]{3})([0-9A-HJ-NPR-Z]{6})([0-9A-HJ-NPR-Z]{4}[0-9]{4})$
   sampling: Vehicle.LowVoltageSystemState='START'
   type: attribute
   usecase: MAINTENANCE01
-  uuid: 6f0b6fa8c34f589baa92e565bc9df5bd
