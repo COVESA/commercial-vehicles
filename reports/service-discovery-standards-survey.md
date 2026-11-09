@@ -16,7 +16,7 @@ Every standards body surveyed has converged on one of two patterns for finding a
 
 The IETF and W3C now treat the multicast step as untrusted "introduction" only and put all real metadata behind an authenticated "exploration" step. Automotive in-vehicle stacks mostly skip open discovery for applications and rely on static provisioning or on a data-model tree that doubles as the service registry. The one place where IETF-style mDNS/DNS-SD has landed normatively in automotive is diagnostics, in ISO 17978 SOVD. SAE has no service-discovery standard.
 
-VISS has left the question of how a client finds the VISS server open since 2020. Section 6 proposes three ready-made options drawn from this survey.
+VISS has left the question of how a client finds the VISS server open since 2020. Section 7 proposes three ready-made options drawn from this survey, and section 8 argues that in-vehicle applications should be provisioned with the server location at install rather than discover it on every start.
 
 ## 2. IETF
 
@@ -165,7 +165,39 @@ For AOSP, a COVESA-defined AIDL interface name is the realistic discovery mechan
 
 Aftermarket devices, such as a telematics gateway on vehicle Ethernet, are where SRP-style unicast registration matters most: the device needs to announce a service the vehicle did not leave the factory with, across zone gateways, with authentication. No automotive body has specified that yet, and it is squarely a commercial vehicle and fleet concern.
 
-## 8. Sources
+## 8. Efficiency in the in-vehicle case: provision, do not discover
+
+An in-vehicle application is installed once from an OEM marketplace and then started many times, on every ignition cycle, resume and process restart. The question is therefore not "which discovery protocol" but "how little work can the start path do". The evidence is one-sided: every stack shipping in volume provisions the service *location* statically and uses discovery, if at all, only for *liveness* and recovery.
+
+### 8.1 Per-start overhead of each mechanism
+
+| Mechanism | Cost on each boot, wake or restart | Source |
+|---|---|---|
+| mDNS/DNS-SD | Mandatory probe and announce on start, wake and link change: 0 to 250 ms jitter, three probes 250 ms apart, two announcements 1 s apart. About 1 s before a service is visible, then a browse wait on the client. Multicast wakes every node on the segment. | [RFC 6762 section 8](https://www.rfc-editor.org/rfc/rfc6762.html) |
+| SOME/IP-SD | Initial wait phase randomised in the INITIAL_DELAY range (vsomeip default 0 to 3000 ms), then a repetition phase with doubling delays, then cyclic offers at 1 s. Formal worst-case analyses exist because subscription latency is a real integration problem. | [Navet et al., SAE 2015](https://nicolas.navet.eu/publi/Some-IP-SAE2015-preprints.pdf); [vsomeip defaults](https://gsasindia.com/blog/someip-service-not-available-debugging-service-discovery) |
+| Matter operational discovery | Field reports of about 5 s per operation until clients stopped waiting for the full browse window. Controllers now cache the last address with the CASE session resumption record and skip mDNS on reconnect; a stale cache costs a 30 s timeout. | [go-matter PR 35](https://github.com/cybergarage/go-matter/pull/35); [Home Assistant issue 4214](https://github.com/home-assistant/addons/issues/4214) |
+| uProtocol uDiscovery | Local database lookup. The registry is populated by the OTA installer, not by self-advertisement, so the common case has no network round trip. | [uDiscovery v3](https://github.com/eclipse-uprotocol/up-spec/tree/main/up-l3/udiscovery/v3) |
+| Android Binder + VINTF | Sub-millisecond lookup of a name declared in a static manifest. `waitForDeclaredService` blocks only until a lazy HAL starts. | [AIDL backends](https://source.android.com/docs/core/architecture/aidl/aidl-backends) |
+| AUTOSAR Adaptive | Service instance manifests fix address, port and instance at deployment. SOME/IP-SD runs on top for presence, not to find the address. | [Manifest specification](https://www.autosar.org/fileadmin/standards/R20-11/AP/AUTOSAR_RS_ManifestSpecification.pdf) |
+| Android Car App Library | The host finds the app through a manifest intent filter; the app admits hosts through a static allowlist. No runtime discovery. | [CarAppService](https://developer.android.com/reference/androidx/car/app/CarAppService) |
+
+### 8.2 Observations
+
+- **Nobody shipping in volume discovers the address at runtime.** AUTOSAR writes it in the manifest, Android writes it in VINTF, uProtocol has the installer write it, and Matter learned to cache it. Multicast discovery survives in those stacks as a liveness signal and a recovery path.
+- **Separate "where" from "ready".** Much of the cost attributed to discovery is the boot-ordering problem: the application starts before the data service does. Provisioning answers "where". "Ready" is cheaper to answer with a blocking wait on a declared Binder name, a TCP connect with exponential backoff, or a single SOME/IP offer, none of which needs a browse.
+- **The marketplace is the natural provisioning point.** An OEM store already decides which applications may use which vehicle APIs and signs them. Delivering a small service descriptor at install is a trivial extension and matches what VISS v3.2 already permits: "as part of a package manifest or by consulting a registry on application install". Android's package visibility rules push the same way, since even explicit binding to another package requires a static `<queries>` declaration ([package visibility](https://developer.android.com/training/package-visibility/declaring)).
+- **Static is also more secure.** An mDNS or SOME/IP-SD answer is unauthenticated. A descriptor delivered by the signed store can pin the server certificate and the access-token server URIs, closing the spoofing hole that the WoT two-phase model exists to mitigate.
+
+### 8.3 Recommended pattern: provision, cache, verify, fall back
+
+1. **Provision.** Define a VISS service descriptor: a JSON document with the endpoint per transport, VISS version, forest or tree identifiers, access-grant and access-token server URIs, and a pinned public key. The OEM marketplace delivers it at install, as application manifest metadata or through a locator the application queries once.
+2. **Cache.** The application stores the descriptor and the last successfully used endpoint, as Matter controllers cache the operational address.
+3. **Verify.** On start, connect directly and verify the pinned key. On Android, resolve a COVESA-defined AIDL name through `servicemanager` with `waitForDeclaredService`; that single call is the whole readiness check.
+4. **Fall back.** Only on connection failure or a changed network, run a bounded DNS-SD browse for `_viss._tcp` or re-query the locator. Never on the hot path.
+
+For the AOSP track this is a concrete deliverable: a locator interface in covesa-aosp-sdk returning the descriptor, so a VISS-backed VHAL of the BMW or Volvo shape is found without OEM-specific wiring. Discovery proper then matters only for the cases provisioning cannot cover: a smartphone pairing over the vehicle hotspot, and an aftermarket device such as a telematics gateway announcing a service the vehicle did not ship with. Those are commercial vehicle and fleet cases, and they call for SRP-style authenticated registration rather than open multicast.
+
+## 9. Sources
 
 - IETF: [RFC 6762](https://www.rfc-editor.org/rfc/rfc6762.html), [RFC 6763](https://www.rfc-editor.org/rfc/rfc6763.html), [RFC 8766](https://www.rfc-editor.org/rfc/rfc8766.html), [RFC 9665](https://www.rfc-editor.org/rfc/rfc9665.html), [RFC 9176](https://www.rfc-editor.org/rfc/rfc9176.html), [RFC 8615](https://www.rfc-editor.org/rfc/rfc8615.html), [RFC 9727](https://www.rfc-editor.org/info/rfc9727/), [DNSSD WG](https://datatracker.ietf.org/wg/dnssd/about/), [draft-ietf-dnssd-advertising-proxy](https://datatracker.ietf.org/doc/draft-ietf-dnssd-advertising-proxy/), [draft-ietf-snac-simple](https://datatracker.ietf.org/doc/draft-ietf-snac-simple/)
 - W3C: [WoT Discovery](https://www.w3.org/TR/wot-discovery/), [Automotive WG minutes 26 May 2020](https://www.w3.org/2020/05/26-auto-minutes.html), [25 Oct 2022](https://www.w3.org/2022/10/25-auto-minutes.html), [2 May 2023](https://www.w3.org/2023/05/02-auto-minutes.html), [Gen2 dynamic registry proposal](http://www.w3.org/2019/11/W3C_Gen2_dynamic_registry.pdf)
